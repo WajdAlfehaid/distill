@@ -17,12 +17,14 @@ from __future__ import annotations
 
 import copy
 import random
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, date
 from typing import Optional
 
-from .formats import fmt_date, fmt_num, fmt_qty
-from .model import Invoice, LineItem
+from .formats import fmt_date, fmt_num, fmt_qty, parse_date, parse_num
+from .model import Invoice, LineItem, Record
+from .ocr import corrupt, numeric_fix
 
 DRIFT_KINDS = {
     "relabel": "loud",
@@ -78,6 +80,11 @@ STREETS = {"SA": ["King Fahd Rd, Riyadh", "Olaya St, Riyadh", "2nd Industrial Ci
            "FR": ["Rue de Rivoli, Paris"], "ES": ["Calle de Alcalá, Madrid"], "GB": ["Old Street, London", "Deansgate, Manchester"],
            "US": ["Main St 400, Austin TX", "Market St, San Francisco CA"]}
 
+SCAN_NOISE = {"digital": 0.0, "good": 0.004, "poor": 0.018}
+NOTES = ["Delivered to Warehouse 3, Gate B", "Partial shipment - balance to follow", "Prices valid until end of quarter",
+         "Please quote our invoice number with your payment", "Goods remain our property until paid in full",
+         "Late payments subject to 1.5% monthly charge", "Contact accounts@ for any query"]
+
 KEYWORD_CATALOG = [("consult", "consulting"), ("food", "food"), ("cold chain", "food"), ("medical", "medical"),
                    ("logistics", "logistics"), ("freight", "logistics"), ("office", "office"), ("bureau", "office"),
                    ("print", "office"), ("it services", "it"), ("cloud", "it"), ("security", "it"),
@@ -121,6 +128,7 @@ class Vendor:
     address: str = ""
     phone: str = ""
     iban: str = ""
+    scan: str = "digital"  # digital (born-digital PDF) | good (clean scan) | poor (bad scan / fax)
 
 
 @dataclass
@@ -132,6 +140,8 @@ class Doc:
     vendor_id: str  # hidden: used only for evaluation and the dashboard
     template_rev: int
     drift_tag: Optional[str] = None  # set when the template is drifted
+    damage: dict = field(default_factory=dict)  # field -> what a careless reader of the damaged print would get
+    scan: str = "digital"
 
 
 # ------------------------------------------------------------------ templates
@@ -204,6 +214,8 @@ def make_template(country: str, currency: str, rng: random.Random, force_table: 
         "show_ship_date": rng.random() < 0.5,
         "show_customer_ref": False,
         "footer": rng.choice(["Thank you for your business.", "Payment by bank transfer only.", "Page 1 of 1"]),
+        "wrap_at": rng.choice([0, 0, 22, 26]) if table_style == "spaces" else 0,
+        "paginate_after": rng.choice([0, 4, 5]),
     }
 
 
@@ -221,39 +233,74 @@ def _money(x: float, tpl: dict, currency: str) -> str:
     return n
 
 
-def render(vendor: Vendor, inv: Invoice, rng: random.Random) -> str:
+class _Noise:
+    """Applies OCR damage to rendered text and records which values a reader could misread."""
+
+    def __init__(self, rate: float, rng: random.Random, num_style: str, date_style: str):
+        self.rate, self.rng, self.ns, self.ds = rate, rng, num_style, date_style
+        self.damage: dict = {}
+
+    def label(self, s: str) -> str:
+        return corrupt(s, self.rate, self.rng)[0]
+
+    def text(self, s: str) -> str:
+        return corrupt(s, self.rate, self.rng)[0]
+
+    def value(self, field_name: str, shown: str, kind: str, truth) -> str:
+        noisy, kinds = corrupt(shown, self.rate, self.rng)
+        if noisy != shown:
+            misread = self._misread(noisy, kind)
+            if misread != truth:
+                self.damage[field_name] = misread
+        return noisy
+
+    def _misread(self, noisy: str, kind: str):
+        if kind == "money":
+            v = parse_num(numeric_fix(re.sub(r"[A-Z]{3}|[$€£]", "", noisy)), self.ns)
+            return round(v, 2) if v is not None else None
+        if kind == "date":
+            return parse_date(numeric_fix(noisy), self.ds)
+        return noisy.strip()
+
+
+def render(vendor: Vendor, inv: Invoice, rng: random.Random, noise_rate: Optional[float] = None) -> tuple[str, dict]:
     t = vendor.template
     sep = t["sep"]
+    rate = SCAN_NOISE[vendor.scan] if noise_rate is None else noise_rate
+    N = _Noise(rate, rng, t["num_style"], t["date_style"])
     L = {k: (v.rstrip(":").rstrip() if ":" in sep else v) for k, v in t["labels"].items()}
     out: list[str] = []
-    out.append(vendor.name.upper())
-    out.append(vendor.address)
-    out.append(vendor.phone)
-    out.append(f"{L['vendor_tax_id']}{sep}{inv.vendor_tax_id}")
+    out.append(N.text(vendor.name.upper()))
+    out.append(N.text(vendor.address))
+    out.append(N.text(vendor.phone))
+    out.append(f"{N.label(L['vendor_tax_id'])}{sep}{N.value('vendor_tax_id', inv.vendor_tax_id, 'text', inv.vendor_tax_id)}")
     out.append("")
     out.append("TAX INVOICE" if vendor.country in ("SA", "AE") else "INVOICE")
     out.append("")
 
-    values = {
-        "invoice_number": inv.invoice_number,
-        "invoice_date": fmt_date(inv.invoice_date, t["date_style"]),
-        "due_date": fmt_date(inv.due_date, t["date_style"]),
-        "po_number": inv.po_number,
-        "currency": inv.currency,
+    shown = {
+        "invoice_number": (inv.invoice_number, "text", inv.invoice_number),
+        "invoice_date": (fmt_date(inv.invoice_date, t["date_style"]), "date", inv.invoice_date),
+        "due_date": (fmt_date(inv.due_date, t["date_style"]), "date", inv.due_date),
+        "po_number": (inv.po_number, "text", inv.po_number),
+        "currency": (inv.currency, "text", inv.currency),
     }
     for f in t["header_order"]:
         if f == "po_number" and inv.po_number is None:
             continue
+        val = N.value(f, *shown[f])
         if t["label_mode"].get(f) == "next":
-            out.append(L[f])
-            out.append(values[f])
+            out.append(N.label(L[f]))
+            out.append(val)
         else:
-            out.append(f"{L[f]}{sep}{values[f]}")
+            out.append(f"{N.label(L[f])}{sep}{val}")
         if f == "invoice_date" and t["show_ship_date"]:
             ship = (date.fromisoformat(inv.invoice_date) - timedelta(days=rng.randint(1, 4))).isoformat()
             out.append(f"Ship Date{sep}{fmt_date(ship, t['date_style'])}")
     if t.get("show_customer_ref"):
         out.append(f"Customer Ref{sep}CR-{rng.randint(10000, 99999)}")
+    if rng.random() < 0.25:
+        out.append(N.text(rng.choice(NOTES)))
     out.append("")
     out.append("Bill To: Qassim Holding Co., Procurement Dept., Buraydah")
     out.append("")
@@ -261,57 +308,98 @@ def render(vendor: Vendor, inv: Invoice, rng: random.Random) -> str:
     tb = t["table"]
     ns = t["num_style"]
 
-    def cell(col: str, li: LineItem) -> str:
+    def cell(col: str, li: LineItem, i: int) -> str:
         if col == "description":
             return li.description
-        if col == "quantity":
-            return fmt_qty(li.quantity, ns)
-        return fmt_num(getattr(li, col), ns)
+        raw = fmt_qty(li.quantity, ns) if col == "quantity" else fmt_num(getattr(li, col), ns)
+        noisy, _ = corrupt(raw, rate, rng)
+        if noisy != raw:
+            v = parse_num(numeric_fix(noisy), ns)
+            if v is None or abs(v - getattr(li, col)) > 1e-6:
+                N.damage.setdefault(f"line_items[{i}]", {})[col] = v if v is not None else 0.0
+        return noisy
 
+    def header_block() -> list[str]:
+        cols = tb["columns"]
+        heads = [tb["headers"][c] for c in cols]
+        if tb["style"] == "inline":
+            return ["Items:"]
+        if tb["style"] == "pipe":
+            return ["| " + " | ".join(heads) + " |", "|" + "|".join("-" * (len(h) + 2) for h in heads) + "|"]
+        if tb["style"] == "semicolon":
+            return [";".join(heads)]
+        return [None]  # spaces: built with widths below
+
+    items = inv.line_items
+    page_break = t.get("paginate_after") or 0
     if tb["style"] == "inline":
         out.append("Items:")
-        for li in inv.line_items:
-            out.append(tb["inline_fmt"].format(description=li.description, quantity=fmt_qty(li.quantity, ns),
-                                               unit_price=fmt_num(li.unit_price, ns), amount=fmt_num(li.amount, ns)))
+        for i, li in enumerate(items):
+            if page_break and i == page_break and len(items) > page_break:
+                out += ["", "Page 1 of 2", vendor.name.upper() + " (continued)", "Items:"]
+            out.append(tb["inline_fmt"].format(description=li.description, quantity=cell("quantity", li, i),
+                                               unit_price=cell("unit_price", li, i), amount=cell("amount", li, i)))
     else:
         cols = tb["columns"]
         heads = [tb["headers"][c] for c in cols]
-        rows = [[cell(c, li) for c in cols] for li in inv.line_items]
-        if tb["style"] == "pipe":
-            out.append("| " + " | ".join(heads) + " |")
-            out.append("|" + "|".join("-" * (len(h) + 2) for h in heads) + "|")
+        rows = [[cell(c, li, i) for c in cols] for i, li in enumerate(items)]
+        wrap = t.get("wrap_at") or 0
+        if tb["style"] == "spaces":
+            disp = []
             for r in rows:
-                out.append("| " + " | ".join(r) + " |")
-        elif tb["style"] == "semicolon":
-            out.append(";".join(heads))
-            for r in rows:
-                out.append(";".join(r))
-        else:  # spaces, aligned
-            widths = [max(len(x) for x in [h] + [r[i] for r in rows]) for i, h in enumerate(heads)]
-            out.append("   ".join(h.ljust(w) for h, w in zip(heads, widths)).rstrip())
-            out.append("-" * (sum(widths) + 3 * (len(widths) - 1)))
-            for r in rows:
-                out.append("   ".join(c.ljust(w) if i == 0 else c.rjust(w) for i, (c, w) in enumerate(zip(r, widths))).rstrip())
+                d = r[cols.index("description")]
+                if wrap and len(d) > wrap and " " in d[:wrap]:
+                    k = d[:wrap].rfind(" ")
+                    disp.append((d[:k], d[k + 1:]))
+                else:
+                    disp.append((d, None))
+            widths = [max(len(x) for x in [h] + [(disp[ri][0] if c == "description" else rows[ri][ci]) for ri in range(len(rows))])
+                      for ci, (h, c) in enumerate(zip(heads, cols))]
+            head_line = "   ".join(h.ljust(w) for h, w in zip(heads, widths)).rstrip()
+            rule = "-" * (sum(widths) + 3 * (len(widths) - 1))
+            out += [head_line, rule]
+            for ri, r in enumerate(rows):
+                if page_break and ri == page_break and len(rows) > page_break:
+                    out += ["", "Page 1 of 2", vendor.name.upper() + " (continued)", head_line, rule]
+                cells = [disp[ri][0] if c == "description" else v for c, v in zip(cols, r)]
+                out.append("   ".join(x.ljust(w) if i == 0 else x.rjust(w) for i, (x, w) in enumerate(zip(cells, widths))).rstrip())
+                if disp[ri][1]:
+                    out.append("  " + disp[ri][1])
+        else:
+            hb = header_block()
+            out += hb
+            for ri, r in enumerate(rows):
+                if page_break and ri == page_break and len(rows) > page_break:
+                    out += ["", "Page 1 of 2", vendor.name.upper() + " (continued)"] + hb
+                out.append(("| " + " | ".join(r) + " |") if tb["style"] == "pipe" else ";".join(r))
     out.append("")
 
     cur = inv.currency
-    out.append(f"{L['subtotal']}{sep}{_money(inv.subtotal, t, cur)}")
+
+    def money_line(f: str, label: str, x: float) -> str:
+        m = _money(x, t, cur)
+        num = fmt_num(x, t["num_style"])
+        noisy_num = N.value(f, num, "money", x)
+        return f"{N.label(label)}{sep}{m.replace(num, noisy_num)}"
+
+    out.append(money_line("subtotal", L["subtotal"], inv.subtotal))
     if inv.discount:
-        out.append(f"{L['discount']}{sep}{_money(inv.discount, t, cur)}")
+        out.append(money_line("discount", L["discount"], inv.discount))
     tax_label = L["tax"] + (f" ({round(vendor.tax_rate * 100, 2):g}%)" if t["tax_label_rate"] else "")
-    out.append(f"{tax_label}{sep}{_money(inv.tax, t, cur)}")
-    out.append(f"{L['total']}{sep}{_money(inv.total, t, cur)}")
+    out.append(money_line("tax", tax_label, inv.tax))
+    out.append(money_line("total", L["total"], inv.total))
     out.append("")
-    out.append(vendor.iban)
+    out.append(N.text(vendor.iban))
     out.append(f"Payment terms: Net {vendor.terms_days}")
     out.append(t["footer"])
-    return "\n".join(out)
+    return "\n".join(out), N.damage
 
 
 # ------------------------------------------------------------------ the stream
 class InvoiceStream:
     def __init__(self, seed: int = 7, n_vendors: int = 20, start: str = "2026-01-04T08:00:00",
-                 vendor_overrides: Optional[dict] = None):
+                 vendor_overrides: Optional[dict] = None, realistic: bool = True):
+        self.realistic = realistic
         self.rng = random.Random(seed)
         self.clock = datetime.fromisoformat(start)
         self.seq = 0
@@ -334,11 +422,12 @@ class InvoiceStream:
                 vendor_id=vid, name=name, country=country, currency=cur, tax_id=make_tax_id(country, self.rng),
                 tax_rate=TAX_RATES[country], terms_days=self.rng.choice([15, 30, 30, 45, 60]), catalog=catalog,
                 decimal_qty=catalog in ("consulting", "food"), discount_prob=self.rng.choice([0.0, 0.0, 0.2, 0.4]),
-                lines_range=(1, self.rng.choice([3, 5, 8])),
+                lines_range=(1, self.rng.choice([3, 5, 8, 12])),
                 inv_prefix=self.rng.choice(["INV-2026-", "A/", "", "BL", "RE-26-"]),
                 inv_counter=self.rng.randint(100, 90000), po_numbers=[], template=tpl,
             )
             r = self.rng
+            v.scan = ov.get("scan") or r.choices(["digital", "good", "poor"], weights=[45, 35, 20])[0] if realistic else "digital"
             v.address = f"Building {r.randint(1000, 9999)}, {STREETS[country][r.randrange(len(STREETS[country]))]}"
             v.phone = f"Tel +{r.randint(10, 999)} {r.randint(100, 999)} {r.randint(1000, 9999)}"
             v.iban = f"IBAN: {v.country}{r.randint(10, 99)} {r.randint(1000, 9999)} {r.randint(1000, 9999)} {r.randint(1000, 9999)}"
@@ -356,7 +445,8 @@ class InvoiceStream:
     # ---------------------------------------------------------- master data
     def vendor_master(self) -> list[dict]:
         return [{"vendor_id": v.vendor_id, "name": v.name, "country": v.country, "currency": v.currency,
-                 "tax_id": v.tax_id, "tax_rate": v.tax_rate, "terms_days": v.terms_days} for v in self.vendors]
+                 "tax_id": v.tax_id, "tax_rate": v.tax_rate, "terms_days": v.terms_days, "scan": v.scan}
+                for v in self.vendors]
 
     def vendor(self, vid: str) -> Vendor:
         return next(v for v in self.vendors if v.vendor_id == vid)
@@ -441,10 +531,10 @@ class InvoiceStream:
         self.clock += timedelta(minutes=self.rng.randint(2, 9))
         v = self.vendor(vendor_id) if vendor_id else self.rng.choices(self.vendors, weights=self.weights, k=1)[0]
         inv = self._invoice(v)
-        text = render(v, inv, self.rng)
+        text, damage = render(v, inv, self.rng)
         tag = v.drift_log[-1]["kind"] if v.drift_log else None
         return Doc(doc_id=f"D{self.seq:05d}", received_at=self.clock.isoformat(), text=text, truth=inv,
-                   vendor_id=v.vendor_id, template_rev=v.template_rev, drift_tag=tag)
+                   vendor_id=v.vendor_id, template_rev=v.template_rev, drift_tag=tag, damage=damage, scan=v.scan)
 
 
 # Reproducible demo/benchmark set-up: guarantees one vendor of each silent kind.

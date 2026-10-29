@@ -1,0 +1,136 @@
+[
+ {
+  "dataset": "docile",
+  "system": "llm_only",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 600,
+  "sources": 280,
+  "doc_exact": 0.9983333333333333,
+  "field_accuracy": 0.9998888888888889,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 611,
+  "llm_calls_per_doc": 1.0183333333333333,
+  "cost_usd": 0.13578809999999988,
+  "cost_all_small_usd": 0.09581009999999994,
+  "cost_all_large_usd": 1.9162020000000002,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 457,
+    "code_share": 0.0,
+    "exact": 0.9978118161925602
+   },
+   "4th-10th": {
+    "docs": 141,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "11th onward": {
+    "docs": 2,
+    "code_share": 0.0,
+    "exact": 1.0
+   }
+  },
+  "field_errors": {
+   "order_id": 1
+  },
+  "wall_seconds": 0.08839312700001756
+ },
+ {
+  "dataset": "docile",
+  "system": "static",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 600,
+  "sources": 280,
+  "doc_exact": 0.9916666666666667,
+  "field_accuracy": 0.9993333333333333,
+  "code_share": 0.008333333333333333,
+  "code_doc_exact": 0.2,
+  "code_field_accuracy": 0.9333333333333333,
+  "silent_wrong_docs": 4,
+  "llm_calls": 606,
+  "llm_calls_per_doc": 1.01,
+  "cost_usd": 0.1350386999999999,
+  "cost_all_small_usd": 0.09581009999999994,
+  "cost_all_large_usd": 1.9162020000000002,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 2,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 457,
+    "code_share": 0.0,
+    "exact": 0.9978118161925602
+   },
+   "4th-10th": {
+    "docs": 141,
+    "code_share": 0.03546099290780142,
+    "exact": 0.9716312056737588
+   },
+   "11th onward": {
+    "docs": 2,
+    "code_share": 0.0,
+    "exact": 1.0
+   }
+  },
+  "field_errors": {
+   "amount_total_gross": 3,
+   "customer_billing_name": 2,
+   "order_id": 1
+  },
+  "wall_seconds": 6.181610543999994
+ },
+ {
+  "dataset": "docile",
+  "system": "distill",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 600,
+  "sources": 280,
+  "doc_exact": 0.9983333333333333,
+  "field_accuracy": 0.9998888888888889,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 613,
+  "llm_calls_per_doc": 1.0216666666666667,
+  "cost_usd": 0.14124209999999982,
+  "cost_all_small_usd": 0.09581009999999994,
+  "cost_all_large_usd": 1.9162020000000002,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 457,
+    "code_share": 0.0,
+    "exact": 0.9978118161925602
+   },
+   "4th-10th": {
+    "docs": 141,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "11th onward": {
+    "docs": 2,
+    "code_share": 0.0,
+    "exact": 1.0
+   }
+  },
+  "field_errors": {
+   "order_id": 1
+  },
+  "wall_seconds": 15.02474174599999
+ }
+]

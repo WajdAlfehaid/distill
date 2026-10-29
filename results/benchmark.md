@@ -2,21 +2,21 @@
 
 | System | Doc accuracy | Wrong docs | LLM cost | Cost / 1k docs (last 1k) | LLM calls / doc | Code share (last 1k) | p50 latency | Human review |
 |---|---|---|---|---|---|---|---|---|
-| llm_only_large | 98.81% | 95 | $19.0925 | $2.3854 | 1.000 | 0% | 3792.0 ms | 71 |
-| llm_only_small | 98.15% | 148 | $1.5394 | $0.1948 | 1.030 | 0% | 1364.0 ms | 8 |
-| static | 87.89% | 969 | $0.4820 | $0.0846 | 0.316 | 60% | 0.1 ms | 0 |
-| distill | 99.95% | 4 | $0.2609 | $0.0243 | 0.143 | 99% | 0.1 ms | 1 |
+| llm_only_large | 94.14% | 469 | $24.6894 | $3.0848 | 1.000 | 0% | 4512.0 ms | 444 |
+| llm_only_small | 94.77% | 418 | $4.1817 | $0.5256 | 1.108 | 0% | 1604.0 ms | 245 |
+| static | 80.80% | 1536 | $2.7351 | $0.3750 | 0.557 | 46% | 0.7 ms | 43 |
+| distill | 96.19% | 305 | $3.7470 | $0.4401 | 0.644 | 74% | 1348.1 ms | 238 |
 
 ## Drift events (wrong documents from the drifted vendor after the change)
 
 | Vendor | Drift | Class | llm_only_large | llm_only_small | static | distill | Distill: detected after | Distill: recovered after |
 |---|---|---|---|---|---|---|---|---|
-| V14 | inline_swap | silent | 10/788 | 12/788 | 788/788 | 0/788 | 1 docs | 6 docs |
-| V18 | date_locale | silent | 5/543 | 10/543 | 112/543 | 0/543 | 1 docs | 6 docs |
-| V20 | relabel | loud | 14/1222 | 17/1222 | 17/1222 | 0/1222 | 1 docs | 7 docs |
-| V11 | table_reflow | loud | 7/412 | 5/412 | 5/412 | 0/412 | 1 docs | 6 docs |
-| V10 | number_style | loud | 4/300 | 7/300 | 7/300 | 0/300 | 1 docs | 8 docs |
-| V12 | new_fields | structural | 3/250 | 8/250 | 0/250 | 0/250 | not needed | not needed |
+| V01 | inline_swap | silent | 32/430 | 17/430 | 393/430 | 16/430 | 2 docs | 9 docs |
+| V10 | date_locale | silent | 19/1316 | 27/1316 | 313/1316 | 0/1316 | 3 docs | 8 docs |
+| V19 | relabel | loud | 64/724 | 42/724 | 42/724 | 38/724 | 3 docs | 19 docs |
+| V07 | table_reflow | loud | 10/516 | 10/516 | 10/516 | 0/516 | 3 docs | 8 docs |
+| V12 | number_style | loud | 31/328 | 30/328 | 30/328 | 29/328 | 1 docs | 21 docs |
+| V13 | new_fields | structural | 3/271 | 8/271 | 169/271 | 0/271 | not needed | not needed |
 
 'Not needed': the change added lines the parser did not use; Distill checked those documents with the model, found the parser still right, and learned the new layout without replacing the parser.
 

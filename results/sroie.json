@@ -1,0 +1,89 @@
+[
+ {
+  "dataset": "sroie",
+  "system": "distill",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 619,
+  "sources": 306,
+  "doc_exact": 1.0,
+  "field_accuracy": 1.0,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 635,
+  "llm_calls_per_doc": 1.0258481421647818,
+  "cost_usd": 0.06998699999999997,
+  "cost_all_small_usd": 0.04615099999999995,
+  "cost_all_large_usd": 0.9230199999999987,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 394,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "4th-10th": {
+    "docs": 81,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "11th onward": {
+    "docs": 144,
+    "code_share": 0.0,
+    "exact": 1.0
+   }
+  },
+  "field_errors": {},
+  "wall_seconds": 26.25378122400025
+ },
+ {
+  "dataset": "sroie",
+  "system": "static",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 619,
+  "sources": 306,
+  "doc_exact": 0.9854604200323102,
+  "field_accuracy": 0.9959612277867528,
+  "code_share": 0.027463651050080775,
+  "code_doc_exact": 0.47058823529411764,
+  "code_field_accuracy": 0.8529411764705882,
+  "silent_wrong_docs": 9,
+  "llm_calls": 618,
+  "llm_calls_per_doc": 0.9983844911147012,
+  "cost_usd": 0.06877519999999997,
+  "cost_all_small_usd": 0.04615099999999995,
+  "cost_all_large_usd": 0.9230199999999987,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 6,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 394,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "4th-10th": {
+    "docs": 81,
+    "code_share": 0.1111111111111111,
+    "exact": 0.9629629629629629
+   },
+   "11th onward": {
+    "docs": 144,
+    "code_share": 0.05555555555555555,
+    "exact": 0.9583333333333334
+   }
+  },
+  "field_errors": {
+   "total": 9,
+   "date": 1
+  },
+  "wall_seconds": 6.116210402999968
+ }
+]

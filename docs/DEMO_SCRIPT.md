@@ -33,14 +33,17 @@ Let a second judge try a loud change (rename labels) on another vendor if time a
 
 ## 2:50 The numbers (60 s)
 
-Switch to the benchmark (results/benchmark.md, or a slide built from it):
-- Same 8,000 invoices, six template changes.
-- Sonnet on everything: $19.09. Haiku on everything: $1.54. Distill: $0.26, at 99.95% exact versus 98–99%.
-- Compile-once: cheap, but 788 of 788 invoices wrong after the silent swap.
-- Every drift detected within one invoice of the changed vendor; replacement parser live within 6–8.
-- Latency per invoice drops from seconds to under a millisecond.
+Show results/benchmark.md and the DocILE / SROIE tables (or slides built from them):
+- Synthetic stream with realistic scan damage, 8,000 invoices, six template changes:
+  Sonnet on everything $24.69 at 94.1% right; Haiku on everything $4.18 at 94.8%; Distill $3.75 at 96.2%,
+  with 42% fewer model calls and 74% of steady-state traffic handled by code in under a millisecond.
+- Compile-once: 393 of 430 invoices wrong after the silent price/quantity swap. Distill: caught within 2 invoices.
+- Real data: DocILE (5,680 business documents) and SROIE (619 scanned receipts). On SROIE Distill compiled nothing
+  and made no silent errors; compile-once compiled anyway and was wrong on 9 of 17.
 
-Say which numbers are from the real API run and which are simulated. Judges respect that.
+Say plainly which numbers are simulated (model tiers), which use a perfect teacher (public datasets), and which come
+from real Claude if you ran `--real`. Be upfront that against the cheapest model the dollar saving is modest; the
+case is accuracy, latency, a 6.6x saving against larger models, and evidence on every result.
 
 ## 3:50 Why it matters (40 s)
 
@@ -49,6 +52,11 @@ Say which numbers are from the real API run and which are simulated. Judges resp
 ## 4:30 Questions
 
 Likely questions and short answers:
+- *Why not just use Haiku on everything?* You can, and it is cheap. Distill is more accurate than that (checks,
+  arbitration, parsers correcting model slips), answers in milliseconds for most traffic, and tells you when a
+  result needs a person. The dollar saving against the cheapest model is modest; against larger models it is large.
+- *What about badly scanned documents?* Distill refuses to compile what does not hold up (SROIE), and tells scan
+  noise apart from template changes so one smudged copy does not throw away a good parser.
 - *What if the LLM labels are wrong?* Labels must pass the business checks; synthesis tolerates a mislabelled example (leave-one-out); shadow disagreements are arbitrated by a larger model, and the parser can correct the LLM.
 - *Is generated code safe to run?* Nothing generated is executed. Parsers are JSON specs of line patterns run by a fixed interpreter.
 - *How is this different from Evaporate?* Evaporate already validates and aggregates candidate functions on a fixed batch. Distill adds what a changing stream needs: drift detection, versioning, shadow promotion, quarantine, adaptive audits and error bounds.

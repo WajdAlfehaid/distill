@@ -18,6 +18,7 @@ import time
 from pathlib import Path
 
 from .datagen import DEMO_OVERRIDES, DRIFT_KINDS, InvoiceStream
+from .doctypes import InvoiceType
 from .engine import Config, Engine
 from .llm import AnthropicLLM, SimulatedLLM
 from .model import Invoice, diff, field_count
@@ -54,11 +55,13 @@ SYSTEMS = {
 }
 
 
-def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: bool = False, progress: bool = False) -> dict:
-    stream = InvoiceStream(seed=seed, vendor_overrides=DEMO_OVERRIDES)
+def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: bool = False, progress: bool = False,
+               realistic: bool = True) -> dict:
+    stream = InvoiceStream(seed=seed, vendor_overrides=DEMO_OVERRIDES, realistic=realistic)
     truth: dict[str, Invoice] = {}
-    llm = AnthropicLLM() if real else SimulatedLLM(lambda d: truth[d], seed=seed)
-    eng = Engine(stream.vendor_master(), stream.po_master, llm, cfg)
+    damage: dict[str, dict] = {}
+    llm = AnthropicLLM() if real else SimulatedLLM(lambda d: truth[d], seed=seed, damage=lambda d: damage.get(d))
+    eng = Engine(InvoiceType(stream.vendor_master(), stream.po_master), llm, cfg)
     sched = {k: (v, kind) for k, v, kind in schedule if k <= n}
     docs, curve, drift_meta = [], [], {}
     t0 = time.perf_counter()
@@ -69,6 +72,7 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
             drift_meta[vid] = {"at": i, "kind": kind, "class": DRIFT_KINDS[kind], "desc": desc}
         d = stream.next_doc()
         truth[d.doc_id] = d.truth
+        damage[d.doc_id] = d.damage
         docs.append(d)
         eng.process(d.doc_id, d.text, d.received_at)
         if i % 50 == 0:
@@ -176,7 +180,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.real and args.n > 1000:
         print("note: --real with many documents costs money; consider --n 300 and adjust the drift schedule")
-    schedule = DEFAULT_SCHEDULE if (args.seed == 11 and args.n == 8000) else auto_schedule(args.seed, args.n)
+    schedule = auto_schedule(args.seed, args.n)
     results = []
     for name in args.systems.split(","):
         print(f"running {name} ...", flush=True)

@@ -23,6 +23,7 @@ from starlette.responses import FileResponse, JSONResponse, StreamingResponse
 from starlette.routing import Route
 
 from .datagen import DEMO_OVERRIDES, DRIFT_KINDS, InvoiceStream
+from .doctypes import InvoiceType
 from .engine import Config, Engine
 from .llm import LARGE_MODEL, SMALL_MODEL, AnthropicLLM, SimulatedLLM, cost_of, SYSTEM_PROMPT
 from .model import Invoice, diff
@@ -52,16 +53,20 @@ class Simulation:
                     pass
             self.stream = InvoiceStream(seed=self.seed, vendor_overrides=DEMO_OVERRIDES)
             self.truth: dict[str, Invoice] = {}
+            self.damage: dict[str, dict] = {}
             self.vendor_of: dict[str, str] = {}
             self.texts: dict[str, str] = {}
-            llm = AnthropicLLM() if self.real else SimulatedLLM(lambda d: self.truth[d], seed=self.seed)
-            self.engine = Engine(self.stream.vendor_master(), self.stream.po_master, llm,
+            llm = AnthropicLLM() if self.real else SimulatedLLM(lambda d: self.truth[d], seed=self.seed,
+                                                                damage=lambda d: self.damage.get(d))
+            self.engine = Engine(InvoiceType(self.stream.vendor_master(), self.stream.po_master), llm,
                                  Config(mode="distill", profile=self.profile), Registry(self.db))
             self.cf = {"large": 0.0, "small": 0.0}  # counterfactual: every document through one model
             self.curve: list[dict] = []
             self.ticks: deque = deque(maxlen=400)
             self.drifts: list[dict] = []
             self.wrong = 0
+            self.verdicts: dict[str, dict] = {}
+            self.revised_seen = 0
             self.pending.clear()
 
     # ------------------------------------------------------------------ loop
@@ -81,17 +86,19 @@ class Simulation:
             vid = self.pending.popleft() if self.pending else None
             d = self.stream.next_doc(vid)
             self.truth[d.doc_id] = d.truth
+            self.damage[d.doc_id] = d.damage
             self.vendor_of[d.doc_id] = d.vendor_id
             self.texts[d.doc_id] = d.text
             rec = self.engine.process(d.doc_id, d.text, d.received_at)
             tin, tout = SimulatedLLM.tokens_for(d.text, d.truth)
             self.cf["large"] += cost_of(LARGE_MODEL, tin, tout)
             self.cf["small"] += cost_of(SMALL_MODEL, tin, tout)
-            pred = Invoice.from_dict(rec["final"]) if rec["final"] else Invoice()
-            bad = diff(pred, d.truth)
-            rec["_correct"] = not bad
-            rec["_wrong_fields"] = bad
-            self.wrong += 1 if bad else 0
+            self._verify(rec)
+            # quarantine may have revised earlier results: re-verify those too
+            for qid in self.engine.revised[self.revised_seen:]:
+                self._verify(self.engine.records[qid])
+            self.revised_seen = len(self.engine.revised)
+            bad = rec["_wrong_fields"]
             kind = "drift" if "drift_confirmed" in rec["flags"] else (
                 "code" if rec["route"] and rec["route"]["path"] == "code" else
                 "audit" if rec["route"] and rec["route"]["path"] == "audit" else "llm")
@@ -104,6 +111,43 @@ class Simulation:
                 if len(self.curve) > 600:
                     self.curve = self.curve[::2]
             return rec
+
+    def _verify(self, rec: dict) -> None:
+        """Compare a result with the answer key (available because the demo data is generated)."""
+        truth = self.truth[rec["doc_id"]]
+        pred = Invoice.from_dict(rec["final"]) if rec["final"] else Invoice()
+        bad = diff(pred, truth)
+        prev = self.verdicts.get(rec["doc_id"])
+        if prev is not None and prev["wrong"]:
+            self.wrong -= 1
+        rec["_correct"] = not bad
+        rec["_wrong_fields"] = bad
+        self.wrong += 1 if bad else 0
+        path = (rec.get("route") or {}).get("path") or "llm"
+        self.verdicts[rec["doc_id"]] = {"path": path, "wrong": bool(bad), "flagged": "human_review" in rec["flags"]}
+
+    def verification(self) -> dict:
+        by = {p: {"docs": 0, "right": 0} for p in ("code", "audit", "llm")}
+        cm = {"passed_right": 0, "passed_wrong": 0, "flagged_wrong": 0, "flagged_right": 0}
+        for v in self.verdicts.values():
+            b = by.setdefault(v["path"], {"docs": 0, "right": 0})
+            b["docs"] += 1
+            b["right"] += 0 if v["wrong"] else 1
+            key = ("flagged_" if v["flagged"] else "passed_") + ("wrong" if v["wrong"] else "right")
+            cm[key] += 1
+        return {"by_route": by, "confusion": cm}
+
+    def recent_rows(self, n: int = 30) -> list[dict]:
+        out = []
+        for did in reversed(self.engine.order[-n:]):
+            r = self.engine.records[did]
+            v = self.stream.vendor(self.vendor_of[did])
+            out.append({"doc_id": did, "seq": r["seq"], "vendor": v.name, "scan": v.scan,
+                        "path": (r.get("route") or {}).get("path"), "source": r["source"], "parser": r.get("parser_id"),
+                        "checks_passed": r.get("checks_passed"), "flags": r["flags"], "correct": r.get("_correct"),
+                        "wrong_fields": r.get("_wrong_fields") or [], "cost": r["cost_usd"],
+                        "damaged": sorted(self.damage.get(did, {}).keys())})
+        return out
 
     # ------------------------------------------------------------------ views
     def snapshot(self) -> dict:
@@ -127,6 +171,8 @@ class Simulation:
                 "vendors": e.parser_table(),
                 "events": e.events[-60:],
                 "drifts": self.drifts[-20:],
+                "verification": self.verification(),
+                "recent": self.recent_rows(),
             }
 
     def doc(self, doc_id: str) -> Optional[dict]:
@@ -139,6 +185,9 @@ class Simulation:
             out["correct"] = r.get("_correct")
             out["wrong_fields"] = r.get("_wrong_fields")
             out["truth"] = self.truth[doc_id].to_dict() if doc_id in self.truth else None
+            out["damaged"] = self.damage.get(doc_id, {})
+            v = self.stream.vendor(self.vendor_of[doc_id])
+            out["scan"] = v.scan
             return out
 
     def vendor(self, vid: str) -> dict:

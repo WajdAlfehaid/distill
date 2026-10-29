@@ -114,6 +114,28 @@ tr.v:hover td{background:var(--soft)}
 .kv dt{color:var(--muted)}
 .kv dd{margin:0}
 .bad{color:var(--drift);font-weight:700}
+.verify{margin-bottom:18px}
+.verify-head{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-start}
+.verify-head>div:first-child{max-width:640px}
+.cm{display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:6px;min-width:320px}
+.cm div{padding:8px 10px;border-radius:8px;background:var(--soft);font-size:13px;color:var(--muted)}
+.cm b{display:block;font-size:20px;color:var(--ink)}
+.cm .bad-cell{background:var(--drift-bg)}
+.cm .bad-cell b{color:var(--drift)}
+.routes{display:flex;flex-wrap:wrap;gap:8px 22px;margin:10px 0 12px;font-size:14px;color:var(--muted)}
+.routes b{color:var(--ink)}
+.tablewrap.short{max-height:420px}
+tr.d{cursor:pointer}
+tr.d:hover td{background:var(--soft)}
+.ok-mark{color:var(--code);font-weight:700}
+.bad-mark{color:var(--drift);font-weight:700}
+.route{display:inline-block;padding:1px 8px;border-radius:6px;font-size:12px;font-weight:600}
+.route.code{background:var(--code-bg);color:var(--code)}
+.route.audit{background:var(--audit-bg);color:var(--audit)}
+.route.llm{background:var(--llm-bg);color:var(--llm)}
+.cmp{width:100%;font-size:13.5px}
+.cmp td,.cmp th{padding:5px 6px}
+.cmp tr.miss td{background:var(--drift-bg)}
 @media (max-width:980px){.grid{grid-template-columns:1fr}.numbers{grid-template-columns:1fr 1fr}}
 @media (prefers-reduced-motion:reduce){.drawer{transition:none}}
 </style>
@@ -177,6 +199,23 @@ tr.v:hover td{background:var(--soft)}
       </div>
     </section>
   </div>
+
+  <section class="panel verify" aria-label="Results checked against the answer key">
+    <div class="verify-head">
+      <div>
+        <h2>Every result, checked against the answer key</h2>
+        <p class="sub">The demo invoices are generated, so the true values are known. In production only Distill's own checks exist, which is why it keeps auditing its parsers.</p>
+      </div>
+      <div class="cm" id="cm"></div>
+    </div>
+    <div class="routes" id="routes"></div>
+    <div class="tablewrap short">
+      <table>
+        <thead><tr><th>Invoice</th><th>Vendor and scan</th><th>How it was processed</th><th>Distill's checks</th><th>Answer key</th><th>AI cost</th></tr></thead>
+        <tbody id="recent"></tbody>
+      </table>
+    </div>
+  </section>
 
   <div class="grid">
     <section class="panel">
@@ -375,19 +414,31 @@ async function openDoc(id){
   const checks = (d.checks||[]).map(c => `<span class="${c.ok ? "" : c.severity}" title="${esc(c.detail)}">${esc(c.name)}${c.ok ? "" : ": " + esc(c.detail)}</span>`).join("");
   const calls = (d.llm_calls||[]).map(c => `<li>${esc(c.purpose)}: ${esc(c.model)}, ${c.in}+${c.out} tokens, ${money(c.cost_usd,6)}${c.simulated ? " (simulated)" : ""}</li>`).join("") || "<li>none: no AI was used</li>";
   const f = d.final || {}, t = d.truth || {};
-  const fields = ["invoice_number","invoice_date","due_date","po_number","currency","subtotal","discount","tax","total"];
+  const fields = ["invoice_number","invoice_date","due_date","po_number","vendor_tax_id","currency","subtotal","discount","tax","total"];
   const wrong = new Set(d.wrong_fields || []);
-  const rows = fields.map(k => `<dt>${k.replace("_"," ")}</dt><dd class="${wrong.has(k) ? "bad" : ""}">${esc(f[k])}${wrong.has(k) ? ` (truth: ${esc(t[k])})` : ""}</dd>`).join("");
-  const items = (f.line_items||[]).map((li,i) => `<dt>line ${i+1}</dt><dd class="${wrong.has(`line_items[${i}]`) ? "bad" : ""}">${esc(li.description)}: ${li.quantity} x ${li.unit_price} = ${li.amount}</dd>`).join("");
+  const dmg = d.damaged || {};
+  const cmpRows = fields.map(k => `<tr class="${wrong.has(k) ? "miss" : ""}"><td>${k.replace(/_/g," ")}</td><td>${esc(f[k])}</td><td>${esc(t[k])}</td>
+      <td>${wrong.has(k) ? '<span class="bad-mark">no</span>' : '<span class="ok-mark">yes</span>'}${k in dmg ? ' <span class="muted">(printed value damaged)</span>' : ""}</td></tr>`).join("");
+  const n = Math.max((f.line_items||[]).length, (t.line_items||[]).length);
+  let itemRows = "";
+  for (let i = 0; i < n; i++){
+    const a = (f.line_items||[])[i], b = (t.line_items||[])[i];
+    const bad = wrong.has(`line_items[${i}]`) || wrong.has("line_items");
+    const fmt = li => li ? `${esc(li.description)}: ${li.quantity} x ${li.unit_price} = ${li.amount}` : "<em>missing</em>";
+    itemRows += `<tr class="${bad ? "miss" : ""}"><td>line ${i+1}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${bad ? '<span class="bad-mark">no</span>' : '<span class="ok-mark">yes</span>'}</td></tr>`;
+  }
+  const items = "";
+  const rows = `<table class="cmp"><thead><tr><th>Field</th><th>Distill extracted</th><th>Answer key</th><th>Match</th></tr></thead><tbody>${cmpRows}${itemRows}</tbody></table>`;
   openDrawer(`${d.doc_id} from ${d.vendor_id}`, `
     <dl class="kv"><dt>Result</dt><dd>${d.correct ? "exactly right" : `<span class="bad">wrong: ${esc((d.wrong_fields||[]).join(", "))}</span>`}</dd>
+    <dt>Scan quality</dt><dd>${esc(SCAN_NAME[d.scan] || d.scan)}${Object.keys(d.damaged||{}).length ? `; damaged in print: ${esc(Object.keys(d.damaged).join(", "))}` : ""}</dd>
     <dt>Produced by</dt><dd>${esc(d.source)}${d.parser_id ? " (" + esc(d.parser_id) + ")" : ""}</dd>
     <dt>Route</dt><dd>${esc(route.path)} — ${esc((route.reasons||[]).join("; "))}</dd>
     <dt>AI cost</dt><dd>${money(d.cost_usd,6)}</dd><dt>Flags</dt><dd>${esc((d.flags||[]).join(", ") || "none")}</dd></dl>
     <h3>Decision trail</h3><ol class="trace">${(d.trace||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ol>
     <h3>Checks</h3><div class="chk">${checks}</div>
     <h3>AI calls</h3><ul class="trace">${calls}</ul>
-    <h3>Extracted</h3><dl class="kv">${rows}${items}</dl>
+    <h3>Extracted versus the answer key</h3>${rows}
     <h3>Document text</h3><pre>${esc(d.text)}</pre>`);
 }
 
@@ -411,7 +462,33 @@ $("#reset").onclick = () => { driftCount.total = 0; driftCount.seen.clear(); pos
 $("#speed").oninput = e => { $("#speedv").textContent = e.target.value + "/s"; post("/api/control", {speed: +e.target.value}); };
 $("#profile").onchange = e => post("/api/control", {profile: e.target.value});
 
-function render(){ if (!S) return; drawNumbers(); drawRiver(); drawChart(); drawVendors(); drawFeed(); }
+const ROUTE_NAME = {code: "Compiled parser", audit: "Parser, checked by AI", llm: "Read by AI"};
+const SCAN_NAME = {digital: "digital PDF", good: "good scan", poor: "poor scan"};
+function drawVerification(){
+  const V = S.verification; if (!V) return;
+  const c = V.confusion;
+  $("#cm").innerHTML = `
+    <div><b>${c.passed_right.toLocaleString()}</b>accepted, and right</div>
+    <div class="${c.passed_wrong ? "bad-cell" : ""}"><b>${c.passed_wrong.toLocaleString()}</b>accepted, but wrong</div>
+    <div><b>${c.flagged_wrong.toLocaleString()}</b>sent for review, and indeed wrong</div>
+    <div><b>${c.flagged_right.toLocaleString()}</b>sent for review, but right</div>`;
+  $("#routes").innerHTML = Object.entries(V.by_route).filter(([, v]) => v.docs).map(([k, v]) =>
+    `<span>${ROUTE_NAME[k] || k}: <b>${(100 * v.right / v.docs).toFixed(1)}%</b> right of ${v.docs.toLocaleString()}</span>`).join("");
+  $("#recent").innerHTML = (S.recent || []).map(r => {
+    const checks = r.flags.includes("human_review") ? '<span class="bad-mark">sent for review</span>'
+      : (r.checks_passed ? "passed" : '<span class="bad-mark">failed</span>');
+    const extra = r.flags.includes("ocr_noise") ? " · noise, not drift" : r.flags.includes("drift_confirmed") ? " · drift caught" : "";
+    const key = r.correct ? '<span class="ok-mark">right</span>'
+      : `<span class="bad-mark">wrong:</span> ${esc(r.wrong_fields.slice(0, 3).join(", "))}`;
+    return `<tr class="d" data-id="${r.doc_id}"><td>#${r.seq}</td>
+      <td>${esc(r.vendor)}<br><span class="muted">${SCAN_NAME[r.scan] || r.scan}${r.damaged.length ? `, ${r.damaged.length} value(s) damaged in print` : ""}</span></td>
+      <td><span class="route ${r.path}">${ROUTE_NAME[r.path] || r.path}</span>${r.parser ? ` <span class="muted">${esc(r.parser)}</span>` : ""}<span class="muted">${extra}</span></td>
+      <td>${checks}</td><td>${key}</td><td>${money(r.cost, 6)}</td></tr>`;
+  }).join("");
+}
+$("#recent").addEventListener("click", e => { const tr = e.target.closest("tr.d"); if (tr) openDoc(tr.dataset.id); });
+
+function render(){ if (!S) return; drawNumbers(); drawRiver(); drawChart(); drawVerification(); drawVendors(); drawFeed(); }
 const es = new EventSource("/api/stream");
 let synced = false;
 es.onmessage = m => { S = JSON.parse(m.data);

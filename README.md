@@ -1,97 +1,108 @@
 # Distill
 
-**The first invoice from a supplier costs a fraction of a cent of AI. The thousandth costs nothing, and Distill keeps proving it is still right.**
+**Document extraction that compiles itself into code where that is safe, and knows when it isn't.**
 
-Companies send the same kinds of documents through large language models millions of times, even though each supplier's layout barely changes. Distill reads a supplier's first few invoices with Claude, compiles what it learned into a small parser (data, not code), and from then on extracts that supplier's invoices without AI. The hard part, and the part this project is about, is what happens next: layouts change, sometimes loudly and sometimes silently, and a compiled parser that is wrong but confident is worse than no parser at all.
+Companies send the same kinds of documents through language models over and over, even though most suppliers' layouts barely change. Distill reads a source's first documents with a model, compiles what it learned into a small parser (JSON data, never generated code), and from then on extracts that source's documents without AI, while checking every result, auditing its parsers against the model, and telling scan damage apart from a real change of template.
 
-Distill treats every compiled parser like a production release:
+## What it does
 
-1. **Detect drift.** Every result goes through business checks (line math, totals, tax, payment terms, PO and vendor master data, duplicates) and the vendor's own history. Layout fingerprints notice unseen or missing lines. A per-vendor monitor turns these signals into *stable → suspect → drift*.
-2. **Generate candidate parsers** from fresh, check-verified examples. Ambiguity (is `03/04/2026` DD/MM or MM/DD?) produces several candidates instead of a guess.
-3. **Test them in isolation** on stored examples, then in **shadow mode** next to live traffic. Disagreements are arbitrated by a larger model, so a wrong LLM label can't kill a correct parser, and a correct parser can correct a wrong LLM label.
-4. **Deploy only a validated version**, with lineage, evidence and one-click rollback. Documents the old parser accepted since its last verified result are **quarantined** and re-checked.
-5. **Keep proving reliability.** Audits compare the parser with the model at a rate that adapts to the evidence (100% for a new parser, halving every 3 clean audits, 2% floor) and spike on risk: high value, history warnings, a suspicious monitor. Every parser carries an exact 95% upper bound on its error rate (Clopper–Pearson; ≈3/n with zero errors, the rule of three).
-6. **Route by policy, not by a fixed cascade.** Each document's path (code, code + audit, small model, large model, person) is chosen from risk, uncertainty, cost and latency, and the reasons are recorded with the result.
+1. **Compile.** From a few verified examples, Distill induces candidate parsers: text-line patterns for text documents, and *registered geometric templates* for scanned pages (each page is aligned to a reference copy of its layout using shared landmark words, then fields are read from learned zones). Candidates are validated in isolation, only against values that are actually legible in each example, then run in **shadow mode** next to live traffic before promotion.
+2. **Check everything.** Arithmetic (line math, subtotal, discount, tax, total), formats, master data (vendor tax ID, currency, tax rate, payment terms, PO), duplicates, and the vendor's own price and quantity history.
+3. **Tell noise from drift.** Scans damage documents: look-alike characters (0/O, 1/l, 5/S), smudged labels, dropped digits. Distill recognises these: values one look-alike or one slip apart, labels within an edit budget, a parser output that already failed the checks on an unchanged layout. Only a **clean** disagreement confirmed by an arbiter model, or the **same field** disagreeing copy after copy, suspends a parser.
+4. **Recover.** On real drift: suspend the parser, quarantine and re-check what it accepted since its last verified result, synthesize a replacement from fresh examples, shadow-test it, promote it. A parser that has simply never seen a field (a vendor's first discount) is kept and extended, not suspended.
+5. **Keep proving reliability.** Audits compare parsers with the model at a rate that adapts to evidence (100% for a new parser, halving every 3 clean audits, 2% floor) and spike on risk. Each parser carries an exact 95% upper bound on its error rate.
+6. **Route by policy.** Each document's path (code, code + audit, small model, large model, person) is chosen from risk, uncertainty, cost and latency, and the reasons are recorded with the result.
 
 ## Results
 
-8,000 synthetic invoices from 20 vendors, six template changes injected mid-stream (`python -m distill.bench`). The LLM tiers are **simulated** in this run (ground truth plus injected errors: 5% of documents for the small model, 1.2% for the large one; tokens billed at published Claude Haiku 5.5 and Sonnet 5.5 prices). Everything else is real: parser synthesis, checks, drift detection, routing, audits, quarantine.
+Three evaluations, each answering a different question. All numbers come from scripts in this repository.
 
-| System | Exactly right | AI cost | Cost per 1k invoices, steady state | LLM calls per invoice | p50 latency |
-|---|---|---|---|---|---|
-| Claude Sonnet on every invoice | 98.81% | $19.09 | $2.39 | 1.00 | 3.8 s |
-| Claude Haiku on every invoice (Sonnet on failed checks) | 98.15% | $1.54 | $0.19 | 1.03 | 1.4 s |
-| Compile once (Evaporate-style, no drift handling) | 87.89% | $0.48 | $0.085 | 0.32 | <1 ms |
-| **Distill** | **99.95%** | **$0.26** | **$0.024** | **0.14** | **<1 ms** |
+### 1. Synthetic invoice stream with realistic scan damage, and injected template changes
 
-| Template change | Kind | Wrong after change: compile-once | Wrong after change: Distill | Distill detected after | New parser promoted after |
-|---|---|---|---|---|---|
-| Price printed before quantity | silent | 788 of 788 | 0 | 1 invoice | 6 invoices |
-| Dates switch DD/MM → MM/DD | silent | 112 of 543 | 0 | 1 | 6 |
-| Labels renamed, due date moved | loud | 17 of 1,222 | 0 | 1 | 7 |
-| Item table re-flowed | loud | 5 of 412 | 0 | 1 | 6 |
-| Number format 1,234.56 → 1.234,56 | loud | 7 of 300 | 0 | 1 | 8 |
-| New fields and discounts | structural | 0 of 250 | 0 | not needed | not needed |
+`python -m distill.bench`: 8,000 invoices from 20 vendors (5 countries, 5 table styles, wrapped descriptions, tables continued on a second page, free-text notes). Each vendor is a born-digital PDF, a good scan or a poor scan, with character-level OCR damage. Six template changes are injected mid-stream. **The model tiers are simulated**: ground truth plus injected mistakes, which grow with document length and with damage to printed values; tokens are billed at published Claude Haiku 5.5 / Sonnet 5.5 prices.
 
-Results hold across seeds (3, 5, 11, 23): 99.95–99.99% exact, 5–7x cheaper than Haiku-on-everything overall and 7–14x in steady state, every drift detected within one invoice of the changed vendor.
+| System | Exactly right | AI cost | Model calls per invoice | Cost per 1k, steady state |
+|---|---|---|---|---|
+| Claude Sonnet on every invoice | 94.1% | $24.69 | 1.00 | $3.08 |
+| Claude Haiku on every invoice (Sonnet when checks fail) | 94.8% | $4.18 | 1.11 | $0.53 |
+| Compile once, no drift handling | 80.8% | $2.74 | 0.56 | $0.38 |
+| **Distill** | **96.2%** | **$3.75** | **0.64** | **$0.44** |
 
-**Before you quote these numbers, run the real thing:** `python -m distill.bench --real --n 400` (see below). The simulated error rates are assumptions; real Claude may be more or less accurate on these documents.
+Code handles 74% of steady-state traffic. Template changes were detected within 1–3 documents of the changed vendor and a validated replacement was live within 8–21. The compile-once baseline got 393 of 430 invoices wrong after a silent change (price and quantity swapped, every total still adds up); Distill got 16 wrong, in line with the model-only systems on the same vendor (17 and 32), whose errors come from scan damage.
 
-## Why the silent drifts matter
+**What this says, honestly:** against the cheapest model, Distill's saving is modest (about 10% in dollars, 42% fewer model calls), because the documents it cannot compile are the damaged ones, and those are the expensive ones for every system. Its clear wins are accuracy (checks, arbitration and the parser correcting model slips), latency (compiled documents take under a millisecond instead of 1–4 seconds), a large saving against larger models (6.6x versus Sonnet), and the evidence trail on every result.
 
-"Price before quantity" is the case arithmetic can't catch: `12.50 @ 3 = 37.50` and `3 @ 12.50 = 37.50` both pass every invariant. Distill catches it because the vendor's price history says this vendor never sells fasteners at 3.00 or in fractional quantities: a history warning raises the risk, the policy orders a targeted audit, the audit disagrees, the arbiter confirms, and the parser is suspended, its recent output quarantined and re-checked, and a replacement synthesized, validated and shadow-tested. The compile-once baseline gets every one of those invoices wrong.
+### 2. DocILE: 5,680 real business documents (Rossum, ICDAR 2023)
+
+`python -m distill.realdata docile`: invoices, orders, credit notes and utility bills with DocTR OCR, 1,063 layout clusters. The model tier is a **perfect teacher** (the human labels) so the run isolates the parser layer: how much real traffic compiled templates can take over, and how often they disagree with the teacher.
+
+DOCILE_RESULTS
+
+### 3. SROIE: 619 real scanned receipts (ICDAR 2019), Tesseract OCR
+
+`python -m distill.realdata sroie`: faded thermal receipts from 236 shops, OCR'd here with Tesseract, identified by unsupervised layout clustering. Distill compiled **no** parsers: nothing it learned held up across copies of these scans, so every receipt went to the model and none was accepted wrongly. The compile-once baseline compiled anyway and was wrong on 9 of the 17 receipts it handled. This is the behaviour we want on data that should not be compiled.
 
 ## How it relates to prior work
 
-Stanford's Evaporate (Arora et al., VLDB 2024) showed that having an LLM synthesize extraction functions instead of reading every document cuts the tokens processed by about 110x, and Evaporate-Code+ already generates many candidate functions and aggregates them with weak supervision. Distill does not claim the idea of code synthesis. Its contribution is the operating discipline around it for a **stream** of business documents that **changes over time**: drift detection (including drift that passes arithmetic), parser versioning with isolated validation, shadow testing and promotion, quarantine of affected results, risk-based routing, and continuously updated statistical evidence that each parser is still right.
+Stanford's Evaporate (Arora et al., VLDB 2024) showed that synthesizing extraction functions instead of reading every document cuts the tokens an LLM processes by about 110x, and Evaporate-Code+ already generates and aggregates candidate functions. Template ("zonal") extraction for known layouts is decades old. Distill's contribution is the operating discipline for a **stream** of real, damaged business documents that **change over time**: learning templates automatically from a model, telling scan noise from drift, versioning with isolated validation and shadow promotion, quarantine of affected results, risk-based routing, and continuously updated evidence that each parser is still right.
 
 ## Quick start
 
-Python 3.10+. No API key needed for the simulated mode.
+Python 3.10+.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest -q                 # 21 tests
-python -m distill.bench             # benchmark -> results/benchmark.md and .json (about 15 s)
-python -m distill.server            # live dashboard on http://127.0.0.1:8000
+python -m pytest -q
+python -m distill.bench                 # synthetic benchmark -> results/benchmark.md
+python -m distill.server                # live dashboard on http://127.0.0.1:8000
+```
+
+Real datasets:
+
+```bash
+# DocILE: get a token at https://docile.rossum.ai, then
+curl -O https://docile-dataset-rossum.s3.eu-west-1.amazonaws.com/<TOKEN>/labeled-trainval.zip
+python scripts/prepare_docile.py labeled-trainval.zip      # -> data/docile_trainval_words.jsonl.gz
+python -m distill.realdata docile
+
+# SROIE: images + keys from the ICDAR 2019 SROIE release, OCR with Tesseract into data/sroie_ocr/*.txt
+python -m distill.realdata sroie --sroie-ocr data/sroie_ocr --sroie-keys data/sroie_keys
 ```
 
 With real Claude (costs money; Haiku 5.5 is $0.10 / $0.50 per million input/output tokens, Sonnet 5.5 $2 / $10):
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...           # Windows PowerShell: $env:ANTHROPIC_API_KEY="sk-ant-..."
-python scripts/smoke_real.py 3                # 3 invoices x 2 models, prints accuracy and cost
+export ANTHROPIC_API_KEY=sk-ant-...
+python scripts/smoke_real.py 3
+python -m distill.realdata docile --real --limit 400
 python -m distill.bench --real --n 400 --systems distill,llm_only_small
 python -m distill.server --real
 ```
 
-Models are set with `DISTILL_SMALL_MODEL` (default `claude-haiku-5-5`) and `DISTILL_LARGE_MODEL` (default `claude-sonnet-5-5`).
-
 ## The live demo
 
-Open the dashboard, press **Start stream**, and let it run to about 1,000 invoices (speed 30–60/s). Then hand a judge the **Change a vendor's template** panel: they pick any vendor and any change, including the silent ones, and Distill isn't told which. Within seconds the feed shows the drift, the quarantine, the candidate parser, the shadow agreements and the promotion. Click any bar in the invoice strip to see exactly why that invoice cost what it cost: route reasons, checks, AI calls, parser version and the raw text. Click a vendor to see its parser lineage and roll back. The full script is in [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
+Press **Start stream** and let it reach about 1,000 invoices. The **verification panel** shows every recent invoice with how it was processed, Distill's own verdict, and the answer-key verdict, plus the running count of "accepted, but wrong". Click any invoice to see extracted values next to the truth, the checks, the AI calls and the decision trail. Then let a judge change any vendor's template, including the silent changes, and watch the feed: drift, quarantine, candidate, shadow agreements, promotion. Script: [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md).
 
 ## Code map
 
 | File | What it does |
 |---|---|
-| `distill/datagen.py` | Synthetic invoice stream: 20 vendors, 5 countries, varied labels, date/number locales, table styles, noise, exact ground truth, six drift mutations |
-| `distill/parser.py` | Parser specs as JSON (line patterns, styles, required fields) and the executor; no generated code ever runs |
-| `distill/synth.py` | Candidate generation by induction from labelled examples (strict and relaxed generators, optional LLM-proposed specs) and isolated validation |
-| `distill/checks.py` | Invariant, format, master-data and history checks |
-| `distill/fingerprint.py` | Vendor identification and layout fingerprints |
-| `distill/drift.py` | Per-vendor drift monitor |
-| `distill/policy.py` | Risk, uncertainty, cost and latency routing with readable reasons; economy / balanced / assurance profiles |
-| `distill/audit.py` | Adaptive audit rate, deterministic sampling, exact error bounds |
-| `distill/engine.py` | The pipeline: routing, audits, arbitration, quarantine, synthesis, shadow, promotion, rollback |
-| `distill/registry.py` | SQLite ledger of parser versions, documents and events |
-| `distill/llm.py` | Claude Messages API client (standard library only) and the labelled simulation |
-| `distill/bench.py` | Four-system benchmark |
-| `distill/server.py`, `web/index.html` | Live dashboard |
+| `distill/model.py` | Schemas and records for any document type; field comparison |
+| `distill/doctypes.py` | Invoice, receipt (SROIE) and DocILE document types: fields, checks, source identification |
+| `distill/parser.py` | Spec interpreter: line rules, constant fields, zone rules, OCR-tolerant values, fuzzy labels, multi-page tables |
+| `distill/synth.py` | Candidate generation (strict, relaxed, geometric) and legibility-aware validation |
+| `distill/zones.py` | Geometric templates with page registration |
+| `distill/ocr.py` | OCR damage model and noise recognition |
+| `distill/engine.py` | Routing, audits, arbitration, noise-vs-drift, quarantine, synthesis, shadow, promotion, rollback |
+| `distill/checks.py`, `policy.py`, `audit.py`, `drift.py`, `fingerprint.py` | Checks, routing policy, audit statistics, drift monitor, layout fingerprints and clustering |
+| `distill/datagen.py` | Synthetic invoice stream with scan quality, layout quirks and drift mutations |
+| `distill/realdata.py`, `scripts/prepare_docile.py` | Public-dataset loaders, scoring and reports |
+| `distill/bench.py`, `distill/server.py`, `web/index.html` | Benchmark and live dashboard |
 
-## Honest limitations
+## Limitations
 
-- Documents are synthetic text, as if after PDF text extraction. Scanned PDFs need an OCR step first (Docling or PaddleOCR would slot in before `Engine.process`).
-- One layout per vendor at a time. Vendors with several concurrent templates (invoices and credit notes) would need fingerprint clustering, which the fingerprint module is shaped for but doesn't do yet.
-- The simulated LLM's error rates are assumptions; the real-mode benchmark is the number to quote.
-- The induced parsers are line-pattern based. Layouts that wrap fields across lines unpredictably need the LLM-proposed generator (`Config(use_llm_spec_proposals=True)`), which is implemented but untested against the live API.
+- Model-tier accuracy in the synthetic benchmark is simulated, and the public-dataset runs use a perfect teacher. Run with `--real` for numbers against real Claude.
+- Line items are extracted for invoices only; DocILE line items (LIR) are not attempted.
+- Values spanning several text lines are handled only as constants (vendor name, address) or by geometric zones.
+- DocILE's layout clusters are used as the source identity in the main DocILE run, the way an AP system knows the vendor; `--cluster learned` uses unsupervised clustering instead.
+- DocILE and SROIE are distributed under their own terms; the converted files are for local experiments.

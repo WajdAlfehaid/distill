@@ -1,33 +1,40 @@
 # Distill: notes for Claude Code
 
-Hackathon project (Challenge 2, "Deliver AI with less compute"). Invoice extraction that compiles LLM work into
-JSON parser specs, then detects drift, re-synthesizes, shadow-tests, promotes and keeps auditing. See README.md.
+Hackathon project (Challenge 2, "Deliver AI with less compute"). Document extraction that compiles LLM work into
+JSON parser specs (text-line patterns or registered geometric templates), then detects drift, tells OCR noise from
+real drift, re-synthesizes, shadow-tests, promotes and keeps auditing. See README.md.
 
 ## Commands
-- `python -m pytest -q` — must stay green (21 tests, ~4 s)
-- `python -m distill.bench` — 4 systems x 8,000 docs, simulated LLM, ~15 s; writes results/
-- `python -m distill.bench --seed 5` — other seeds pick drift vendors automatically (`auto_schedule`)
-- `python -m distill.server [--real] [--port 8000]` — dashboard at web/index.html, SSE at /api/stream
-- `python scripts/smoke_real.py 3` — real-API sanity check (needs ANTHROPIC_API_KEY)
+- `python -m pytest -q` — must stay green
+- `python -m distill.bench` — synthetic invoices with realistic scan noise, 4 systems x 8,000 docs; writes results/
+- `python -m distill.realdata docile` — DocILE (needs data/docile_trainval_words.jsonl.gz, see scripts/prepare_docile.py)
+- `python -m distill.realdata sroie --sroie-ocr <dir of .txt> --sroie-keys <dir of .json>` — SROIE receipts
+- add `--real` to either to use real Claude (ANTHROPIC_API_KEY); without it the model tier is simulated or a perfect teacher
+- `python -m distill.server [--real] [--port 8000]` — dashboard (web/index.html), SSE at /api/stream
+- `python scripts/smoke_real.py 3` — real-API sanity check
 
 ## Rules
 - Dependencies: standard library + starlette + uvicorn only. The Claude client is urllib-based on purpose.
 - Parsers are data (JSON specs). Never execute model-written code.
-- Every number shown to judges must be reproducible from `distill.bench`; label simulated numbers as simulated.
-- Ground truth (`Doc.truth`) is only for scoring and the simulated LLM oracle. The engine must never read it.
-- Keep `Engine.process` the single entry point; the benchmark and server both drive it.
+- Every number shown to judges must be reproducible from a script; label simulated numbers as simulated.
+- Ground truth is only for scoring and the simulated LLM oracle. The engine must never read it.
+- `Engine.process(doc_id, text, received_at, meta)` is the single entry point; `meta["words"]` carries OCR word boxes.
 
-## Architecture in one line per stage
-fingerprint.identify_vendor -> parser.execute (active spec) -> checks.run_checks -> drift.DriftMonitor.observe
--> policy.decide -> code | _audit (small model, large arbiter) | _llm_extract_with_escalation
--> learn (examples, history, layout) -> _shadow_step (arbitrated) -> _maybe_synthesize (synth.generate_candidates,
-best_candidate; fallbacks: fresh+older, fresh, leave-one-out, latest-k) -> promotion; _on_drift -> _quarantine.
+## Code map
+- model.py: Schema/FieldSpec/Record (generic records; `Invoice(...)` builds an invoice Record), comparison
+- doctypes.py: invoice / receipt (SROIE) / docile schemas, their checks and source identification
+- parser.py: spec executor (line rules, const rules, zone rules, OCR-tolerant numbers, fuzzy labels, multi-page items)
+- synth.py: induction of candidate specs (strict, relaxed, zones), legibility-aware validation
+- zones.py: geometric templates with page registration (align scans to a reference page)
+- ocr.py: OCR corruption model + noise recognition (ocr_equivalent, fuzzy_label)
+- engine.py: routing, audits, arbitration, noise-vs-drift classification, quarantine, synthesis, shadow, promotion
+- datagen.py: synthetic invoice stream with per-vendor scan quality, wrapped rows, page breaks, drift mutations
+- realdata.py: DocILE / SROIE loaders, scoring against any annotated value, report
+- bench.py, server.py, web/index.html: benchmark and dashboard
 
 ## Open work, in priority order
-1. Run the real-API benchmark (`--real --n 400 --systems distill,llm_only_small`) and put real numbers in README
-   and the pitch. Check `llm.SYSTEM_PROMPT` against real failure modes first with `scripts/smoke_real.py`.
-2. Record a backup video of the dashboard demo (silent swap on V14, relabel on V20).
-3. Pitch slides from results/benchmark.md (cost chart, drift table, the silent-swap story).
-4. Stretch: PDF input (render invoices to PDF with reportlab, extract with pypdf/pdfplumber) so judges see real files.
-5. Stretch: Batch API (50% cheaper) for audits and quarantine re-checks, which are not latency-critical.
-6. Stretch: multiple concurrent templates per vendor (cluster fingerprints, one parser per cluster).
+1. Real-API runs: `python -m distill.realdata docile --real --limit 400` and `python -m distill.bench --real --n 400`.
+2. Record a backup video of the dashboard demo.
+3. Pitch slides from results/*.md.
+4. Batch API (50% cheaper) for audits and quarantine re-checks.
+5. Multi-line values in line rules; line items for DocILE (LIR).

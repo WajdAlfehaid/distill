@@ -1,36 +1,56 @@
-"""The Distill engine: one document at a time, end to end.
+"""The Distill engine: one document at a time, end to end, for any document type.
 
-    identify vendor -> fingerprint layout -> run active parser -> business checks
+    identify source -> fingerprint layout -> run active parser -> checks
       -> drift monitor -> routing policy -> (code | audit | LLM)
+      -> compare, and tell OCR noise from real drift
       -> learn (examples, history, layout) -> synthesise / shadow / promote
+
+Noise versus drift
+------------------
+Scanned documents are damaged in ordinary ways: look-alike characters, smudged
+labels, values that never made it through OCR. When the parser and a verified
+extraction disagree, the engine first asks whether OCR damage explains it (the
+values are one look-alike character apart, the parser had to repair or fuzzily
+match that field, or a field is missing while the layout itself is unchanged).
+Only disagreements that noise cannot explain count as evidence that the parser
+is wrong, and only that evidence suspends a parser.
 
 Modes (used by the benchmark to compare like for like):
   distill   full system
-  static    "compile once" baseline: first validated parser per vendor is kept
-            forever; LLM only when the parser visibly breaks (no checks gate,
-            no drift monitor, no audits, no re-synthesis)
-  llm_only  every document goes to the small model, escalating to the large
-            model when its output fails the checks
+  static    "compile once" baseline: first validated parser per source is kept
+            forever; LLM only when the parser visibly breaks
+  llm_only  every document goes to a model, escalating to the large model when its
+            output fails the checks
 """
 from __future__ import annotations
 
+import json
 import time
 from collections import deque
 from dataclasses import dataclass, field
 from typing import Optional
 
 from .audit import describe_bound, error_upper_bound
-from .checks import VendorHistory, run_checks, CheckReport
+from .checks import CheckReport
+from .doctypes import DocType, InvoiceType
 from .drift import DriftMonitor
-from .fingerprint import LayoutModel, doc_shapes, identify_vendor
+from .fingerprint import LayoutModel, doc_shapes, structural
 from .llm import LLMResult
-from .model import Invoice, diff
-from .parser import execute
-from .policy import Route, RouteInput, decide
+from .model import Record, diff
+from .ocr import money_ocr_equivalent, ocr_equivalent
+from .parser import ExecResult, execute
+from .policy import RouteInput, decide
 from .registry import ParserVersion, Registry
 from .synth import Example, best_candidate, generate_candidates
 
 DSL_DOC = (__import__("distill.parser", fromlist=["__doc__"]).__doc__ or "")
+
+
+def _item_close(x, y) -> bool:
+    """Same line item, up to OCR damage."""
+    desc_ok = ocr_equivalent(x.description, y.description) or x.description.split()[:2] == y.description.split()[:2]
+    nums = [(x.quantity, y.quantity), (x.unit_price, y.unit_price), (x.amount, y.amount)]
+    return desc_ok and all(abs(p - q) < 0.006 or money_ocr_equivalent(p, q) for p, q in nums)
 
 
 @dataclass
@@ -48,8 +68,8 @@ class Config:
 class VendorState:
     master: dict
     monitor: DriftMonitor
+    history: object
     layout: LayoutModel = field(default_factory=LayoutModel)
-    history: VendorHistory = field(default_factory=VendorHistory)
     examples: deque = field(default_factory=lambda: deque(maxlen=12))
     epoch: int = 0
     active: Optional[ParserVersion] = None
@@ -58,28 +78,37 @@ class VendorState:
     code_pool: list = field(default_factory=list)  # doc_ids accepted by code since the last verified document
     examples_added: int = 0
     last_synth_fail_seq: int = -1  # value of examples_added when synthesis last failed
+    docs: int = 0
 
 
 class Engine:
-    def __init__(self, vendor_master: list[dict], po_master: dict[str, str], llm, config: Optional[Config] = None,
-                 registry: Optional[Registry] = None):
+    def __init__(self, doctype: DocType, llm, config: Optional[Config] = None, registry: Optional[Registry] = None):
+        self.doctype: DocType = doctype
+        self.schema = doctype.schema
         self.cfg = config or Config()
-        self.master = vendor_master
-        self.po_master = po_master
         self.llm = llm
         self.reg = registry or Registry()
-        self.vendors: dict[str, VendorState] = {
-            v["vendor_id"]: VendorState(master=v, monitor=DriftMonitor(v["vendor_id"])) for v in vendor_master}
-        for vs in self.vendors.values():
-            vs.examples = deque(maxlen=self.cfg.max_examples)
+        self.vendors: dict[str, VendorState] = {}
+        for v in getattr(doctype, "vendor_master", []):
+            self._vs(v["vendor_id"])
         self.seq = 0
         self.records: dict[str, dict] = {}
         self.order: list[str] = []
         self.events: list[dict] = []
         self.listeners: list = []
+        self.revised: list[str] = []  # documents whose final result was changed after the fact (quarantine)
         self.totals = {"docs": 0, "cost_usd": 0.0, "llm_calls": 0, "code_docs": 0, "audit_docs": 0, "llm_docs": 0,
                        "human_review": 0, "quarantined": 0, "quarantine_corrected": 0, "latency_ms": 0.0,
-                       "synth_cost_usd": 0.0}
+                       "synth_cost_usd": 0.0, "noise_disagreements": 0, "llm_corrected_by_parser": 0}
+
+    def _vs(self, key: str) -> VendorState:
+        vs = self.vendors.get(key)
+        if vs is None:
+            vs = VendorState(master=self.doctype.master(key), monitor=DriftMonitor(key),
+                             history=self.doctype.new_history())
+            vs.examples = deque(maxlen=self.cfg.max_examples)
+            self.vendors[key] = vs
+        return vs
 
     # ------------------------------------------------------------------ events
     def _event(self, kind: str, vendor_id: Optional[str], message: str, **data) -> None:
@@ -93,11 +122,13 @@ class Engine:
                 pass
 
     # ------------------------------------------------------------------ helpers
-    def _checks(self, inv: Invoice, received_at: str, vs: VendorState) -> CheckReport:
-        return run_checks(inv, received_at, vs.master, self.po_master, vs.history)
+    def _checks(self, rec: Optional[Record], received_at: str, vs: Optional[VendorState]) -> CheckReport:
+        if rec is None:
+            return CheckReport()
+        return self.doctype.checks(rec, received_at, vs.master if vs else None, vs.history if vs else None)
 
     def _llm(self, rec: dict, doc_id: str, text: str, tier: str, purpose: str) -> LLMResult:
-        res = self.llm.extract(doc_id, text, tier)
+        res = self.llm.extract(doc_id, text, tier, self.schema)
         rec["llm_calls"].append({"model": res.model, "tier": tier, "purpose": purpose, "in": res.input_tokens,
                                  "out": res.output_tokens, "cost_usd": res.cost_usd, "ms": res.latency_ms,
                                  "simulated": res.simulated, "error": res.error})
@@ -106,8 +137,7 @@ class Engine:
         self.totals["llm_calls"] += 1
         return res
 
-    def _llm_extract_with_escalation(self, rec: dict, doc_id: str, text: str, received_at: str, vs: VendorState,
-                                     first_tier: str) -> tuple[Optional[Invoice], CheckReport, str]:
+    def _llm_extract_with_escalation(self, rec, doc_id, text, received_at, vs, first_tier):
         res = self._llm(rec, doc_id, text, first_tier, "extract")
         rep = self._checks(res.invoice, received_at, vs) if res.invoice else None
         tier = first_tier
@@ -117,79 +147,153 @@ class Engine:
             rep2 = self._checks(res2.invoice, received_at, vs) if res2.invoice else None
             if rep2 is not None and (rep is None or len(rep2.fails) <= len(rep.fails)):
                 res, rep, tier = res2, rep2, "large"
-        if rep is None:
-            rep = CheckReport()
-        return res.invoice, rep, tier
+        return res.invoice, rep or CheckReport(), tier
+
+    def _classify(self, bad: list[str], code: Record, verified: Record, er: Optional[ExecResult],
+                  layout_changed: bool, code_failed: bool = False) -> tuple[list[str], list[str]]:
+        """Split disagreements into (real, noise). Noise = explained by OCR damage on an unchanged layout.
+
+        When the parser's own output already failed the business checks on an unchanged layout,
+        the copy is visibly damaged: a misread there is noise. A wrong parser shows up instead as
+        clean, check-passing disagreements, or as the same field disagreeing copy after copy
+        (see _systematic)."""
+        if code_failed and not layout_changed:
+            return [], list(bad)
+        real, noise = [], []
+        types = self.schema.types
+        items_noise = None
+        for f in bad:
+            if f.startswith("line_items"):
+                if items_noise is None:
+                    items_noise = self._items_noise(code, verified, er, layout_changed)
+                (noise if items_noise else real).append(f)
+                continue
+            cv, vv = code.values.get(f), verified.values.get(f)
+            if er and (f in er.fuzzy or f in er.ocr_fixed):
+                noise.append(f)
+            elif cv is None or vv is None:
+                (real if layout_changed else noise).append(f)
+            elif types.get(f) == "money":
+                (noise if money_ocr_equivalent(cv, vv) else real).append(f)
+            elif ocr_equivalent(cv, vv):
+                noise.append(f)
+            else:
+                real.append(f)
+        return real, noise
+
+    def _systematic(self, vs: VendorState, bad: list[str], window: int = 6, need: int = 3) -> Optional[str]:
+        """Record which fields disagreed on this copy; return a field that disagreed on most recent copies."""
+        hist = getattr(vs, "disagreements", None)
+        if hist is None:
+            hist = vs.disagreements = deque(maxlen=window)
+        hist.append(set(bad))
+        counts = {}
+        for fs in hist:
+            for f in fs:
+                counts[f] = counts.get(f, 0) + 1
+        hot = [f for f, c in counts.items() if c >= need]
+        return hot[0] if hot else None
+
+    @staticmethod
+    def _items_noise(code: Record, verified: Record, er: Optional[ExecResult], layout_changed: bool) -> bool:
+        """Line-item differences explained by a damaged scan rather than a wrong parser.
+
+        Noise: on an unchanged layout, the parser read fewer rows (a damaged row stopped matching),
+        or every differing value is a look-alike/one-slip misread. Real: rows read cleanly with
+        different values (e.g. quantity and price swapped), or the layout itself changed.
+        """
+        if layout_changed:
+            return False
+        a, b = code.line_items, verified.line_items
+        if er and "line_items" in er.ocr_fixed:
+            return True
+        if len(a) < len(b):
+            # every row the parser did read must agree with one of the verified rows
+            return all(any(_item_close(x, y) for y in b) for x in a)
+        if len(a) != len(b):
+            return False
+        return all(_item_close(x, y) for x, y in zip(a, b))
 
     # ------------------------------------------------------------------ main entry
-    def process(self, doc_id: str, text: str, received_at: str) -> dict:
+    def process(self, doc_id: str, text: str, received_at: str, meta: Optional[dict] = None) -> dict:
         self.seq += 1
         t0 = time.perf_counter()
         rec = {"doc_id": doc_id, "seq": self.seq, "received_at": received_at, "vendor_id": None, "source": None,
                "parser_id": None, "route": None, "final": None, "checks": [], "cost_usd": 0.0, "latency_ms": 0.0,
-               "flags": [], "trace": [], "llm_calls": [], "drift_state": None, "signals": {}, "_text": text}
-        vid = identify_vendor(text, self.master)
+               "flags": [], "trace": [], "llm_calls": [], "drift_state": None, "signals": {}, "_text": text,
+               "_words": (meta or {}).get("words")}
+        words = rec["_words"]
+        vid = self.doctype.identify(text, meta)
         rec["vendor_id"] = vid
         if vid is None:
             inv, rep, tier = self._unknown_vendor(rec, doc_id, text, received_at)
             return self._finish(rec, inv, rep, f"llm_{tier}", t0)
+        vs = self._vs(vid)
+        vs.docs += 1
 
         if self.cfg.mode == "llm_only":
-            vs = self.vendors[vid]
             inv, rep, tier = self._llm_extract_with_escalation(rec, doc_id, text, received_at, vs, self.cfg.llm_only_tier)
             rec["route"] = {"path": "llm", "model": self.cfg.llm_only_tier, "reasons": ["baseline: LLM on every document"]}
             self.totals["llm_docs"] += 1
             if not rep.passed:
                 rec["flags"].append("human_review")
-            if inv and rep.passed:
-                vs.history.learn(inv, received_at)
+            if inv is not None and rep.passed:
+                self.doctype.learn(vs.history, inv, received_at)
             return self._finish(rec, inv, rep, f"llm_{tier}", t0)
 
-        vs = self.vendors[vid]
         shapes = doc_shapes(text)
         novelty = vs.layout.novelty(shapes) if self.cfg.mode == "distill" else []
         missing = vs.layout.missing_core(shapes) if self.cfg.mode == "distill" else []
+        # A changed template replaces label lines: new label-like lines appear AND familiar ones vanish.
+        # A damaged copy usually does only one of the two, and prose notes are not labels at all.
+        new_labels = [x for x in novelty if structural(x)]
+        layout_changed = bool(new_labels and missing) or len(missing) >= 2
 
         # ---- run the active parser (if any) and check its output
-        code_inv, code_rep, anchors_ok, code_ms = None, None, True, 0.0
+        code_inv, code_rep, anchors_ok, er = None, None, True, None
         active = vs.active if (vs.active and vs.active.status == "active") else None
         if active:
             c0 = time.perf_counter()
-            r = execute(active.spec, text)
-            code_ms = (time.perf_counter() - c0) * 1000
-            code_inv, anchors_ok = r.invoice, r.anchors_ok
+            er = execute(active.spec, text, self.schema, words)
+            rec["latency_ms"] += (time.perf_counter() - c0) * 1000
+            code_inv, anchors_ok = er.record, er.anchors_ok
             code_rep = self._checks(code_inv, received_at, vs)
-            rec["trace"].append(f"parser {active.parser_id}: anchors {'ok' if anchors_ok else 'MISSING ' + str(r.missing_required + r.parse_errors)}; {code_rep.summary()}")
-            rec["latency_ms"] += code_ms
+            notes = []
+            if er.fuzzy:
+                notes.append(f"damaged label(s) recovered: {er.fuzzy}")
+            if er.ocr_fixed:
+                notes.append(f"look-alike characters repaired in {er.ocr_fixed}")
+            rec["trace"].append(f"parser {active.parser_id}: anchors {'ok' if anchors_ok else 'MISSING ' + str(er.missing_required + er.parse_errors)}"
+                                f"; {code_rep.summary()}" + (f"; {'; '.join(notes)}" if notes else ""))
 
-        # ---- static baseline: trust the parser unless it visibly breaks
         if self.cfg.mode == "static":
             return self._process_static(rec, vs, doc_id, text, received_at, code_inv, anchors_ok, t0)
 
-        # ---- drift signals
+        # ---- drift signals (hard = the parser looks wrong on a clean copy; soft = noise or warnings)
         hard, medium, soft = [], [], []
         if active:
+            noisy_copy = bool(er.fuzzy or er.ocr_fixed)
             if not anchors_ok:
-                hard.append("anchors_missing")
-            hard += [c.name for c in code_rep.fails]
+                (hard if layout_changed else soft).append("anchors_missing" if layout_changed else "unreadable_field")
+            for c in code_rep.fails:
+                (soft if noisy_copy and not layout_changed else hard).append(c.name)
             soft += [c.name for c in code_rep.warns]
             if novelty:
                 medium.append("novel_layout_lines")
             if missing:
                 medium.append("missing_layout_lines")
-            state = vs.monitor.observe(self.seq, hard, medium, soft)
-            if state == "drift" and active.status == "active":
+            if vs.monitor.observe(self.seq, hard, medium, soft) == "drift" and active.status == "active":
                 self._on_drift(vs, rec, f"repeated hard failures ({', '.join(hard[:3]) or 'see history'})")
-                active = None
+                active, code_inv, code_rep, anchors_ok = None, None, None, True
         rec["signals"] = {"hard": hard, "medium": medium, "soft": soft, "novelty": novelty[:5], "missing": missing[:5]}
 
         # ---- route
-        value = (code_inv.total if code_inv and code_inv.total else 0.0)
+        value, currency = self.doctype.value(code_inv, vs.master)
         route = decide(RouteInput(
             doc_id=doc_id, vendor_known=True, has_parser=active is not None, drift_state=vs.monitor.state,
             anchors_ok=anchors_ok, code_fails=[c.name for c in code_rep.fails] if code_rep else [],
             code_warns=[c.name for c in code_rep.warns] if code_rep else [], novelty=novelty + missing,
-            value=value, currency=vs.master["currency"], parser_clean_audits=active.audits_clean if active else 0),
+            value=value, currency=currency, parser_clean_audits=active.audits_clean if active else 0),
             self.cfg.profile)
         rec["route"] = route.to_dict()
         rec["trace"].append(f"route: {route.path} ({'; '.join(route.reasons)})")
@@ -197,12 +301,15 @@ class Engine:
         verified = False  # the final answer was confirmed independently of the parser
         if route.path == "code":
             inv, rep, source = code_inv, code_rep, "code"
+            if not code_rep.warns:
+                self._systematic(vs, [])  # a clean copy is evidence the parser is still fine
             rec["parser_id"] = active.parser_id
             active.docs += 1
             vs.code_pool.append(doc_id)
             self.totals["code_docs"] += 1
         elif route.path == "audit":
-            inv, rep, source, verified = self._audit(rec, vs, active, doc_id, text, received_at, code_inv, code_rep)
+            inv, rep, source, verified = self._audit(rec, vs, active, doc_id, text, received_at, code_inv, code_rep,
+                                                     er, layout_changed)
             self.totals["audit_docs"] += 1
         else:
             inv, rep, tier = self._llm_extract_with_escalation(rec, doc_id, text, received_at, vs, route.model)
@@ -211,32 +318,17 @@ class Engine:
             verified = rep.passed
             if not rep.passed:
                 rec["flags"].append("human_review")
-            # the parser was skipped because of novelty/failed checks: was it actually wrong?
             if active and code_inv is not None and inv is not None and rep.passed:
-                bad = diff(code_inv, inv)
-                if bad and anchors_ok and not code_rep.fails:
-                    # The parser's output passed every check too: before blaming it, ask the arbiter.
-                    arb = self._llm(rec, doc_id, text, "large", "arbiter")
-                    if arb.invoice is not None and not diff(code_inv, arb.invoice):
-                        rec["trace"].append(f"LLM disagreed with parser on {bad[:4]}; arbiter sided with the parser")
-                        rec["flags"].append("llm_error_corrected_by_parser")
-                        inv, rep, source, bad = code_inv, code_rep, "code", []
-                if bad:
-                    rec["trace"].append(f"parser disagrees with verified LLM output on {bad[:4]}")
-                    self._on_drift(vs, rec, f"parser output disagrees with verified extraction on {', '.join(bad[:3])}")
-                    active = None
-                else:
-                    rec["trace"].append("parser agrees with verified output; unseen lines were harmless")
-                    verified = True
+                inv, rep, source, verified = self._compare_with_parser(rec, vs, active, doc_id, text, code_inv,
+                                                                       code_rep, anchors_ok, er, inv, rep, source,
+                                                                       verified, layout_changed)
 
         # ---- learn from trusted results
         if inv is not None and rep.passed and source != "code":
-            self._add_example(vs, doc_id, text, inv, received_at)
+            self._add_example(vs, doc_id, text, inv, received_at, words)
         if inv is not None and rep.passed:
-            vs.history.learn(inv, received_at)
-            if source != "code" or verified:
-                vs.layout.learn(shapes)
-            elif not novelty:
+            self.doctype.learn(vs.history, inv, received_at)
+            if source != "code" or verified or not novelty:
                 vs.layout.learn(shapes)
         if verified:
             vs.code_pool.clear()
@@ -246,22 +338,65 @@ class Engine:
             self._shadow_step(vs, rec, text, inv)
         self._maybe_synthesize(vs, rec)
         if rec.get("_corrected_final") is not None:
-            if inv is not None and inv.invoice_number:
-                vs.history.invoice_numbers.discard(inv.invoice_number)
             inv = rec.pop("_corrected_final")
             source = "code"
             rep = self._checks(inv, received_at, vs)
-            if inv.invoice_number:
-                vs.history.invoice_numbers.add(inv.invoice_number)
+            rep.checks = [c for c in rep.checks if c.name != "not_duplicate"]
         rec["drift_state"] = vs.monitor.state
         return self._finish(rec, inv, rep, source, t0)
+
+    def _compare_with_parser(self, rec, vs, active, doc_id, text, code_inv, code_rep, anchors_ok, er, inv, rep,
+                             source, verified, layout_changed):
+        """The document went to a model although a parser exists. Was the parser wrong, or was this copy noisy?"""
+        bad = diff(code_inv, inv)
+        if not bad:
+            self._systematic(vs, [])
+            rec["trace"].append("parser agrees with the verified extraction; the unusual signals were harmless")
+            return inv, rep, source, True
+        real, noise = self._classify(bad, code_inv, inv, er, layout_changed, bool(code_rep.fails))
+        if not real:
+            sys_f = self._systematic(vs, bad)
+            if sys_f:
+                real = [sys_f]
+        else:
+            self._systematic(vs, bad)
+        rules = set(active.spec.get("fields", {}))
+        unknown = [f for f in real if not f.startswith("line_items") and f not in rules]
+        if real and len(unknown) == len(real):
+            # The parser never learned these fields (e.g. the first discount this vendor ever printed):
+            # it is incomplete, not wrong. Keep it and learn an extended version in the background.
+            vs.needs_extension = True
+            rec["trace"].append(f"parser has no rule for {unknown}; it keeps running while an extended version is learned")
+            self._event("extend", vs.master["vendor_id"], f"{active.parser_id} has never seen {', '.join(unknown)}; "
+                        "learning an extended version")
+            return inv, rep, source, verified
+        if real:
+            # Before blaming the parser, ask the arbiter: the model that read this document may have slipped.
+            arb = self._llm(rec, doc_id, text, "large", "arbiter")
+            if arb.invoice is not None:
+                still = [f for f in diff(code_inv, arb.invoice) if f in real]
+                if not still:
+                    rec["trace"].append(f"model disagreed with parser on {real[:4]}; arbiter sided with the parser")
+                    rec["flags"].append("llm_error_corrected_by_parser")
+                    self.totals["llm_corrected_by_parser"] += 1
+                    if not code_rep.fails:
+                        return code_inv, code_rep, "code", True
+                    real = []
+        if real:
+            rec["trace"].append(f"parser disagrees with the verified extraction on {real[:4]} (not explained by OCR damage)")
+            self._on_drift(vs, rec, f"parser output disagrees with verified extraction on {', '.join(real[:3])}")
+        else:
+            self.totals["noise_disagreements"] += 1
+            rec["flags"].append("ocr_noise")
+            rec["trace"].append(f"parser misread this copy on {noise[:4]}: OCR damage, not drift; the model's reading is used")
+        return inv, rep, source, verified
 
     # ------------------------------------------------------------------ paths
     def _unknown_vendor(self, rec, doc_id, text, received_at):
         res = self._llm(rec, doc_id, text, "large", "unknown vendor")
-        rep = run_checks(res.invoice, received_at, None, self.po_master, None) if res.invoice else CheckReport()
+        rep = self._checks(res.invoice, received_at, None)
         rec["flags"].append("human_review")
-        rec["route"] = {"path": "llm", "model": "large", "reasons": ["vendor not in master data"]}
+        rec["route"] = {"path": "llm", "model": "large", "reasons": ["source not recognised"]}
         self.totals["llm_docs"] += 1
         return res.invoice, rep, "large"
 
@@ -276,26 +411,29 @@ class Engine:
         rec["route"] = {"path": "llm", "reasons": ["no parser" if not vs.active else "parser broke"]}
         self.totals["llm_docs"] += 1
         if inv is not None and rep.passed:
-            vs.history.learn(inv, received_at)
+            self.doctype.learn(vs.history, inv, received_at)
             if vs.active is None:
-                self._add_example(vs, doc_id, text, inv, received_at)
-                if len(vs.examples) >= self.cfg.min_examples:
-                    ex = self._epoch_examples(vs)
-                    best, scored = best_candidate(generate_candidates(ex), ex)
+                self._add_example(vs, doc_id, text, inv, received_at, rec.get("_words"))
+                ex = self._epoch_examples(vs)
+                if len(ex) >= self.cfg.min_examples and vs.last_synth_fail_seq != vs.examples_added:
+                    best, _ = best_candidate(generate_candidates(ex), ex)
                     if best:
                         vs.versions += 1
                         vs.active = ParserVersion(f"{vs.master['vendor_id']}-p{vs.versions}", vs.master["vendor_id"],
                                                   vs.versions, best, best.get("generator", "?"), status="active",
                                                   created_seq=self.seq, promoted_seq=self.seq)
                         self._event("promoted", vs.master["vendor_id"], f"static parser {vs.active.parser_id} compiled")
+                    else:
+                        vs.last_synth_fail_seq = vs.examples_added
         return self._finish(rec, inv, rep, f"llm_{tier}", t0)
 
-    def _audit(self, rec, vs, active, doc_id, text, received_at, code_inv, code_rep):
+    def _audit(self, rec, vs, active, doc_id, text, received_at, code_inv, code_rep, er, layout_changed):
         res = self._llm(rec, doc_id, text, "small", "audit")
         rec["parser_id"] = active.parser_id
         if res.invoice is not None and not diff(code_inv, res.invoice):
             active.audits_clean += 1
             active.docs += 1
+            self._systematic(vs, [])
             rec["trace"].append(f"audit: small model agrees with parser ({describe_bound(active.audits_failed, active.audits_clean + active.audits_failed)})")
             return code_inv, code_rep, "code", True
         bad = diff(code_inv, res.invoice) if res.invoice else ["llm_error"]
@@ -306,14 +444,27 @@ class Engine:
             active.docs += 1
             rec["trace"].append("arbiter sides with the parser (small model slipped)")
             return code_inv, code_rep, "code", True
-        arb_rep = self._checks(arb.invoice, received_at, vs) if arb.invoice else CheckReport()
-        active.audits_failed += 1
+        arb_rep = self._checks(arb.invoice, received_at, vs)
         if arb.invoice is not None and arb_rep.passed:
             bad = diff(code_inv, arb.invoice)
-            rec["trace"].append(f"arbiter confirms parser error on {bad[:4]}")
-            rec["flags"].append("parser_error_caught")
-            self._on_drift(vs, rec, f"audit proved parser wrong on {', '.join(bad[:3])}")
+            real, noise = self._classify(bad, code_inv, arb.invoice, er, layout_changed, bool(code_rep.fails))
+            if not real:
+                sys_f = self._systematic(vs, bad)
+                if sys_f:
+                    real = [sys_f]
+            else:
+                self._systematic(vs, bad)
+            if real:
+                active.audits_failed += 1
+                rec["trace"].append(f"arbiter confirms parser error on {real[:4]}")
+                rec["flags"].append("parser_error_caught")
+                self._on_drift(vs, rec, f"audit proved parser wrong on {', '.join(real[:3])}")
+            else:
+                self.totals["noise_disagreements"] += 1
+                rec["flags"].append("ocr_noise")
+                rec["trace"].append(f"parser misread this damaged copy ({noise[:4]}); counted as noise, not a parser error")
             return arb.invoice, arb_rep, "llm_large", True
+        active.audits_failed += 1
         rec["flags"].append("human_review")
         return arb.invoice or code_inv, arb_rep if arb.invoice else code_rep, "llm_large", False
 
@@ -343,7 +494,7 @@ class Engine:
             q = self.records.get(qid)
             if q is None:
                 continue
-            res = self.llm.extract(qid, q["_text"], "small")
+            res = self.llm.extract(qid, q["_text"], "small", self.schema)
             q["llm_calls"].append({"model": res.model, "tier": "small", "purpose": "quarantine re-check",
                                    "in": res.input_tokens, "out": res.output_tokens, "cost_usd": res.cost_usd,
                                    "ms": res.latency_ms, "simulated": res.simulated})
@@ -355,20 +506,23 @@ class Engine:
             if res.invoice is None:
                 continue
             rep = self._checks(res.invoice, q["received_at"], vs)
-            prev = Invoice.from_dict(q["final"]) if q["final"] else None
+            rep.checks = [c for c in rep.checks if c.name != "not_duplicate"]
+            prev = Record.from_dict(q["final"], self.schema) if q["final"] else None
             if rep.passed and (prev is None or diff(prev, res.invoice)):
                 q["final"] = res.invoice.to_dict()
                 q["source"] = "llm_small"
                 q["flags"].append("corrected_by_quarantine")
-                q["trace"].append(f"quarantine: corrected after drift detected at seq {self.seq}")
+                self.revised.append(qid)
+                q["trace"].append(f"quarantine: corrected after drift detected at #{self.seq}")
                 corrected += 1
         self.totals["quarantine_corrected"] += corrected
         self._event("quarantine", vs.master["vendor_id"],
                     f"Quarantined {len(pool)} recent document(s); corrected {corrected}.", n=len(pool), corrected=corrected)
 
     # ------------------------------------------------------------------ learning
-    def _add_example(self, vs: VendorState, doc_id: str, text: str, inv: Invoice, received_at: str) -> None:
-        vs.examples.append((vs.epoch, Example(text=text, labels=inv, received_at=received_at, doc_id=doc_id)))
+    def _add_example(self, vs: VendorState, doc_id: str, text: str, inv: Record, received_at: str,
+                     words: Optional[list] = None) -> None:
+        vs.examples.append((vs.epoch, Example(text=text, labels=inv, received_at=received_at, doc_id=doc_id, words=words)))
         vs.examples_added += 1
 
     def _epoch_examples(self, vs: VendorState) -> list[Example]:
@@ -377,26 +531,29 @@ class Engine:
     def _maybe_synthesize(self, vs: VendorState, rec: dict) -> None:
         if self.cfg.mode != "distill" or vs.shadow is not None:
             return
-        needs = vs.active is None or vs.active.status != "active"
-        if not needs:
+        extending = vs.active is not None and vs.active.status == "active" and getattr(vs, "needs_extension", False)
+        if vs.active is not None and vs.active.status == "active" and not extending:
             return
         fresh = self._epoch_examples(vs)
-        if len(fresh) < self.cfg.min_examples or vs.last_synth_fail_seq == vs.examples_added:
+        if len(fresh) < self.cfg.min_examples:
             return
+        # after a failed attempt, wait for more evidence: retry after 1, 2, 4, 8 ... new examples (max 8)
+        if vs.last_synth_fail_seq >= 0:
+            wait = min(8, max(1, getattr(vs, "synth_failures", 1)))
+            if vs.examples_added - vs.last_synth_fail_seq < wait:
+                return
         older = [e for ep, e in vs.examples if ep != vs.epoch]
         proposals, pcost = [], 0.0
         if self.cfg.use_llm_spec_proposals:
             proposals, pcost = self.llm.propose_spec(fresh, DSL_DOC)
             self.totals["synth_cost_usd"] += pcost
             self.totals["cost_usd"] += pcost
-        # 1) all fresh examples (+ compatible older ones keep optional fields alive)
-        attempts = [("fresh+older", fresh + older), ("fresh", fresh)]
-        # 2) leave-one-out: tolerate one mislabeled example (an undetectable LLM slip)
-        if len(fresh) >= self.cfg.min_examples + 1:
+        attempts = [("fresh+older", fresh + older)] if older else []
+        attempts.append(("fresh", fresh))
+        if len(fresh) >= self.cfg.min_examples + 1:  # tolerate one mislabelled or unreadable example
             for i in range(len(fresh)):
                 attempts.append((f"leave-out {fresh[i].doc_id}", fresh[:i] + fresh[i + 1:]))
-        # 3) most recent examples only: the layout may have changed while we were still learning
-        for k in range(len(fresh) - 1, self.cfg.min_examples - 1, -1):
+        for k in range(len(fresh) - 1, self.cfg.min_examples - 1, -1):  # the layout may have moved while learning
             attempts.append((f"latest {k}", fresh[-k:]))
         chosen = None
         for label, ex in attempts:
@@ -406,11 +563,12 @@ class Engine:
             best, scored = best_candidate(cands, ex)
             if best is None and label == "fresh+older":
                 best, scored = best_candidate(cands, fresh)
-            if best is not None:
+            if best is not None and self._covers_schema(best, ex):
                 chosen = (label, best, scored, len(cands))
                 break
         if chosen is None:
             vs.last_synth_fail_seq = vs.examples_added
+            vs.synth_failures = getattr(vs, "synth_failures", 0) * 2 or 1
             rec["trace"].append(f"synthesis: no candidate fits all {len(fresh)} fresh examples yet")
             return
         label, best, scored, n_cands = chosen
@@ -429,22 +587,42 @@ class Engine:
                     f"in isolation from {n_cands} candidates; now in shadow mode", parser_id=p.parser_id)
         rec["trace"].append(f"synthesis: {p.parser_id} -> shadow ({label}, {v.exact}/{v.n} exact)")
 
-    def _shadow_step(self, vs: VendorState, rec: dict, text: str, verified: Invoice) -> None:
+    def _covers_schema(self, spec: dict, examples: list) -> bool:
+        """A parser must extract every field that all its examples carry; otherwise its output is incomplete."""
+        have = set(spec.get("fields", {}))
+        for f in self.schema.fields:
+            present_everywhere = all(ex.labels.values.get(f.name) not in (None, "") for ex in examples)
+            if f.name in ("discount", "po_number"):
+                continue
+            if present_everywhere and f.name not in have:
+                return False
+        return True
+
+    def _shadow_step(self, vs: VendorState, rec: dict, text: str, verified: Record) -> None:
         sh = vs.shadow
         if sh is None:
             return
-        r = execute(sh.spec, text)
-        bad = diff(r.invoice, verified) if r.anchors_ok else ["anchors"]
+        r = execute(sh.spec, text, self.schema, rec.get("_words"))
         vid = vs.master["vendor_id"]
+        if not r.anchors_ok and not rec.get("signals", {}).get("novelty") and vs.layout.n_docs:
+            rec["trace"].append(f"shadow {sh.parser_id} could not read this damaged copy; not held against it")
+            return
+        bad = diff(r.record, verified) if r.anchors_ok else ["anchors"]
         if bad and r.anchors_ok:
-            # Who is wrong, the candidate parser or the LLM that labelled this document? Ask the arbiter.
+            # Who is wrong, the candidate parser or the model that labelled this document? Ask the arbiter.
             arb = self._llm(rec, rec["doc_id"], text, "large", "shadow arbiter")
-            if arb.invoice is not None and not diff(r.invoice, arb.invoice):
+            if arb.invoice is not None and not diff(r.record, arb.invoice):
                 rec["trace"].append(f"shadow {sh.parser_id} disagreed on {bad[:3]}; arbiter sided with the parser "
-                                    "-> LLM label corrected")
+                                    "-> model's label corrected")
                 rec["flags"].append("llm_error_corrected_by_parser")
-                rec["_corrected_final"] = r.invoice
+                self.totals["llm_corrected_by_parser"] += 1
+                rec["_corrected_final"] = r.record
                 bad = []
+            elif arb.invoice is not None:
+                real, noise = self._classify(diff(r.record, arb.invoice), r.record, arb.invoice, r, False)
+                if not real:
+                    rec["trace"].append(f"shadow {sh.parser_id} misread this damaged copy ({noise[:3]}); not held against it")
+                    return
         if bad:
             sh.shadow_disagree += 1
             sh.status = "rejected"
@@ -467,28 +645,29 @@ class Engine:
                 self.reg.save_parser(old)
             sh.status = "active"
             sh.promoted_seq = self.seq
+            vs.needs_extension = False
             sh.audits_clean = sh.shadow_agree  # shadow agreements are pre-promotion audits
             vs.active, vs.shadow = sh, None
             self.reg.save_parser(sh)
             vs.monitor.recovered(self.seq, f"{sh.parser_id} promoted")
+            vs.disagreements = deque(maxlen=6)
             vs.code_pool.clear()
-            what = "replaces " + old.parser_id if old else "first parser for this vendor"
+            what = "replaces " + old.parser_id if old else "first parser for this source"
             self._event("promoted", vid, f"{sh.parser_id} promoted ({what}) after {sh.validation.get('exact')}/"
                         f"{sh.validation.get('examples')} isolated + {sh.shadow_agree} shadow agreements",
                         parser_id=sh.parser_id)
 
     # ------------------------------------------------------------------ manual controls
     def rollback(self, vendor_id: str) -> Optional[str]:
-        """Re-activate the most recent retired parser for a vendor (dashboard button)."""
+        """Re-activate the most recent retired parser for a source (dashboard button)."""
         vs = self.vendors[vendor_id]
         hist = [p for p in self.reg.parser_history(vendor_id) if p["status"] == "retired"]
         if not hist:
             return None
         pid = hist[-1]["parser_id"]
         row = self.reg.db.execute("SELECT spec FROM parsers WHERE parser_id=?", (pid,)).fetchone()
-        import json as _json
         vs.versions += 1
-        p = ParserVersion(f"{vendor_id}-p{vs.versions}", vendor_id, vs.versions, _json.loads(row[0]), "rollback",
+        p = ParserVersion(f"{vendor_id}-p{vs.versions}", vendor_id, vs.versions, json.loads(row[0]), "rollback",
                           status="active", parent_id=pid, created_seq=self.seq, promoted_seq=self.seq)
         if vs.active:
             vs.active.status = "retired"
@@ -501,11 +680,12 @@ class Engine:
         return p.parser_id
 
     # ------------------------------------------------------------------ bookkeeping
-    def _finish(self, rec: dict, inv: Optional[Invoice], rep: CheckReport, source: str, t0: float) -> dict:
-        rec["final"] = inv.to_dict() if inv else None
+    def _finish(self, rec: dict, inv: Optional[Record], rep: CheckReport, source: str, t0: float) -> dict:
+        rec["final"] = inv.to_dict() if inv is not None else None
         rec["source"] = source
         rec["checks"] = rep.to_list() if rep else []
         rec["checks_summary"] = rep.summary() if rep else "no output"
+        rec["checks_passed"] = rep.passed if rep else False
         rec["wall_ms"] = (time.perf_counter() - t0) * 1000
         if "human_review" in rec["flags"]:
             self.totals["human_review"] += 1
@@ -527,7 +707,7 @@ class Engine:
                 "active": a.parser_id if a and a.status == "active" else None,
                 "shadow": vs.shadow.parser_id if vs.shadow else None,
                 "generator": a.generator if a else None,
-                "docs": a.docs if a else 0, "audits": n, "audit_errors": a.audits_failed if a else 0,
+                "docs": a.docs if a else 0, "seen": vs.docs, "audits": n, "audit_errors": a.audits_failed if a else 0,
                 "error_bound": error_upper_bound(a.audits_failed, n) if a and n else None,
                 "bound_text": describe_bound(a.audits_failed, n) if a else "",
                 "examples": len(self._epoch_examples(vs)), "versions": vs.versions,

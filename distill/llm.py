@@ -22,7 +22,7 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
-from .model import Invoice, LineItem
+from .model import INVOICE, Record, Schema
 
 # USD per million tokens (input, output). Source: platform.claude.com/docs/en/about-claude/pricing (Oct 2026).
 PRICES = {
@@ -44,9 +44,23 @@ Rules: interpret dates and number separators using the document's own convention
 vendor's country; copy descriptions exactly; never invent values; do not include currency symbols."""
 
 
+def prompt_for(schema: Schema) -> str:
+    """System prompt for a schema. The invoice prompt is fixed; other schemas are described field by field."""
+    if schema.name == "invoice":
+        return SYSTEM_PROMPT
+    lines = [f"You extract fields from {schema.description} (plain text produced by OCR, so expect damaged",
+             "characters). Return ONLY a JSON object with exactly these keys:"]
+    for f in schema.fields:
+        kind = "a number" if f.type == "money" else "a string"
+        lines.append(f"  {f.name}: {kind} - {f.label}{' (null if not on the document)' if f.optional else ''}")
+    lines.append("Rules: copy printed values as they appear on the document (repair obvious OCR slips such as O for 0),")
+    lines.append("never invent values, use null for anything that is not on the document.")
+    return "\n".join(lines)
+
+
 @dataclass
 class LLMResult:
-    invoice: Optional[Invoice]
+    invoice: Optional[Record]  # the extracted record (named for history; any schema)
     model: str
     input_tokens: int = 0
     output_tokens: int = 0
@@ -101,11 +115,11 @@ class AnthropicLLM:
         u = data.get("usage", {})
         return text, int(u.get("input_tokens", 0)), int(u.get("output_tokens", 0)), (time.perf_counter() - t0) * 1000
 
-    def extract(self, doc_id: str, text: str, tier: str = "small") -> LLMResult:
+    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE) -> LLMResult:
         model = self.models[tier]
         try:
-            out, tin, tout, ms = self._call(model, SYSTEM_PROMPT, f"Invoice text:\n<<<\n{text}\n>>>")
-            inv = Invoice.from_dict(_parse_json_obj(out))
+            out, tin, tout, ms = self._call(model, prompt_for(schema), f"Document text:\n<<<\n{text}\n>>>")
+            inv = Record.from_dict(_parse_json_obj(out), schema)
             return LLMResult(inv, model, tin, tout, cost_of(model, tin, tout), ms, raw=out)
         except Exception as e:  # network/JSON problems become a failed extraction, never a crash
             return LLMResult(None, model, error=f"{type(e).__name__}: {e}")
@@ -128,49 +142,87 @@ class AnthropicLLM:
 
 # ------------------------------------------------------------------ simulated client
 TIER_PROFILE = {
-    # P(document contains an extraction error), base latency (ms), ms per output token
-    "small": {"p_err": 0.05, "lat": 700, "per_tok": 4},
-    "large": {"p_err": 0.012, "lat": 1800, "per_tok": 12},
+    # base P(document contains an extraction error), extra per line of text, base latency (ms), ms per output token,
+    # P(a damaged value is read back correctly)
+    "small": {"p_err": 0.03, "per_line": 0.0008, "lat": 700, "per_tok": 4, "recover": 0.6},
+    "large": {"p_err": 0.008, "per_line": 0.0002, "lat": 1800, "per_tok": 12, "recover": 0.8},
 }
 
 
 class SimulatedLLM:
-    """Ground truth + injected errors. Needs an oracle: doc_id -> true Invoice."""
+    """Ground truth + realistic, injected mistakes. Clearly labelled as simulated everywhere.
+
+    `oracle(doc_id)` returns the true record. `damage(doc_id)` (optional) returns the fields
+    whose printed value is damaged in the document; the simulated model reads those back
+    correctly only with probability `recover`, as a real model reading OCR text would.
+    With `p_err=0` and no damage this is a perfect teacher (used to measure the parser layer
+    in isolation on public datasets, where the labels are human).
+    """
 
     simulated = True
 
-    def __init__(self, oracle: Callable[[str], Invoice], small: str = SMALL_MODEL, large: str = LARGE_MODEL,
-                 seed: int = 0, profiles: Optional[dict] = None):
+    def __init__(self, oracle: Callable[[str], Record], small: str = SMALL_MODEL, large: str = LARGE_MODEL,
+                 seed: int = 0, profiles: Optional[dict] = None, damage: Optional[Callable[[str], dict]] = None):
         self.oracle = oracle
+        self.damage = damage
         self.models = {"small": small, "large": large}
         self.seed = seed
         self.profiles = profiles or TIER_PROFILE
 
     @staticmethod
-    def tokens_for(text: str, inv: Invoice) -> tuple[int, int]:
+    def tokens_for(text: str, inv: Record) -> tuple[int, int]:
         tin = int(len(text) / 3.6) + len(SYSTEM_PROMPT) // 4 + 20
-        tout = 70 + 32 * len(inv.line_items)
+        tout = 40 + 9 * len(inv.schema.fields) + 32 * len(inv.line_items)
         return tin, tout
 
-    def extract(self, doc_id: str, text: str, tier: str = "small") -> LLMResult:
+    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE) -> LLMResult:
         model = self.models[tier]
         prof = self.profiles[tier]
         truth = self.oracle(doc_id)
         inv = copy.deepcopy(truth)
         rng = random.Random(f"{self.seed}:{doc_id}:{tier}")
-        err = ""
-        if rng.random() < prof["p_err"]:
-            err = _inject_error(inv, rng)
+        notes = []
+        n_lines = text.count("\n") + 1
+        if rng.random() < prof["p_err"] + prof.get("per_line", 0) * n_lines:
+            notes.append(_inject_error(inv, rng))
+        if self.damage:
+            for fname, misread in (self.damage(doc_id) or {}).items():
+                if rng.random() > prof.get("recover", 1.0):
+                    _apply_misread(inv, fname, misread)
+                    notes.append(f"misread damaged {fname}")
         tin, tout = self.tokens_for(text, truth)
         ms = prof["lat"] + prof["per_tok"] * tout
-        return LLMResult(inv, model, tin, tout, cost_of(model, tin, tout), ms, simulated=True, raw=err)
+        return LLMResult(inv, model, tin, tout, cost_of(model, tin, tout), ms, simulated=True, raw="; ".join(notes))
 
     def propose_spec(self, examples: list, dsl_doc: str) -> tuple[list[dict], float]:
         return [], 0.0
 
 
-def _inject_error(inv: Invoice, rng: random.Random) -> str:
-    """Realistic LLM slips. About half are catchable by arithmetic, half are not."""
+def _apply_misread(inv: Record, fname: str, misread) -> None:
+    if fname.startswith("line_items[") and inv.line_items:
+        i = int(fname[11:-1])
+        if i < len(inv.line_items) and isinstance(misread, dict):
+            for k, v in misread.items():
+                setattr(inv.line_items[i], k, v)
+    elif fname in inv.values:
+        inv.values[fname] = misread
+
+
+def _inject_error(inv: Record, rng: random.Random) -> str:
+    """Realistic model slips. About half are catchable by arithmetic, half are not."""
+    if inv.schema.name != "invoice":
+        names = [f.name for f in inv.schema.fields if inv.values.get(f.name) not in (None, "")]
+        if not names:
+            return "none"
+        f = rng.choice(names)
+        v = inv.values[f]
+        if isinstance(v, float):
+            inv.values[f] = round(v + rng.choice([0.1, 1.0, -1.0, 10.0]), 2)
+        else:
+            s = str(v)
+            i = rng.randrange(len(s))
+            inv.values[f] = s[:i] + s[i + 1:] if len(s) > 3 else s + "1"
+        return f"slip in {f}"
     kind = rng.choice(["amount_digit", "drop_line", "date_swap", "desc_typo", "invoice_no", "qty_misread"])
     if kind == "amount_digit" and inv.line_items:
         li = rng.choice(inv.line_items)

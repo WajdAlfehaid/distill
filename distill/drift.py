@@ -40,9 +40,8 @@ class DriftMonitor:
         self.window.append({"hard": hard, "medium": medium, "soft": soft})
         n_hard = sum(1 for w in self.window if w["hard"])
         n_soft = sum(1 for w in self.window if w["soft"] or w["medium"])
-        if n_hard >= 2:
-            self._enter("drift", f"repeated hard failures: {hard or self._last('hard')}", seq)
-        elif hard:
+        if hard:
+            # drift itself is only ever confirmed by comparing with a verified extraction (engine)
             self._enter("suspect", f"hard signal: {hard[:3]}", seq)
         elif n_soft >= 2:
             self._enter("suspect", f"repeated warnings: {(medium + soft)[:3] or self._last('soft')}", seq)
