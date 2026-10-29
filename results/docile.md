@@ -1,22 +1,21 @@
-# DOCILE: 600 real documents, 280 sources
+# DOCILE: 5,680 real documents, 1063 sources
 Teacher: human labels (perfect teacher).
 
 | System | Docs fully right | Fields right | Handled by code | Right when handled by code | Wrong but accepted by code | LLM calls / doc | LLM cost | Cost if every doc went to Haiku / Sonnet |
 |---|---|---|---|---|---|---|---|---|
-| llm_only | 99.8% | 100.0% | 0.0% | - | 0 | 1.02 | $0.1358 | $0.0958 / $1.92 |
-| static | 99.2% | 99.9% | 0.8% | 20.0% | 4 | 1.01 | $0.1350 | $0.0958 / $1.92 |
-| distill | 99.8% | 100.0% | 0.0% | - | 0 | 1.02 | $0.1412 | $0.0958 / $1.92 |
+| distill | 100.0% | 100.0% | 0.3% | 100.0% | 0 | 1.04 | $1.6564 | $0.9142 / $18.28 |
+| static | 97.0% | 99.6% | 4.4% | 32.1% | 171 | 0.98 | $1.3455 | $0.9142 / $18.28 |
 
 ## Distill by how many documents it had already seen from that source
 
 | Position | Docs | Handled by code | Fully right |
 |---|---|---|---|
-| first 3 from a source | 457 | 0.0% | 99.8% |
-| 4th-10th | 141 | 0.0% | 100.0% |
-| 11th onward | 2 | 0.0% | 100.0% |
+| first 3 from a source | 1,866 | 0.0% | 99.9% |
+| 4th-10th | 1,157 | 0.0% | 100.0% |
+| 11th onward | 2,657 | 0.7% | 100.0% |
 
-Parsers promoted: 0. Disagreements recognised as OCR noise: 0. Drifts confirmed: 0.
+Parsers promoted: 9. Disagreements recognised as OCR noise: 5. Drifts confirmed: 3.
 
-Fields Distill got wrong most often: order_id (1)
+Fields Distill got wrong most often: order_id (1), document_id (1)
 
 _With a perfect teacher, reading every document with the model is 100% right by construction; the question is how much of that Distill keeps while replacing the model with compiled code. Run with `--real` to measure accuracy against real Claude._

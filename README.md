@@ -36,7 +36,14 @@ Code handles 74% of steady-state traffic. Template changes were detected within 
 
 `python -m distill.realdata docile`: invoices, orders, credit notes and utility bills with DocTR OCR, 1,063 layout clusters. The model tier is a **perfect teacher** (the human labels) so the run isolates the parser layer: how much real traffic compiled templates can take over, and how often they disagree with the teacher.
 
-DOCILE_RESULTS
+| System | Handled by code | Right when handled by code | Wrong but accepted by code | Parsers promoted |
+|---|---|---|---|---|
+| Compile once, no drift handling | 4.4% | 32.1% | 171 | 37 |
+| **Distill** | 0.3% | 100% | **0** | 9 |
+
+This is the most important result in the repository, and it is sobering. DocILE's "layouts" are much looser than real templates: copies of one layout label different fields and place values differently, and the same value is often printed in several places. A compiler that trusts what it learned (compile-once) takes 4.4% of traffic and gets two thirds of it wrong. Distill's validation, shadow testing and noise-versus-drift logic refuse almost everything, so it makes no silent errors but saves nothing on this data.
+
+What this means for the product: compilation pays off on high-volume, consistently templated sources (the situation in result 1, and typical for a company's top suppliers), and the hard engineering problem is knowing *when* that is the case. Raising coverage on DocILE-like data (per-field partial templates with targeted model calls for the remaining fields, more examples per layout) is the main open work.
 
 ### 3. SROIE: 619 real scanned receipts (ICDAR 2019), Tesseract OCR
 
