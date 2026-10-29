@@ -73,6 +73,11 @@ CATALOGS = {
                 ("Blood pressure monitor", 60, 180), ("Disinfectant 5L", 20, 50), ("Gauze rolls (pack 12)", 6, 18)],
 }
 
+STREETS = {"SA": ["King Fahd Rd, Riyadh", "Olaya St, Riyadh", "2nd Industrial City, Dammam", "King Abdulaziz Rd, Buraydah"],
+           "AE": ["Sheikh Zayed Rd, Dubai", "Jebel Ali Free Zone"], "DE": ["Hauptstrasse 12, Hamburg", "Industriestr. 4, Köln"],
+           "FR": ["Rue de Rivoli, Paris"], "ES": ["Calle de Alcalá, Madrid"], "GB": ["Old Street, London", "Deansgate, Manchester"],
+           "US": ["Main St 400, Austin TX", "Market St, San Francisco CA"]}
+
 KEYWORD_CATALOG = [("consult", "consulting"), ("food", "food"), ("cold chain", "food"), ("medical", "medical"),
                    ("logistics", "logistics"), ("freight", "logistics"), ("office", "office"), ("bureau", "office"),
                    ("print", "office"), ("it services", "it"), ("cloud", "it"), ("security", "it"),
@@ -334,7 +339,7 @@ class InvoiceStream:
                 inv_counter=self.rng.randint(100, 90000), po_numbers=[], template=tpl,
             )
             r = self.rng
-            v.address = f"Building {r.randint(1000, 9999)}, {r.choice(['King Fahd Rd', 'Industrial Area 2', 'Hauptstrasse 12', 'Main St 400', 'Olaya St'])}"
+            v.address = f"Building {r.randint(1000, 9999)}, {STREETS[country][r.randrange(len(STREETS[country]))]}"
             v.phone = f"Tel +{r.randint(10, 999)} {r.randint(100, 999)} {r.randint(1000, 9999)}"
             v.iban = f"IBAN: {v.country}{r.randint(10, 99)} {r.randint(1000, 9999)} {r.randint(1000, 9999)} {r.randint(1000, 9999)}"
             while len(v.po_numbers) < 40:

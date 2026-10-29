@@ -3,474 +3,874 @@
   "system": "llm_only_large",
   "mode": "llm_only",
   "simulated_llm": true,
-  "docs": 4000,
-  "doc_accuracy": 0.99025,
-  "wrong_docs": 39,
-  "field_accuracy": 0.998076,
-  "cost_usd": 9.50874,
-  "cost_per_1k_docs": 2.37718,
-  "cost_per_1k_docs_last_1000": 2.36676,
-  "llm_calls": 4000,
+  "docs": 8000,
+  "doc_accuracy": 0.98813,
+  "wrong_docs": 95,
+  "field_accuracy": 0.998068,
+  "cost_usd": 19.092464,
+  "cost_per_1k_docs": 2.38656,
+  "cost_per_1k_docs_last_1000": 2.38538,
+  "llm_calls": 8000,
   "llm_calls_per_doc": 1.0,
   "code_share": 0.0,
   "audit_share": 0.0,
   "code_share_last_1000": 0.0,
-  "human_review": 29,
+  "human_review": 71,
   "quarantined": 0,
   "quarantine_corrected": 0,
   "latency_ms_p50": 3792.0,
-  "latency_ms_mean": 3812.93,
-  "wall_seconds": 1.2,
+  "latency_ms_mean": 3816.58,
+  "wall_seconds": 2.76,
   "drifts": [
    {
     "vendor": "V14",
     "kind": "inline_swap",
     "class": "silent",
     "at_doc": 1500,
-    "vendor_docs_after": 308,
-    "wrong_after": 0
+    "vendor_docs_after": 788,
+    "wrong_after": 10
    },
    {
     "vendor": "V18",
     "kind": "date_locale",
     "class": "silent",
     "at_doc": 1800,
-    "vendor_docs_after": 198,
-    "wrong_after": 1
+    "vendor_docs_after": 543,
+    "wrong_after": 5
    },
    {
     "vendor": "V20",
     "kind": "relabel",
     "class": "loud",
     "at_doc": 2100,
-    "vendor_docs_after": 378,
-    "wrong_after": 2
+    "vendor_docs_after": 1222,
+    "wrong_after": 14
    },
    {
     "vendor": "V11",
     "kind": "table_reflow",
     "class": "loud",
     "at_doc": 2400,
-    "vendor_docs_after": 126,
-    "wrong_after": 1
+    "vendor_docs_after": 412,
+    "wrong_after": 7
    },
    {
     "vendor": "V10",
     "kind": "number_style",
     "class": "loud",
     "at_doc": 2700,
-    "vendor_docs_after": 76,
-    "wrong_after": 1
+    "vendor_docs_after": 300,
+    "wrong_after": 4
    },
    {
     "vendor": "V12",
     "kind": "new_fields",
     "class": "structural",
     "at_doc": 3000,
-    "vendor_docs_after": 46,
-    "wrong_after": 0
+    "vendor_docs_after": 250,
+    "wrong_after": 3
    }
   ],
   "curve": [
    {
     "doc": 50,
-    "cost_usd": 0.114362,
+    "cost_usd": 0.11465,
     "llm_calls": 50
    },
    {
     "doc": 100,
-    "cost_usd": 0.229686,
+    "cost_usd": 0.23027,
     "llm_calls": 100
    },
    {
     "doc": 150,
-    "cost_usd": 0.344458,
+    "cost_usd": 0.345284,
     "llm_calls": 150
    },
    {
     "doc": 200,
-    "cost_usd": 0.465236,
+    "cost_usd": 0.466286,
     "llm_calls": 200
    },
    {
     "doc": 250,
-    "cost_usd": 0.586106,
+    "cost_usd": 0.587388,
     "llm_calls": 250
    },
    {
     "doc": 300,
-    "cost_usd": 0.707524,
+    "cost_usd": 0.709052,
     "llm_calls": 300
    },
    {
     "doc": 350,
-    "cost_usd": 0.825972,
+    "cost_usd": 0.827752,
     "llm_calls": 350
    },
    {
     "doc": 400,
-    "cost_usd": 0.944946,
+    "cost_usd": 0.946984,
     "llm_calls": 400
    },
    {
     "doc": 450,
-    "cost_usd": 1.070756,
+    "cost_usd": 1.072996,
     "llm_calls": 450
    },
    {
     "doc": 500,
-    "cost_usd": 1.185934,
+    "cost_usd": 1.188448,
     "llm_calls": 500
    },
    {
     "doc": 550,
-    "cost_usd": 1.30001,
+    "cost_usd": 1.302788,
     "llm_calls": 550
    },
    {
     "doc": 600,
-    "cost_usd": 1.415062,
+    "cost_usd": 1.418076,
     "llm_calls": 600
    },
    {
     "doc": 650,
-    "cost_usd": 1.524578,
+    "cost_usd": 1.527886,
     "llm_calls": 650
    },
    {
     "doc": 700,
-    "cost_usd": 1.64808,
+    "cost_usd": 1.651642,
     "llm_calls": 700
    },
    {
     "doc": 750,
-    "cost_usd": 1.766534,
+    "cost_usd": 1.770354,
     "llm_calls": 750
    },
    {
     "doc": 800,
-    "cost_usd": 1.873608,
+    "cost_usd": 1.877728,
     "llm_calls": 800
    },
    {
     "doc": 850,
-    "cost_usd": 1.99043,
+    "cost_usd": 1.994834,
     "llm_calls": 850
    },
    {
     "doc": 900,
-    "cost_usd": 2.111416,
+    "cost_usd": 2.116052,
     "llm_calls": 900
    },
    {
     "doc": 950,
-    "cost_usd": 2.227764,
+    "cost_usd": 2.232682,
     "llm_calls": 950
    },
    {
     "doc": 1000,
-    "cost_usd": 2.34764,
+    "cost_usd": 2.352798,
     "llm_calls": 1000
    },
    {
     "doc": 1050,
-    "cost_usd": 2.472262,
+    "cost_usd": 2.477734,
     "llm_calls": 1050
    },
    {
     "doc": 1100,
-    "cost_usd": 2.597092,
+    "cost_usd": 2.602856,
     "llm_calls": 1100
    },
    {
     "doc": 1150,
-    "cost_usd": 2.712324,
+    "cost_usd": 2.718378,
     "llm_calls": 1150
    },
    {
     "doc": 1200,
-    "cost_usd": 2.82673,
+    "cost_usd": 2.833048,
     "llm_calls": 1200
    },
    {
     "doc": 1250,
-    "cost_usd": 2.948922,
+    "cost_usd": 2.955526,
     "llm_calls": 1250
    },
    {
     "doc": 1300,
-    "cost_usd": 3.073302,
+    "cost_usd": 3.080156,
     "llm_calls": 1300
    },
    {
     "doc": 1350,
-    "cost_usd": 3.201206,
+    "cost_usd": 3.208286,
     "llm_calls": 1350
    },
    {
     "doc": 1400,
-    "cost_usd": 3.329686,
+    "cost_usd": 3.337056,
     "llm_calls": 1400
    },
    {
     "doc": 1450,
-    "cost_usd": 3.450934,
+    "cost_usd": 3.45857,
     "llm_calls": 1450
    },
    {
     "doc": 1500,
-    "cost_usd": 3.568178,
+    "cost_usd": 3.576064,
     "llm_calls": 1500
    },
    {
     "doc": 1550,
-    "cost_usd": 3.690012,
+    "cost_usd": 3.69815,
     "llm_calls": 1550
    },
    {
     "doc": 1600,
-    "cost_usd": 3.806676,
+    "cost_usd": 3.81511,
     "llm_calls": 1600
    },
    {
     "doc": 1650,
-    "cost_usd": 3.93397,
+    "cost_usd": 3.94261,
     "llm_calls": 1650
    },
    {
     "doc": 1700,
-    "cost_usd": 4.049512,
+    "cost_usd": 4.058402,
     "llm_calls": 1700
    },
    {
     "doc": 1750,
-    "cost_usd": 4.171044,
+    "cost_usd": 4.180214,
     "llm_calls": 1750
    },
    {
     "doc": 1800,
-    "cost_usd": 4.290194,
+    "cost_usd": 4.299642,
     "llm_calls": 1800
    },
    {
     "doc": 1850,
-    "cost_usd": 4.412298,
+    "cost_usd": 4.422034,
     "llm_calls": 1850
    },
    {
     "doc": 1900,
-    "cost_usd": 4.532688,
+    "cost_usd": 4.542654,
     "llm_calls": 1900
    },
    {
     "doc": 1950,
-    "cost_usd": 4.648338,
+    "cost_usd": 4.658556,
     "llm_calls": 1950
    },
    {
     "doc": 2000,
-    "cost_usd": 4.7646,
+    "cost_usd": 4.775078,
     "llm_calls": 2000
    },
    {
     "doc": 2050,
-    "cost_usd": 4.888142,
+    "cost_usd": 4.898852,
     "llm_calls": 2050
    },
    {
     "doc": 2100,
-    "cost_usd": 5.009762,
+    "cost_usd": 5.02075,
     "llm_calls": 2100
    },
    {
     "doc": 2150,
-    "cost_usd": 5.123394,
+    "cost_usd": 5.13464,
     "llm_calls": 2150
    },
    {
     "doc": 2200,
-    "cost_usd": 5.236132,
+    "cost_usd": 5.247638,
     "llm_calls": 2200
    },
    {
     "doc": 2250,
-    "cost_usd": 5.349326,
+    "cost_usd": 5.361116,
     "llm_calls": 2250
    },
    {
     "doc": 2300,
-    "cost_usd": 5.462362,
+    "cost_usd": 5.474388,
     "llm_calls": 2300
    },
    {
     "doc": 2350,
-    "cost_usd": 5.571316,
+    "cost_usd": 5.583584,
     "llm_calls": 2350
    },
    {
     "doc": 2400,
-    "cost_usd": 5.685332,
+    "cost_usd": 5.697864,
     "llm_calls": 2400
    },
    {
     "doc": 2450,
-    "cost_usd": 5.81208,
+    "cost_usd": 5.824804,
     "llm_calls": 2450
    },
    {
     "doc": 2500,
-    "cost_usd": 5.935328,
+    "cost_usd": 5.948268,
     "llm_calls": 2500
    },
    {
     "doc": 2550,
-    "cost_usd": 6.054066,
+    "cost_usd": 6.067242,
     "llm_calls": 2550
    },
    {
     "doc": 2600,
-    "cost_usd": 6.17848,
+    "cost_usd": 6.191892,
     "llm_calls": 2600
    },
    {
     "doc": 2650,
-    "cost_usd": 6.294418,
+    "cost_usd": 6.308118,
     "llm_calls": 2650
    },
    {
     "doc": 2700,
-    "cost_usd": 6.416628,
+    "cost_usd": 6.430616,
     "llm_calls": 2700
    },
    {
     "doc": 2750,
-    "cost_usd": 6.54395,
+    "cost_usd": 6.55819,
     "llm_calls": 2750
    },
    {
     "doc": 2800,
-    "cost_usd": 6.663574,
+    "cost_usd": 6.67812,
     "llm_calls": 2800
    },
    {
     "doc": 2850,
-    "cost_usd": 6.78214,
+    "cost_usd": 6.796936,
     "llm_calls": 2850
    },
    {
     "doc": 2900,
-    "cost_usd": 6.905986,
+    "cost_usd": 6.92102,
     "llm_calls": 2900
    },
    {
     "doc": 2950,
-    "cost_usd": 7.022368,
+    "cost_usd": 7.037652,
     "llm_calls": 2950
    },
    {
     "doc": 3000,
-    "cost_usd": 7.141976,
+    "cost_usd": 7.157482,
     "llm_calls": 3000
    },
    {
     "doc": 3050,
-    "cost_usd": 7.25499,
+    "cost_usd": 7.270774,
     "llm_calls": 3050
    },
    {
     "doc": 3100,
-    "cost_usd": 7.3776,
+    "cost_usd": 7.393676,
     "llm_calls": 3100
    },
    {
     "doc": 3150,
-    "cost_usd": 7.496828,
+    "cost_usd": 7.513128,
     "llm_calls": 3150
    },
    {
     "doc": 3200,
-    "cost_usd": 7.614244,
+    "cost_usd": 7.630804,
     "llm_calls": 3200
    },
    {
     "doc": 3250,
-    "cost_usd": 7.740064,
+    "cost_usd": 7.756868,
     "llm_calls": 3250
    },
    {
     "doc": 3300,
-    "cost_usd": 7.858308,
+    "cost_usd": 7.87541,
     "llm_calls": 3300
    },
    {
     "doc": 3350,
-    "cost_usd": 7.973682,
+    "cost_usd": 7.991082,
     "llm_calls": 3350
    },
    {
     "doc": 3400,
-    "cost_usd": 8.088586,
+    "cost_usd": 8.106254,
     "llm_calls": 3400
    },
    {
     "doc": 3450,
-    "cost_usd": 8.21132,
+    "cost_usd": 8.229252,
     "llm_calls": 3450
    },
    {
     "doc": 3500,
-    "cost_usd": 8.333114,
+    "cost_usd": 8.351342,
     "llm_calls": 3500
    },
    {
     "doc": 3550,
-    "cost_usd": 8.452112,
+    "cost_usd": 8.470574,
     "llm_calls": 3550
    },
    {
     "doc": 3600,
-    "cost_usd": 8.571744,
+    "cost_usd": 8.590452,
     "llm_calls": 3600
    },
    {
     "doc": 3650,
-    "cost_usd": 8.697682,
+    "cost_usd": 8.71667,
     "llm_calls": 3650
    },
    {
     "doc": 3700,
-    "cost_usd": 8.809486,
+    "cost_usd": 8.82873,
     "llm_calls": 3700
    },
    {
     "doc": 3750,
-    "cost_usd": 8.928112,
+    "cost_usd": 8.947614,
     "llm_calls": 3750
    },
    {
     "doc": 3800,
-    "cost_usd": 9.044636,
+    "cost_usd": 9.064384,
     "llm_calls": 3800
    },
    {
     "doc": 3850,
-    "cost_usd": 9.159954,
+    "cost_usd": 9.180008,
     "llm_calls": 3850
    },
    {
     "doc": 3900,
-    "cost_usd": 9.282264,
+    "cost_usd": 9.302572,
     "llm_calls": 3900
    },
    {
     "doc": 3950,
-    "cost_usd": 9.400674,
+    "cost_usd": 9.421242,
     "llm_calls": 3950
    },
    {
     "doc": 4000,
-    "cost_usd": 9.50874,
+    "cost_usd": 9.529568,
     "llm_calls": 4000
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 9.646294,
+    "llm_calls": 4050
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 9.769762,
+    "llm_calls": 4100
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 9.88865,
+    "llm_calls": 4150
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 10.009994,
+    "llm_calls": 4200
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 10.128202,
+    "llm_calls": 4250
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 10.24749,
+    "llm_calls": 4300
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 10.375492,
+    "llm_calls": 4350
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 10.497692,
+    "llm_calls": 4400
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 10.615262,
+    "llm_calls": 4450
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 10.728678,
+    "llm_calls": 4500
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 10.852256,
+    "llm_calls": 4550
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 10.96612,
+    "llm_calls": 4600
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 11.08623,
+    "llm_calls": 4650
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 11.211406,
+    "llm_calls": 4700
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 11.334512,
+    "llm_calls": 4750
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 11.451146,
+    "llm_calls": 4800
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 11.567768,
+    "llm_calls": 4850
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 11.6941,
+    "llm_calls": 4900
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 11.806898,
+    "llm_calls": 4950
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 11.921814,
+    "llm_calls": 5000
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 12.037376,
+    "llm_calls": 5050
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 12.158088,
+    "llm_calls": 5100
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 12.282102,
+    "llm_calls": 5150
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 12.401378,
+    "llm_calls": 5200
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 12.51945,
+    "llm_calls": 5250
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 12.639584,
+    "llm_calls": 5300
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 12.763116,
+    "llm_calls": 5350
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 12.88882,
+    "llm_calls": 5400
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 12.999032,
+    "llm_calls": 5450
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 13.118222,
+    "llm_calls": 5500
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 13.235092,
+    "llm_calls": 5550
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 13.355,
+    "llm_calls": 5600
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 13.46574,
+    "llm_calls": 5650
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 13.585306,
+    "llm_calls": 5700
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 13.704542,
+    "llm_calls": 5750
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 13.825032,
+    "llm_calls": 5800
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 13.938054,
+    "llm_calls": 5850
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 14.063312,
+    "llm_calls": 5900
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 14.18121,
+    "llm_calls": 5950
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 14.297766,
+    "llm_calls": 6000
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 14.416144,
+    "llm_calls": 6050
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 14.54139,
+    "llm_calls": 6100
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 14.662376,
+    "llm_calls": 6150
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 14.785392,
+    "llm_calls": 6200
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 14.903974,
+    "llm_calls": 6250
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 15.025598,
+    "llm_calls": 6300
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 15.149434,
+    "llm_calls": 6350
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 15.275216,
+    "llm_calls": 6400
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 15.395536,
+    "llm_calls": 6450
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 15.518906,
+    "llm_calls": 6500
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 15.636694,
+    "llm_calls": 6550
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 15.759152,
+    "llm_calls": 6600
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 15.877216,
+    "llm_calls": 6650
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 15.998242,
+    "llm_calls": 6700
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 16.120392,
+    "llm_calls": 6750
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 16.237854,
+    "llm_calls": 6800
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 16.344782,
+    "llm_calls": 6850
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 16.464186,
+    "llm_calls": 6900
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 16.58871,
+    "llm_calls": 6950
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 16.707086,
+    "llm_calls": 7000
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 16.831684,
+    "llm_calls": 7050
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 16.953056,
+    "llm_calls": 7100
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 17.066474,
+    "llm_calls": 7150
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 17.1867,
+    "llm_calls": 7200
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 17.316206,
+    "llm_calls": 7250
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 17.438732,
+    "llm_calls": 7300
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 17.552558,
+    "llm_calls": 7350
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 17.67359,
+    "llm_calls": 7400
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 17.794272,
+    "llm_calls": 7450
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 17.91505,
+    "llm_calls": 7500
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 18.02648,
+    "llm_calls": 7550
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 18.14501,
+    "llm_calls": 7600
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 18.272748,
+    "llm_calls": 7650
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 18.38446,
+    "llm_calls": 7700
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 18.504452,
+    "llm_calls": 7750
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 18.621158,
+    "llm_calls": 7800
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 18.739836,
+    "llm_calls": 7850
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 18.852978,
+    "llm_calls": 7900
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 18.973308,
+    "llm_calls": 7950
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 19.092464,
+    "llm_calls": 8000
    }
   ],
   "events": [],
@@ -480,474 +880,874 @@
   "system": "llm_only_small",
   "mode": "llm_only",
   "simulated_llm": true,
-  "docs": 4000,
-  "doc_accuracy": 0.981,
-  "wrong_docs": 76,
-  "field_accuracy": 0.999044,
-  "cost_usd": 0.784235,
-  "cost_per_1k_docs": 0.19606,
-  "cost_per_1k_docs_last_1000": 0.18229,
-  "llm_calls": 4125,
-  "llm_calls_per_doc": 1.0312,
+  "docs": 8000,
+  "doc_accuracy": 0.9815,
+  "wrong_docs": 148,
+  "field_accuracy": 0.999068,
+  "cost_usd": 1.539365,
+  "cost_per_1k_docs": 0.19242,
+  "cost_per_1k_docs_last_1000": 0.19475,
+  "llm_calls": 8242,
+  "llm_calls_per_doc": 1.0303,
   "code_share": 0.0,
   "audit_share": 0.0,
   "code_share_last_1000": 0.0,
-  "human_review": 4,
+  "human_review": 8,
   "quarantined": 0,
   "quarantine_corrected": 0,
   "latency_ms_p50": 1364.0,
-  "latency_ms_mean": 1493.22,
-  "wall_seconds": 1.17,
+  "latency_ms_mean": 1488.58,
+  "wall_seconds": 2.5,
   "drifts": [
    {
     "vendor": "V14",
     "kind": "inline_swap",
     "class": "silent",
     "at_doc": 1500,
-    "vendor_docs_after": 308,
-    "wrong_after": 4
+    "vendor_docs_after": 788,
+    "wrong_after": 12
    },
    {
     "vendor": "V18",
     "kind": "date_locale",
     "class": "silent",
     "at_doc": 1800,
-    "vendor_docs_after": 198,
-    "wrong_after": 4
+    "vendor_docs_after": 543,
+    "wrong_after": 10
    },
    {
     "vendor": "V20",
     "kind": "relabel",
     "class": "loud",
     "at_doc": 2100,
-    "vendor_docs_after": 378,
-    "wrong_after": 3
+    "vendor_docs_after": 1222,
+    "wrong_after": 17
    },
    {
     "vendor": "V11",
     "kind": "table_reflow",
     "class": "loud",
     "at_doc": 2400,
-    "vendor_docs_after": 126,
-    "wrong_after": 2
+    "vendor_docs_after": 412,
+    "wrong_after": 5
    },
    {
     "vendor": "V10",
     "kind": "number_style",
     "class": "loud",
     "at_doc": 2700,
-    "vendor_docs_after": 76,
-    "wrong_after": 0
+    "vendor_docs_after": 300,
+    "wrong_after": 7
    },
    {
     "vendor": "V12",
     "kind": "new_fields",
     "class": "structural",
     "at_doc": 3000,
-    "vendor_docs_after": 46,
-    "wrong_after": 1
+    "vendor_docs_after": 250,
+    "wrong_after": 8
    }
   ],
   "curve": [
    {
     "doc": 50,
-    "cost_usd": 0.005718,
+    "cost_usd": 0.005733,
     "llm_calls": 50
    },
    {
     "doc": 100,
-    "cost_usd": 0.011484,
+    "cost_usd": 0.011514,
     "llm_calls": 100
    },
    {
     "doc": 150,
-    "cost_usd": 0.021953,
+    "cost_usd": 0.022006,
     "llm_calls": 152
    },
    {
     "doc": 200,
-    "cost_usd": 0.027992,
+    "cost_usd": 0.028056,
     "llm_calls": 202
    },
    {
     "doc": 250,
-    "cost_usd": 0.034035,
+    "cost_usd": 0.034111,
     "llm_calls": 252
    },
    {
     "doc": 300,
-    "cost_usd": 0.04658,
+    "cost_usd": 0.046675,
     "llm_calls": 304
    },
    {
     "doc": 350,
-    "cost_usd": 0.055919,
+    "cost_usd": 0.056026,
     "llm_calls": 355
    },
    {
     "doc": 400,
-    "cost_usd": 0.063865,
+    "cost_usd": 0.063991,
     "llm_calls": 406
    },
    {
     "doc": 450,
-    "cost_usd": 0.07897,
+    "cost_usd": 0.079118,
     "llm_calls": 459
    },
    {
     "doc": 500,
-    "cost_usd": 0.086439,
+    "cost_usd": 0.086606,
     "llm_calls": 510
    },
    {
     "doc": 550,
-    "cost_usd": 0.092142,
+    "cost_usd": 0.092323,
     "llm_calls": 560
    },
    {
     "doc": 600,
-    "cost_usd": 0.102567,
+    "cost_usd": 0.102766,
     "llm_calls": 612
    },
    {
     "doc": 650,
-    "cost_usd": 0.116857,
+    "cost_usd": 0.11709,
     "llm_calls": 666
    },
    {
     "doc": 700,
-    "cost_usd": 0.125772,
+    "cost_usd": 0.126018,
     "llm_calls": 717
    },
    {
     "doc": 750,
-    "cost_usd": 0.136721,
+    "cost_usd": 0.13699,
     "llm_calls": 769
    },
    {
     "doc": 800,
-    "cost_usd": 0.147382,
+    "cost_usd": 0.147682,
     "llm_calls": 821
    },
    {
     "doc": 850,
-    "cost_usd": 0.156693,
+    "cost_usd": 0.157012,
     "llm_calls": 872
    },
    {
     "doc": 900,
-    "cost_usd": 0.170835,
+    "cost_usd": 0.171179,
     "llm_calls": 925
    },
    {
     "doc": 950,
-    "cost_usd": 0.178622,
+    "cost_usd": 0.178988,
     "llm_calls": 976
    },
    {
     "doc": 1000,
-    "cost_usd": 0.184616,
+    "cost_usd": 0.184994,
     "llm_calls": 1026
    },
    {
     "doc": 1050,
-    "cost_usd": 0.193527,
+    "cost_usd": 0.193925,
     "llm_calls": 1077
    },
    {
     "doc": 1100,
-    "cost_usd": 0.207541,
+    "cost_usd": 0.207985,
     "llm_calls": 1130
    },
    {
     "doc": 1150,
-    "cost_usd": 0.22384,
+    "cost_usd": 0.224329,
     "llm_calls": 1184
    },
    {
     "doc": 1200,
-    "cost_usd": 0.235144,
+    "cost_usd": 0.23566,
     "llm_calls": 1237
    },
    {
     "doc": 1250,
-    "cost_usd": 0.24809,
+    "cost_usd": 0.248632,
     "llm_calls": 1289
    },
    {
     "doc": 1300,
-    "cost_usd": 0.254309,
+    "cost_usd": 0.254864,
     "llm_calls": 1339
    },
    {
     "doc": 1350,
-    "cost_usd": 0.268234,
+    "cost_usd": 0.268816,
     "llm_calls": 1392
    },
    {
     "doc": 1400,
-    "cost_usd": 0.280752,
+    "cost_usd": 0.281359,
     "llm_calls": 1444
    },
    {
     "doc": 1450,
-    "cost_usd": 0.286815,
+    "cost_usd": 0.287435,
     "llm_calls": 1494
    },
    {
     "doc": 1500,
-    "cost_usd": 0.295011,
+    "cost_usd": 0.295645,
     "llm_calls": 1545
    },
    {
     "doc": 1550,
-    "cost_usd": 0.301103,
+    "cost_usd": 0.30175,
     "llm_calls": 1595
    },
    {
     "doc": 1600,
-    "cost_usd": 0.312722,
+    "cost_usd": 0.313386,
     "llm_calls": 1647
    },
    {
     "doc": 1650,
-    "cost_usd": 0.321114,
+    "cost_usd": 0.321789,
     "llm_calls": 1698
    },
    {
     "doc": 1700,
-    "cost_usd": 0.331622,
+    "cost_usd": 0.332314,
     "llm_calls": 1750
    },
    {
     "doc": 1750,
-    "cost_usd": 0.345588,
+    "cost_usd": 0.346315,
     "llm_calls": 1803
    },
    {
     "doc": 1800,
-    "cost_usd": 0.35325,
+    "cost_usd": 0.353996,
     "llm_calls": 1854
    },
    {
     "doc": 1850,
-    "cost_usd": 0.367231,
+    "cost_usd": 0.368004,
     "llm_calls": 1907
    },
    {
     "doc": 1900,
-    "cost_usd": 0.37325,
+    "cost_usd": 0.374035,
     "llm_calls": 1957
    },
    {
     "doc": 1950,
-    "cost_usd": 0.382073,
+    "cost_usd": 0.382876,
     "llm_calls": 2008
    },
    {
     "doc": 2000,
-    "cost_usd": 0.387886,
+    "cost_usd": 0.388702,
     "llm_calls": 2058
    },
    {
     "doc": 2050,
-    "cost_usd": 0.394063,
+    "cost_usd": 0.394891,
     "llm_calls": 2108
    },
    {
     "doc": 2100,
-    "cost_usd": 0.405178,
+    "cost_usd": 0.40603,
     "llm_calls": 2160
    },
    {
     "doc": 2150,
-    "cost_usd": 0.419838,
+    "cost_usd": 0.420722,
     "llm_calls": 2214
    },
    {
     "doc": 2200,
-    "cost_usd": 0.436189,
+    "cost_usd": 0.43711,
     "llm_calls": 2269
    },
    {
     "doc": 2250,
-    "cost_usd": 0.444626,
+    "cost_usd": 0.44557,
     "llm_calls": 2320
    },
    {
     "doc": 2300,
-    "cost_usd": 0.457416,
+    "cost_usd": 0.458385,
     "llm_calls": 2373
    },
    {
     "doc": 2350,
-    "cost_usd": 0.465528,
+    "cost_usd": 0.466517,
     "llm_calls": 2424
    },
    {
     "doc": 2400,
-    "cost_usd": 0.477761,
+    "cost_usd": 0.478773,
     "llm_calls": 2476
    },
    {
     "doc": 2450,
-    "cost_usd": 0.484098,
+    "cost_usd": 0.48512,
     "llm_calls": 2526
    },
    {
     "doc": 2500,
-    "cost_usd": 0.49026,
+    "cost_usd": 0.491293,
     "llm_calls": 2576
    },
    {
     "doc": 2550,
-    "cost_usd": 0.496197,
+    "cost_usd": 0.497242,
     "llm_calls": 2626
    },
    {
     "doc": 2600,
-    "cost_usd": 0.505872,
+    "cost_usd": 0.506933,
     "llm_calls": 2677
    },
    {
     "doc": 2650,
-    "cost_usd": 0.519877,
+    "cost_usd": 0.520968,
     "llm_calls": 2730
    },
    {
     "doc": 2700,
-    "cost_usd": 0.529013,
+    "cost_usd": 0.530123,
     "llm_calls": 2781
    },
    {
     "doc": 2750,
-    "cost_usd": 0.539061,
+    "cost_usd": 0.540198,
     "llm_calls": 2833
    },
    {
     "doc": 2800,
-    "cost_usd": 0.549433,
+    "cost_usd": 0.550588,
     "llm_calls": 2885
    },
    {
     "doc": 2850,
-    "cost_usd": 0.560061,
+    "cost_usd": 0.561237,
     "llm_calls": 2937
    },
    {
     "doc": 2900,
-    "cost_usd": 0.575031,
+    "cost_usd": 0.576247,
     "llm_calls": 2991
    },
    {
     "doc": 2950,
-    "cost_usd": 0.585886,
+    "cost_usd": 0.587121,
     "llm_calls": 3043
    },
    {
     "doc": 3000,
-    "cost_usd": 0.601941,
+    "cost_usd": 0.603206,
     "llm_calls": 3097
    },
    {
     "doc": 3050,
-    "cost_usd": 0.609225,
+    "cost_usd": 0.610509,
     "llm_calls": 3148
    },
    {
     "doc": 3100,
-    "cost_usd": 0.618054,
+    "cost_usd": 0.619356,
     "llm_calls": 3199
    },
    {
     "doc": 3150,
-    "cost_usd": 0.626361,
+    "cost_usd": 0.627678,
     "llm_calls": 3250
    },
    {
     "doc": 3200,
-    "cost_usd": 0.632232,
+    "cost_usd": 0.633562,
     "llm_calls": 3300
    },
    {
     "doc": 3250,
-    "cost_usd": 0.640133,
+    "cost_usd": 0.641481,
     "llm_calls": 3351
    },
    {
     "doc": 3300,
-    "cost_usd": 0.646045,
+    "cost_usd": 0.647409,
     "llm_calls": 3401
    },
    {
     "doc": 3350,
-    "cost_usd": 0.656118,
+    "cost_usd": 0.657512,
     "llm_calls": 3453
    },
    {
     "doc": 3400,
-    "cost_usd": 0.663541,
+    "cost_usd": 0.664953,
     "llm_calls": 3504
    },
    {
     "doc": 3450,
-    "cost_usd": 0.67945,
+    "cost_usd": 0.680903,
     "llm_calls": 3558
    },
    {
     "doc": 3500,
-    "cost_usd": 0.690752,
+    "cost_usd": 0.692231,
     "llm_calls": 3610
    },
    {
     "doc": 3550,
-    "cost_usd": 0.698722,
+    "cost_usd": 0.700219,
     "llm_calls": 3661
    },
    {
     "doc": 3600,
-    "cost_usd": 0.708789,
+    "cost_usd": 0.710309,
     "llm_calls": 3713
    },
    {
     "doc": 3650,
-    "cost_usd": 0.717434,
+    "cost_usd": 0.718974,
     "llm_calls": 3764
    },
    {
     "doc": 3700,
-    "cost_usd": 0.729034,
+    "cost_usd": 0.730601,
     "llm_calls": 3817
    },
    {
     "doc": 3750,
-    "cost_usd": 0.738976,
+    "cost_usd": 0.740557,
     "llm_calls": 3869
    },
    {
     "doc": 3800,
-    "cost_usd": 0.749822,
+    "cost_usd": 0.751427,
     "llm_calls": 3921
    },
    {
     "doc": 3850,
-    "cost_usd": 0.761426,
+    "cost_usd": 0.763052,
     "llm_calls": 3973
    },
    {
     "doc": 3900,
-    "cost_usd": 0.767541,
+    "cost_usd": 0.769181,
     "llm_calls": 4023
    },
    {
     "doc": 3950,
-    "cost_usd": 0.773462,
+    "cost_usd": 0.775114,
     "llm_calls": 4073
    },
    {
     "doc": 4000,
-    "cost_usd": 0.784235,
+    "cost_usd": 0.78591,
     "llm_calls": 4125
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 0.793411,
+    "llm_calls": 4176
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 0.803034,
+    "llm_calls": 4227
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 0.808979,
+    "llm_calls": 4277
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 0.815046,
+    "llm_calls": 4327
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 0.820956,
+    "llm_calls": 4377
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 0.828889,
+    "llm_calls": 4428
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 0.835289,
+    "llm_calls": 4478
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 0.841399,
+    "llm_calls": 4528
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 0.856123,
+    "llm_calls": 4581
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 0.866774,
+    "llm_calls": 4634
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 0.883887,
+    "llm_calls": 4688
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 0.891888,
+    "llm_calls": 4739
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 0.902608,
+    "llm_calls": 4791
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 0.910564,
+    "llm_calls": 4842
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 0.91672,
+    "llm_calls": 4892
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 0.926271,
+    "llm_calls": 4944
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 0.93411,
+    "llm_calls": 4995
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 0.945833,
+    "llm_calls": 5047
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 0.956197,
+    "llm_calls": 5099
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 0.966265,
+    "llm_calls": 5151
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 0.978385,
+    "llm_calls": 5204
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 0.993944,
+    "llm_calls": 5258
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 1.003619,
+    "llm_calls": 5309
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 1.014351,
+    "llm_calls": 5361
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 1.020255,
+    "llm_calls": 5411
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 1.032461,
+    "llm_calls": 5463
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 1.043032,
+    "llm_calls": 5515
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 1.051371,
+    "llm_calls": 5566
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 1.058506,
+    "llm_calls": 5617
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 1.069743,
+    "llm_calls": 5670
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 1.081605,
+    "llm_calls": 5723
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 1.093396,
+    "llm_calls": 5775
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 1.103301,
+    "llm_calls": 5827
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 1.111291,
+    "llm_calls": 5878
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 1.122695,
+    "llm_calls": 5930
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 1.131484,
+    "llm_calls": 5981
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 1.139107,
+    "llm_calls": 6032
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 1.156186,
+    "llm_calls": 6086
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 1.164049,
+    "llm_calls": 6137
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 1.17519,
+    "llm_calls": 6189
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 1.185919,
+    "llm_calls": 6241
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 1.192182,
+    "llm_calls": 6291
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 1.198231,
+    "llm_calls": 6341
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 1.212766,
+    "llm_calls": 6395
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 1.223355,
+    "llm_calls": 6447
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 1.233904,
+    "llm_calls": 6499
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 1.242442,
+    "llm_calls": 6550
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 1.250747,
+    "llm_calls": 6601
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 1.261853,
+    "llm_calls": 6653
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 1.268021,
+    "llm_calls": 6703
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 1.277283,
+    "llm_calls": 6754
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 1.283406,
+    "llm_calls": 6804
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 1.291345,
+    "llm_calls": 6855
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 1.297396,
+    "llm_calls": 6905
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 1.303504,
+    "llm_calls": 6955
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 1.311045,
+    "llm_calls": 7006
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 1.318727,
+    "llm_calls": 7057
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 1.327389,
+    "llm_calls": 7108
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 1.336008,
+    "llm_calls": 7159
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 1.34461,
+    "llm_calls": 7210
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 1.356546,
+    "llm_calls": 7263
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 1.362615,
+    "llm_calls": 7313
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 1.369968,
+    "llm_calls": 7364
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 1.378713,
+    "llm_calls": 7415
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 1.385188,
+    "llm_calls": 7465
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 1.391315,
+    "llm_calls": 7515
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 1.40446,
+    "llm_calls": 7568
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 1.41627,
+    "llm_calls": 7620
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 1.424666,
+    "llm_calls": 7671
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 1.430705,
+    "llm_calls": 7721
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 1.443786,
+    "llm_calls": 7774
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 1.454495,
+    "llm_calls": 7826
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 1.466341,
+    "llm_calls": 7878
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 1.476315,
+    "llm_calls": 7930
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 1.484295,
+    "llm_calls": 7981
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 1.498592,
+    "llm_calls": 8035
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 1.511282,
+    "llm_calls": 8088
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 1.521655,
+    "llm_calls": 8140
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 1.531087,
+    "llm_calls": 8191
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 1.539365,
+    "llm_calls": 8242
    }
   ],
   "events": [],
@@ -957,474 +1757,874 @@
   "system": "static",
   "mode": "static",
   "simulated_llm": true,
-  "docs": 4000,
-  "doc_accuracy": 0.89125,
-  "wrong_docs": 435,
-  "field_accuracy": 0.990784,
-  "cost_usd": 0.161277,
-  "cost_per_1k_docs": 0.04032,
-  "cost_per_1k_docs_last_1000": 0.08204,
-  "llm_calls": 809,
-  "llm_calls_per_doc": 0.2023,
-  "code_share": 0.8043,
+  "docs": 8000,
+  "doc_accuracy": 0.87887,
+  "wrong_docs": 969,
+  "field_accuracy": 0.989699,
+  "cost_usd": 0.481952,
+  "cost_per_1k_docs": 0.06024,
+  "cost_per_1k_docs_last_1000": 0.08457,
+  "llm_calls": 2529,
+  "llm_calls_per_doc": 0.3161,
+  "code_share": 0.6929,
   "audit_share": 0.0,
-  "code_share_last_1000": 0.597,
+  "code_share_last_1000": 0.598,
   "human_review": 0,
   "quarantined": 0,
   "quarantine_corrected": 0,
-  "latency_ms_p50": 0.11,
-  "latency_ms_mean": 300.53,
-  "wall_seconds": 2.45,
+  "latency_ms_p50": 0.1,
+  "latency_ms_mean": 466.44,
+  "wall_seconds": 4.26,
   "drifts": [
    {
     "vendor": "V14",
     "kind": "inline_swap",
     "class": "silent",
     "at_doc": 1500,
-    "vendor_docs_after": 308,
-    "wrong_after": 308
+    "vendor_docs_after": 788,
+    "wrong_after": 788
    },
    {
     "vendor": "V18",
     "kind": "date_locale",
     "class": "silent",
     "at_doc": 1800,
-    "vendor_docs_after": 198,
-    "wrong_after": 82
+    "vendor_docs_after": 543,
+    "wrong_after": 112
    },
    {
     "vendor": "V20",
     "kind": "relabel",
     "class": "loud",
     "at_doc": 2100,
-    "vendor_docs_after": 378,
-    "wrong_after": 3
+    "vendor_docs_after": 1222,
+    "wrong_after": 17
    },
    {
     "vendor": "V11",
     "kind": "table_reflow",
     "class": "loud",
     "at_doc": 2400,
-    "vendor_docs_after": 126,
-    "wrong_after": 2
+    "vendor_docs_after": 412,
+    "wrong_after": 5
    },
    {
     "vendor": "V10",
     "kind": "number_style",
     "class": "loud",
     "at_doc": 2700,
-    "vendor_docs_after": 76,
-    "wrong_after": 0
+    "vendor_docs_after": 300,
+    "wrong_after": 7
    },
    {
     "vendor": "V12",
     "kind": "new_fields",
     "class": "structural",
     "at_doc": 3000,
-    "vendor_docs_after": 46,
+    "vendor_docs_after": 250,
     "wrong_after": 0
    }
   ],
   "curve": [
    {
     "doc": 50,
-    "cost_usd": 0.005142,
+    "cost_usd": 0.005154,
     "llm_calls": 44
    },
    {
     "doc": 100,
-    "cost_usd": 0.00775,
+    "cost_usd": 0.007769,
     "llm_calls": 65
    },
    {
     "doc": 150,
-    "cost_usd": 0.008435,
+    "cost_usd": 0.008456,
     "llm_calls": 71
    },
    {
     "doc": 200,
-    "cost_usd": 0.008728,
+    "cost_usd": 0.008749,
     "llm_calls": 73
    },
    {
     "doc": 250,
-    "cost_usd": 0.008968,
+    "cost_usd": 0.008989,
     "llm_calls": 75
    },
    {
     "doc": 300,
-    "cost_usd": 0.009141,
+    "cost_usd": 0.009163,
     "llm_calls": 76
    },
    {
     "doc": 350,
-    "cost_usd": 0.009141,
+    "cost_usd": 0.009163,
     "llm_calls": 76
    },
    {
     "doc": 400,
-    "cost_usd": 0.009399,
+    "cost_usd": 0.009422,
     "llm_calls": 78
    },
    {
     "doc": 450,
-    "cost_usd": 0.00952,
+    "cost_usd": 0.009543,
     "llm_calls": 79
    },
    {
     "doc": 500,
-    "cost_usd": 0.010054,
+    "cost_usd": 0.010077,
     "llm_calls": 83
    },
    {
     "doc": 550,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 600,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 650,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 700,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 750,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 800,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 850,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 900,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 950,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1000,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1050,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1100,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1150,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1200,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1250,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1300,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1350,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1400,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1450,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1500,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1550,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1600,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1650,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1700,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1750,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1800,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1850,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1900,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 1950,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 2000,
-    "cost_usd": 0.010174,
+    "cost_usd": 0.010198,
     "llm_calls": 84
    },
    {
     "doc": 2050,
-    "cost_usd": 0.010346,
+    "cost_usd": 0.01037,
     "llm_calls": 85
    },
    {
     "doc": 2100,
-    "cost_usd": 0.010568,
+    "cost_usd": 0.010592,
     "llm_calls": 87
    },
    {
     "doc": 2150,
-    "cost_usd": 0.017169,
+    "cost_usd": 0.017204,
     "llm_calls": 105
    },
    {
     "doc": 2200,
-    "cost_usd": 0.020648,
+    "cost_usd": 0.020692,
     "llm_calls": 119
    },
    {
     "doc": 2250,
-    "cost_usd": 0.021991,
+    "cost_usd": 0.022037,
     "llm_calls": 130
    },
    {
     "doc": 2300,
-    "cost_usd": 0.023468,
+    "cost_usd": 0.023516,
     "llm_calls": 144
    },
    {
     "doc": 2350,
-    "cost_usd": 0.024998,
+    "cost_usd": 0.025049,
     "llm_calls": 157
    },
    {
     "doc": 2400,
-    "cost_usd": 0.026169,
+    "cost_usd": 0.026222,
     "llm_calls": 168
    },
    {
     "doc": 2450,
-    "cost_usd": 0.028556,
+    "cost_usd": 0.028612,
     "llm_calls": 186
    },
    {
     "doc": 2500,
-    "cost_usd": 0.02983,
+    "cost_usd": 0.029888,
     "llm_calls": 196
    },
    {
     "doc": 2550,
-    "cost_usd": 0.032187,
+    "cost_usd": 0.032249,
     "llm_calls": 214
    },
    {
     "doc": 2600,
-    "cost_usd": 0.034059,
+    "cost_usd": 0.034123,
     "llm_calls": 229
    },
    {
     "doc": 2650,
-    "cost_usd": 0.041362,
+    "cost_usd": 0.041441,
     "llm_calls": 250
    },
    {
     "doc": 2700,
-    "cost_usd": 0.045568,
+    "cost_usd": 0.045654,
     "llm_calls": 260
    },
    {
     "doc": 2750,
-    "cost_usd": 0.050304,
+    "cost_usd": 0.050405,
     "llm_calls": 282
    },
    {
     "doc": 2800,
-    "cost_usd": 0.054309,
+    "cost_usd": 0.054418,
     "llm_calls": 302
    },
    {
     "doc": 2850,
-    "cost_usd": 0.059082,
+    "cost_usd": 0.059195,
     "llm_calls": 322
    },
    {
     "doc": 2900,
-    "cost_usd": 0.061803,
+    "cost_usd": 0.06192,
     "llm_calls": 342
    },
    {
     "doc": 2950,
-    "cost_usd": 0.067473,
+    "cost_usd": 0.067593,
     "llm_calls": 363
    },
    {
     "doc": 3000,
-    "cost_usd": 0.07924,
+    "cost_usd": 0.079378,
     "llm_calls": 393
    },
    {
     "doc": 3050,
-    "cost_usd": 0.08122,
+    "cost_usd": 0.081362,
     "llm_calls": 410
    },
    {
     "doc": 3100,
-    "cost_usd": 0.086854,
+    "cost_usd": 0.087004,
     "llm_calls": 434
    },
    {
     "doc": 3150,
-    "cost_usd": 0.091305,
+    "cost_usd": 0.091463,
     "llm_calls": 452
    },
    {
     "doc": 3200,
-    "cost_usd": 0.094399,
+    "cost_usd": 0.094563,
     "llm_calls": 477
    },
    {
     "doc": 3250,
-    "cost_usd": 0.096075,
+    "cost_usd": 0.096241,
     "llm_calls": 490
    },
    {
     "doc": 3300,
-    "cost_usd": 0.099254,
+    "cost_usd": 0.099426,
     "llm_calls": 515
    },
    {
     "doc": 3350,
-    "cost_usd": 0.101586,
+    "cost_usd": 0.101762,
     "llm_calls": 534
    },
    {
     "doc": 3400,
-    "cost_usd": 0.106201,
+    "cost_usd": 0.106386,
     "llm_calls": 558
    },
    {
     "doc": 3450,
-    "cost_usd": 0.116003,
+    "cost_usd": 0.116217,
     "llm_calls": 585
    },
    {
     "doc": 3500,
-    "cost_usd": 0.1192,
+    "cost_usd": 0.11942,
     "llm_calls": 609
    },
    {
     "doc": 3550,
-    "cost_usd": 0.122332,
+    "cost_usd": 0.122557,
     "llm_calls": 633
    },
    {
     "doc": 3600,
-    "cost_usd": 0.124703,
+    "cost_usd": 0.124932,
     "llm_calls": 653
    },
    {
     "doc": 3650,
-    "cost_usd": 0.130016,
+    "cost_usd": 0.130257,
     "llm_calls": 677
    },
    {
     "doc": 3700,
-    "cost_usd": 0.131565,
+    "cost_usd": 0.131808,
     "llm_calls": 690
    },
    {
     "doc": 3750,
-    "cost_usd": 0.135221,
+    "cost_usd": 0.135467,
     "llm_calls": 708
    },
    {
     "doc": 3800,
-    "cost_usd": 0.140513,
+    "cost_usd": 0.14077,
     "llm_calls": 727
    },
    {
     "doc": 3850,
-    "cost_usd": 0.148797,
+    "cost_usd": 0.149063,
     "llm_calls": 748
    },
    {
     "doc": 3900,
-    "cost_usd": 0.150704,
+    "cost_usd": 0.150973,
     "llm_calls": 762
    },
    {
     "doc": 3950,
-    "cost_usd": 0.153174,
+    "cost_usd": 0.153448,
     "llm_calls": 782
    },
    {
     "doc": 4000,
-    "cost_usd": 0.161277,
+    "cost_usd": 0.161566,
     "llm_calls": 809
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 0.165921,
+    "llm_calls": 832
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 0.172535,
+    "llm_calls": 857
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 0.175101,
+    "llm_calls": 879
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 0.177941,
+    "llm_calls": 902
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 0.181068,
+    "llm_calls": 927
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 0.183801,
+    "llm_calls": 948
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 0.186894,
+    "llm_calls": 972
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 0.190648,
+    "llm_calls": 1000
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 0.193581,
+    "llm_calls": 1023
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 0.198607,
+    "llm_calls": 1052
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 0.206872,
+    "llm_calls": 1072
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 0.208696,
+    "llm_calls": 1088
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 0.211298,
+    "llm_calls": 1108
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 0.213837,
+    "llm_calls": 1127
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 0.216558,
+    "llm_calls": 1148
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 0.222696,
+    "llm_calls": 1171
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 0.227161,
+    "llm_calls": 1193
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 0.229559,
+    "llm_calls": 1213
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 0.234886,
+    "llm_calls": 1232
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 0.23949,
+    "llm_calls": 1254
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 0.244911,
+    "llm_calls": 1275
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 0.256152,
+    "llm_calls": 1306
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 0.258688,
+    "llm_calls": 1325
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 0.261815,
+    "llm_calls": 1350
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 0.264146,
+    "llm_calls": 1369
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 0.273711,
+    "llm_calls": 1397
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 0.278426,
+    "llm_calls": 1420
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 0.283673,
+    "llm_calls": 1446
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 0.286067,
+    "llm_calls": 1467
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 0.290675,
+    "llm_calls": 1492
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 0.296699,
+    "llm_calls": 1513
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 0.304502,
+    "llm_calls": 1530
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 0.308902,
+    "llm_calls": 1551
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 0.314185,
+    "llm_calls": 1579
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 0.32256,
+    "llm_calls": 1605
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 0.325393,
+    "llm_calls": 1628
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 0.327989,
+    "llm_calls": 1650
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 0.332558,
+    "llm_calls": 1669
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 0.334714,
+    "llm_calls": 1685
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 0.336933,
+    "llm_calls": 1705
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 0.338781,
+    "llm_calls": 1719
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 0.341095,
+    "llm_calls": 1737
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 0.343506,
+    "llm_calls": 1756
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 0.348726,
+    "llm_calls": 1775
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 0.353874,
+    "llm_calls": 1798
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 0.357004,
+    "llm_calls": 1822
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 0.358967,
+    "llm_calls": 1838
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 0.362148,
+    "llm_calls": 1862
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 0.365054,
+    "llm_calls": 1885
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 0.367195,
+    "llm_calls": 1902
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 0.36981,
+    "llm_calls": 1924
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 0.372461,
+    "llm_calls": 1944
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 0.37504,
+    "llm_calls": 1965
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 0.377636,
+    "llm_calls": 1986
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 0.380036,
+    "llm_calls": 2005
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 0.384869,
+    "llm_calls": 2031
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 0.387277,
+    "llm_calls": 2053
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 0.392749,
+    "llm_calls": 2077
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 0.395384,
+    "llm_calls": 2097
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 0.397382,
+    "llm_calls": 2113
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 0.403978,
+    "llm_calls": 2136
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 0.406061,
+    "llm_calls": 2153
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 0.408838,
+    "llm_calls": 2177
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 0.414859,
+    "llm_calls": 2204
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 0.417892,
+    "llm_calls": 2226
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 0.420608,
+    "llm_calls": 2247
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 0.431057,
+    "llm_calls": 2276
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 0.433579,
+    "llm_calls": 2297
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 0.438368,
+    "llm_calls": 2317
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 0.441149,
+    "llm_calls": 2339
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 0.44845,
+    "llm_calls": 2361
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 0.456346,
+    "llm_calls": 2388
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 0.46192,
+    "llm_calls": 2408
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 0.463879,
+    "llm_calls": 2426
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 0.466015,
+    "llm_calls": 2443
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 0.471476,
+    "llm_calls": 2464
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 0.472954,
+    "llm_calls": 2476
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 0.477482,
+    "llm_calls": 2492
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 0.479906,
+    "llm_calls": 2512
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 0.481952,
+    "llm_calls": 2529
    }
   ],
   "events": [
@@ -1557,7 +2757,7 @@
     "active": "V01-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 73,
+    "docs": 155,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1572,7 +2772,7 @@
     "active": "V02-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 82,
+    "docs": 157,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1587,7 +2787,7 @@
     "active": "V03-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 175,
+    "docs": 326,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1602,7 +2802,7 @@
     "active": "V04-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 154,
+    "docs": 337,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1617,7 +2817,7 @@
     "active": "V05-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 79,
+    "docs": 160,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1632,7 +2832,7 @@
     "active": "V06-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 97,
+    "docs": 204,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1647,7 +2847,7 @@
     "active": "V07-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 76,
+    "docs": 135,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1662,7 +2862,7 @@
     "active": "V08-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 90,
+    "docs": 170,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1677,7 +2877,7 @@
     "active": "V09-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 93,
+    "docs": 197,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1722,7 +2922,7 @@
     "active": "V12-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 192,
+    "docs": 396,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1737,7 +2937,7 @@
     "active": "V13-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 94,
+    "docs": 198,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1752,7 +2952,7 @@
     "active": "V14-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 484,
+    "docs": 964,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1767,7 +2967,7 @@
     "active": "V15-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 99,
+    "docs": 211,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1782,7 +2982,7 @@
     "active": "V16-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 106,
+    "docs": 221,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1797,7 +2997,7 @@
     "active": "V17-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 162,
+    "docs": 368,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1812,7 +3012,7 @@
     "active": "V18-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 234,
+    "docs": 259,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1827,7 +3027,7 @@
     "active": "V19-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 134,
+    "docs": 292,
     "audits": 0,
     "audit_errors": 0,
     "error_bound": null,
@@ -1856,31 +3056,31 @@
   "system": "distill",
   "mode": "distill",
   "simulated_llm": true,
-  "docs": 4000,
-  "doc_accuracy": 0.999,
+  "docs": 8000,
+  "doc_accuracy": 0.9995,
   "wrong_docs": 4,
-  "field_accuracy": 0.999955,
-  "cost_usd": 0.308887,
-  "cost_per_1k_docs": 0.07722,
-  "cost_per_1k_docs_last_1000": 0.05589,
-  "llm_calls": 1262,
-  "llm_calls_per_doc": 0.3155,
-  "code_share": 0.7165,
-  "audit_share": 0.2228,
-  "code_share_last_1000": 0.964,
-  "human_review": 0,
-  "quarantined": 67,
+  "field_accuracy": 0.999978,
+  "cost_usd": 0.260864,
+  "cost_per_1k_docs": 0.03261,
+  "cost_per_1k_docs_last_1000": 0.02428,
+  "llm_calls": 1144,
+  "llm_calls_per_doc": 0.143,
+  "code_share": 0.8769,
+  "audit_share": 0.0939,
+  "code_share_last_1000": 0.992,
+  "human_review": 1,
+  "quarantined": 110,
   "quarantine_corrected": 1,
   "latency_ms_p50": 0.1,
-  "latency_ms_mean": 463.69,
-  "wall_seconds": 2.33,
+  "latency_ms_mean": 198.38,
+  "wall_seconds": 4.78,
   "drifts": [
    {
     "vendor": "V14",
     "kind": "inline_swap",
     "class": "silent",
     "at_doc": 1500,
-    "vendor_docs_after": 308,
+    "vendor_docs_after": 788,
     "wrong_after": 0,
     "detected_after_vendor_docs": 1,
     "recovered_after_vendor_docs": 6,
@@ -1891,7 +3091,7 @@
     "kind": "date_locale",
     "class": "silent",
     "at_doc": 1800,
-    "vendor_docs_after": 198,
+    "vendor_docs_after": 543,
     "wrong_after": 0,
     "detected_after_vendor_docs": 1,
     "recovered_after_vendor_docs": 6,
@@ -1902,7 +3102,7 @@
     "kind": "relabel",
     "class": "loud",
     "at_doc": 2100,
-    "vendor_docs_after": 378,
+    "vendor_docs_after": 1222,
     "wrong_after": 0,
     "detected_after_vendor_docs": 1,
     "recovered_after_vendor_docs": 7,
@@ -1913,7 +3113,7 @@
     "kind": "table_reflow",
     "class": "loud",
     "at_doc": 2400,
-    "vendor_docs_after": 126,
+    "vendor_docs_after": 412,
     "wrong_after": 0,
     "detected_after_vendor_docs": 1,
     "recovered_after_vendor_docs": 6,
@@ -1924,7 +3124,7 @@
     "kind": "number_style",
     "class": "loud",
     "at_doc": 2700,
-    "vendor_docs_after": 76,
+    "vendor_docs_after": 300,
     "wrong_after": 0,
     "detected_after_vendor_docs": 1,
     "recovered_after_vendor_docs": 8,
@@ -1935,7 +3135,7 @@
     "kind": "new_fields",
     "class": "structural",
     "at_doc": 3000,
-    "vendor_docs_after": 46,
+    "vendor_docs_after": 250,
     "wrong_after": 0,
     "detected_after_vendor_docs": null,
     "recovered_after_vendor_docs": null,
@@ -1945,403 +3145,803 @@
   "curve": [
    {
     "doc": 50,
-    "cost_usd": 0.005718,
-    "llm_calls": 50
+    "cost_usd": 0.00548,
+    "llm_calls": 48
    },
    {
     "doc": 100,
-    "cost_usd": 0.012401,
-    "llm_calls": 94
+    "cost_usd": 0.011415,
+    "llm_calls": 85
    },
    {
     "doc": 150,
-    "cost_usd": 0.028758,
-    "llm_calls": 137
+    "cost_usd": 0.02487,
+    "llm_calls": 123
    },
    {
     "doc": 200,
-    "cost_usd": 0.035147,
-    "llm_calls": 172
+    "cost_usd": 0.030243,
+    "llm_calls": 149
    },
    {
     "doc": 250,
-    "cost_usd": 0.038846,
-    "llm_calls": 202
+    "cost_usd": 0.032757,
+    "llm_calls": 169
    },
    {
     "doc": 300,
-    "cost_usd": 0.045181,
-    "llm_calls": 229
+    "cost_usd": 0.038291,
+    "llm_calls": 190
    },
    {
     "doc": 350,
-    "cost_usd": 0.052307,
-    "llm_calls": 260
+    "cost_usd": 0.040647,
+    "llm_calls": 209
    },
    {
     "doc": 400,
-    "cost_usd": 0.055391,
-    "llm_calls": 285
+    "cost_usd": 0.042853,
+    "llm_calls": 227
    },
    {
     "doc": 450,
-    "cost_usd": 0.06041,
-    "llm_calls": 304
+    "cost_usd": 0.044038,
+    "llm_calls": 236
    },
    {
     "doc": 500,
-    "cost_usd": 0.064269,
-    "llm_calls": 324
+    "cost_usd": 0.04658,
+    "llm_calls": 245
    },
    {
     "doc": 550,
-    "cost_usd": 0.068317,
-    "llm_calls": 346
+    "cost_usd": 0.048282,
+    "llm_calls": 259
    },
    {
     "doc": 600,
-    "cost_usd": 0.072489,
-    "llm_calls": 363
+    "cost_usd": 0.051467,
+    "llm_calls": 267
    },
    {
     "doc": 650,
-    "cost_usd": 0.077946,
-    "llm_calls": 385
+    "cost_usd": 0.052733,
+    "llm_calls": 279
    },
    {
     "doc": 700,
-    "cost_usd": 0.082592,
-    "llm_calls": 400
+    "cost_usd": 0.053859,
+    "llm_calls": 287
    },
    {
     "doc": 750,
-    "cost_usd": 0.09031,
-    "llm_calls": 411
+    "cost_usd": 0.057378,
+    "llm_calls": 292
    },
    {
     "doc": 800,
-    "cost_usd": 0.094445,
-    "llm_calls": 422
+    "cost_usd": 0.061324,
+    "llm_calls": 301
    },
    {
     "doc": 850,
-    "cost_usd": 0.096383,
-    "llm_calls": 439
+    "cost_usd": 0.062909,
+    "llm_calls": 315
    },
    {
     "doc": 900,
-    "cost_usd": 0.102855,
-    "llm_calls": 452
+    "cost_usd": 0.066769,
+    "llm_calls": 321
    },
    {
     "doc": 950,
-    "cost_usd": 0.103946,
-    "llm_calls": 462
+    "cost_usd": 0.067051,
+    "llm_calls": 324
    },
    {
     "doc": 1000,
-    "cost_usd": 0.105141,
-    "llm_calls": 472
+    "cost_usd": 0.067723,
+    "llm_calls": 330
    },
    {
     "doc": 1050,
-    "cost_usd": 0.107071,
-    "llm_calls": 487
+    "cost_usd": 0.068706,
+    "llm_calls": 338
    },
    {
     "doc": 1100,
-    "cost_usd": 0.111568,
-    "llm_calls": 495
+    "cost_usd": 0.073129,
+    "llm_calls": 345
    },
    {
     "doc": 1150,
-    "cost_usd": 0.118934,
-    "llm_calls": 512
+    "cost_usd": 0.07758,
+    "llm_calls": 354
    },
    {
     "doc": 1200,
-    "cost_usd": 0.12171,
-    "llm_calls": 523
+    "cost_usd": 0.079776,
+    "llm_calls": 360
    },
    {
     "doc": 1250,
-    "cost_usd": 0.126347,
-    "llm_calls": 534
+    "cost_usd": 0.08054,
+    "llm_calls": 366
    },
    {
     "doc": 1300,
-    "cost_usd": 0.128383,
-    "llm_calls": 549
+    "cost_usd": 0.08162,
+    "llm_calls": 374
    },
    {
     "doc": 1350,
-    "cost_usd": 0.133172,
-    "llm_calls": 560
+    "cost_usd": 0.082008,
+    "llm_calls": 378
    },
    {
     "doc": 1400,
-    "cost_usd": 0.134546,
-    "llm_calls": 569
+    "cost_usd": 0.082638,
+    "llm_calls": 382
    },
    {
     "doc": 1450,
-    "cost_usd": 0.13568,
-    "llm_calls": 577
+    "cost_usd": 0.083036,
+    "llm_calls": 385
    },
    {
     "doc": 1500,
-    "cost_usd": 0.139226,
-    "llm_calls": 588
+    "cost_usd": 0.086234,
+    "llm_calls": 393
    },
    {
     "doc": 1550,
-    "cost_usd": 0.143319,
-    "llm_calls": 608
+    "cost_usd": 0.089754,
+    "llm_calls": 408
    },
    {
     "doc": 1600,
-    "cost_usd": 0.150492,
-    "llm_calls": 623
+    "cost_usd": 0.092979,
+    "llm_calls": 417
    },
    {
     "doc": 1650,
-    "cost_usd": 0.151899,
-    "llm_calls": 633
+    "cost_usd": 0.093665,
+    "llm_calls": 422
    },
    {
     "doc": 1700,
-    "cost_usd": 0.152997,
-    "llm_calls": 641
+    "cost_usd": 0.094322,
+    "llm_calls": 427
    },
    {
     "doc": 1750,
-    "cost_usd": 0.156858,
-    "llm_calls": 653
+    "cost_usd": 0.094808,
+    "llm_calls": 431
    },
    {
     "doc": 1800,
-    "cost_usd": 0.158247,
-    "llm_calls": 665
+    "cost_usd": 0.095502,
+    "llm_calls": 437
    },
    {
     "doc": 1850,
-    "cost_usd": 0.166106,
-    "llm_calls": 679
+    "cost_usd": 0.107974,
+    "llm_calls": 508
    },
    {
     "doc": 1900,
-    "cost_usd": 0.170725,
-    "llm_calls": 698
+    "cost_usd": 0.109537,
+    "llm_calls": 520
    },
    {
     "doc": 1950,
-    "cost_usd": 0.175479,
-    "llm_calls": 713
+    "cost_usd": 0.113484,
+    "llm_calls": 529
    },
    {
     "doc": 2000,
-    "cost_usd": 0.180202,
-    "llm_calls": 730
+    "cost_usd": 0.117368,
+    "llm_calls": 539
    },
    {
     "doc": 2050,
-    "cost_usd": 0.184773,
-    "llm_calls": 747
+    "cost_usd": 0.121025,
+    "llm_calls": 550
    },
    {
     "doc": 2100,
-    "cost_usd": 0.185807,
-    "llm_calls": 755
+    "cost_usd": 0.121588,
+    "llm_calls": 554
    },
    {
     "doc": 2150,
-    "cost_usd": 0.197895,
-    "llm_calls": 795
+    "cost_usd": 0.130405,
+    "llm_calls": 588
    },
    {
     "doc": 2200,
-    "cost_usd": 0.20102,
-    "llm_calls": 806
+    "cost_usd": 0.132985,
+    "llm_calls": 594
    },
    {
     "doc": 2250,
-    "cost_usd": 0.204898,
-    "llm_calls": 816
+    "cost_usd": 0.136619,
+    "llm_calls": 602
    },
    {
     "doc": 2300,
-    "cost_usd": 0.205816,
-    "llm_calls": 823
+    "cost_usd": 0.137399,
+    "llm_calls": 608
    },
    {
     "doc": 2350,
-    "cost_usd": 0.209203,
-    "llm_calls": 829
+    "cost_usd": 0.140491,
+    "llm_calls": 612
    },
    {
     "doc": 2400,
-    "cost_usd": 0.209504,
-    "llm_calls": 832
+    "cost_usd": 0.140576,
+    "llm_calls": 613
    },
    {
     "doc": 2450,
-    "cost_usd": 0.210845,
-    "llm_calls": 842
+    "cost_usd": 0.141628,
+    "llm_calls": 621
    },
    {
     "doc": 2500,
-    "cost_usd": 0.211772,
-    "llm_calls": 849
+    "cost_usd": 0.142146,
+    "llm_calls": 625
    },
    {
     "doc": 2550,
-    "cost_usd": 0.213262,
-    "llm_calls": 859
+    "cost_usd": 0.143325,
+    "llm_calls": 633
    },
    {
     "doc": 2600,
-    "cost_usd": 0.21449,
-    "llm_calls": 869
+    "cost_usd": 0.14405,
+    "llm_calls": 639
    },
    {
     "doc": 2650,
-    "cost_usd": 0.219258,
-    "llm_calls": 883
+    "cost_usd": 0.147902,
+    "llm_calls": 646
    },
    {
     "doc": 2700,
-    "cost_usd": 0.220543,
-    "llm_calls": 893
+    "cost_usd": 0.148426,
+    "llm_calls": 651
    },
    {
     "doc": 2750,
-    "cost_usd": 0.231516,
-    "llm_calls": 936
+    "cost_usd": 0.158797,
+    "llm_calls": 690
    },
    {
     "doc": 2800,
-    "cost_usd": 0.235312,
-    "llm_calls": 951
+    "cost_usd": 0.162048,
+    "llm_calls": 701
    },
    {
     "doc": 2850,
-    "cost_usd": 0.240537,
-    "llm_calls": 966
+    "cost_usd": 0.163076,
+    "llm_calls": 709
    },
    {
     "doc": 2900,
-    "cost_usd": 0.243678,
-    "llm_calls": 976
+    "cost_usd": 0.164018,
+    "llm_calls": 716
    },
    {
     "doc": 2950,
-    "cost_usd": 0.247955,
-    "llm_calls": 986
+    "cost_usd": 0.167835,
+    "llm_calls": 723
    },
    {
     "doc": 3000,
-    "cost_usd": 0.251982,
-    "llm_calls": 997
+    "cost_usd": 0.168532,
+    "llm_calls": 729
    },
    {
     "doc": 3050,
-    "cost_usd": 0.252916,
-    "llm_calls": 1005
+    "cost_usd": 0.169264,
+    "llm_calls": 735
    },
    {
     "doc": 3100,
-    "cost_usd": 0.254369,
-    "llm_calls": 1016
+    "cost_usd": 0.170466,
+    "llm_calls": 744
    },
    {
     "doc": 3150,
-    "cost_usd": 0.255718,
-    "llm_calls": 1027
+    "cost_usd": 0.171123,
+    "llm_calls": 750
    },
    {
     "doc": 3200,
-    "cost_usd": 0.25708,
-    "llm_calls": 1038
+    "cost_usd": 0.171774,
+    "llm_calls": 755
    },
    {
     "doc": 3250,
-    "cost_usd": 0.259022,
-    "llm_calls": 1051
+    "cost_usd": 0.172082,
+    "llm_calls": 757
    },
    {
     "doc": 3300,
-    "cost_usd": 0.261974,
-    "llm_calls": 1075
+    "cost_usd": 0.175281,
+    "llm_calls": 762
    },
    {
     "doc": 3350,
-    "cost_usd": 0.265555,
-    "llm_calls": 1089
+    "cost_usd": 0.175963,
+    "llm_calls": 767
    },
    {
     "doc": 3400,
-    "cost_usd": 0.268823,
-    "llm_calls": 1103
+    "cost_usd": 0.176472,
+    "llm_calls": 771
    },
    {
     "doc": 3450,
-    "cost_usd": 0.272562,
-    "llm_calls": 1115
+    "cost_usd": 0.179474,
+    "llm_calls": 777
    },
    {
     "doc": 3500,
-    "cost_usd": 0.27841,
-    "llm_calls": 1134
+    "cost_usd": 0.180269,
+    "llm_calls": 782
    },
    {
     "doc": 3550,
-    "cost_usd": 0.279261,
-    "llm_calls": 1140
+    "cost_usd": 0.180369,
+    "llm_calls": 783
    },
    {
     "doc": 3600,
-    "cost_usd": 0.28247,
-    "llm_calls": 1165
+    "cost_usd": 0.181182,
+    "llm_calls": 789
    },
    {
     "doc": 3650,
-    "cost_usd": 0.291424,
-    "llm_calls": 1191
+    "cost_usd": 0.182147,
+    "llm_calls": 796
    },
    {
     "doc": 3700,
-    "cost_usd": 0.293826,
-    "llm_calls": 1210
+    "cost_usd": 0.183069,
+    "llm_calls": 803
    },
    {
     "doc": 3750,
-    "cost_usd": 0.298748,
-    "llm_calls": 1223
+    "cost_usd": 0.183861,
+    "llm_calls": 808
    },
    {
     "doc": 3800,
-    "cost_usd": 0.30225,
-    "llm_calls": 1234
+    "cost_usd": 0.184474,
+    "llm_calls": 813
    },
    {
     "doc": 3850,
-    "cost_usd": 0.303166,
-    "llm_calls": 1241
+    "cost_usd": 0.185274,
+    "llm_calls": 819
    },
    {
     "doc": 3900,
-    "cost_usd": 0.303951,
-    "llm_calls": 1247
+    "cost_usd": 0.185551,
+    "llm_calls": 821
    },
    {
     "doc": 3950,
-    "cost_usd": 0.305021,
-    "llm_calls": 1255
+    "cost_usd": 0.185872,
+    "llm_calls": 824
    },
    {
     "doc": 4000,
-    "cost_usd": 0.308887,
-    "llm_calls": 1262
+    "cost_usd": 0.18963,
+    "llm_calls": 830
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 0.18997,
+    "llm_calls": 833
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 0.194381,
+    "llm_calls": 841
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 0.195104,
+    "llm_calls": 846
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 0.195653,
+    "llm_calls": 850
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 0.195808,
+    "llm_calls": 851
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 0.196599,
+    "llm_calls": 857
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 0.19711,
+    "llm_calls": 861
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 0.197602,
+    "llm_calls": 865
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 0.197925,
+    "llm_calls": 868
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 0.1982,
+    "llm_calls": 870
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 0.200434,
+    "llm_calls": 873
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 0.200703,
+    "llm_calls": 876
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 0.200805,
+    "llm_calls": 877
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 0.201076,
+    "llm_calls": 879
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 0.202143,
+    "llm_calls": 886
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 0.202521,
+    "llm_calls": 889
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 0.202622,
+    "llm_calls": 890
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 0.20288,
+    "llm_calls": 892
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 0.206478,
+    "llm_calls": 897
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 0.206778,
+    "llm_calls": 900
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 0.206895,
+    "llm_calls": 901
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 0.207168,
+    "llm_calls": 903
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 0.207269,
+    "llm_calls": 904
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 0.208052,
+    "llm_calls": 910
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 0.208753,
+    "llm_calls": 915
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 0.208991,
+    "llm_calls": 917
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 0.209758,
+    "llm_calls": 923
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 0.210192,
+    "llm_calls": 926
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 0.210502,
+    "llm_calls": 928
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 0.212498,
+    "llm_calls": 932
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 0.213303,
+    "llm_calls": 938
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 0.213792,
+    "llm_calls": 942
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 0.214573,
+    "llm_calls": 949
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 0.215144,
+    "llm_calls": 953
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 0.218429,
+    "llm_calls": 958
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 0.218669,
+    "llm_calls": 960
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 0.218824,
+    "llm_calls": 961
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 0.219477,
+    "llm_calls": 966
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 0.220026,
+    "llm_calls": 970
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 0.222909,
+    "llm_calls": 975
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 0.223093,
+    "llm_calls": 977
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 0.22335,
+    "llm_calls": 979
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 0.223914,
+    "llm_calls": 983
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 0.224379,
+    "llm_calls": 986
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 0.224771,
+    "llm_calls": 989
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 0.227468,
+    "llm_calls": 992
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 0.227688,
+    "llm_calls": 994
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 0.228309,
+    "llm_calls": 998
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 0.229133,
+    "llm_calls": 1004
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 0.229475,
+    "llm_calls": 1007
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 0.229954,
+    "llm_calls": 1011
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 0.23054,
+    "llm_calls": 1015
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 0.231158,
+    "llm_calls": 1020
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 0.231553,
+    "llm_calls": 1023
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 0.231863,
+    "llm_calls": 1025
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 0.23226,
+    "llm_calls": 1028
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 0.234816,
+    "llm_calls": 1031
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 0.235281,
+    "llm_calls": 1034
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 0.236136,
+    "llm_calls": 1040
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 0.236583,
+    "llm_calls": 1043
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 0.237119,
+    "llm_calls": 1047
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 0.237716,
+    "llm_calls": 1052
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 0.238347,
+    "llm_calls": 1058
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 0.238876,
+    "llm_calls": 1062
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 0.239306,
+    "llm_calls": 1065
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 0.239769,
+    "llm_calls": 1068
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 0.242472,
+    "llm_calls": 1072
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 0.243058,
+    "llm_calls": 1076
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 0.243706,
+    "llm_calls": 1082
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 0.244579,
+    "llm_calls": 1088
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 0.245238,
+    "llm_calls": 1094
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 0.250841,
+    "llm_calls": 1102
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 0.254461,
+    "llm_calls": 1107
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 0.256717,
+    "llm_calls": 1113
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 0.257504,
+    "llm_calls": 1119
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 0.258662,
+    "llm_calls": 1127
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 0.259074,
+    "llm_calls": 1130
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 0.259777,
+    "llm_calls": 1135
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 0.260113,
+    "llm_calls": 1138
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 0.260864,
+    "llm_calls": 1144
    }
   ],
   "events": [
@@ -2686,8 +4286,8 @@
     "seq": 1805,
     "kind": "quarantine",
     "vendor_id": "V18",
-    "message": "Quarantined 4 recent document(s); corrected 0.",
-    "n": 4,
+    "message": "Quarantined 62 recent document(s); corrected 0.",
+    "n": 62,
     "corrected": 0
    },
    {
@@ -2757,8 +4357,8 @@
     "seq": 2404,
     "kind": "quarantine",
     "vendor_id": "V11",
-    "message": "Quarantined 1 recent document(s); corrected 0.",
-    "n": 1,
+    "message": "Quarantined 2 recent document(s); corrected 0.",
+    "n": 2,
     "corrected": 0
    },
    {
@@ -2816,35 +4416,6 @@
     "vendor_id": "V10",
     "message": "V10-p4 promoted (replaces V10-p2) after 5/5 isolated + 3 shadow agreements",
     "parser_id": "V10-p4"
-   },
-   {
-    "seq": 3266,
-    "kind": "drift",
-    "vendor_id": "V06",
-    "message": "Drift confirmed for Gulf Packaging Factory: parser output disagrees with verified extraction on line_items[0]. Parser suspended.",
-    "parser_id": "V06-p1"
-   },
-   {
-    "seq": 3266,
-    "kind": "quarantine",
-    "vendor_id": "V06",
-    "message": "Quarantined 16 recent document(s); corrected 0.",
-    "n": 16,
-    "corrected": 0
-   },
-   {
-    "seq": 3334,
-    "kind": "candidate",
-    "vendor_id": "V06",
-    "message": "V06-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
-    "parser_id": "V06-p2"
-   },
-   {
-    "seq": 3419,
-    "kind": "promoted",
-    "vendor_id": "V06",
-    "message": "V06-p2 promoted (replaces V06-p1) after 3/3 isolated + 3 shadow agreements",
-    "parser_id": "V06-p2"
    }
   ],
   "parsers": [
@@ -2855,7 +4426,7 @@
     "active": "V01-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 70,
+    "docs": 152,
     "audits": 17,
     "audit_errors": 0,
     "error_bound": 0.16156611126074014,
@@ -2870,11 +4441,11 @@
     "active": "V02-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 79,
-    "audits": 18,
+    "docs": 154,
+    "audits": 15,
     "audit_errors": 0,
-    "error_bound": 0.15331755395727814,
-    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
+    "error_bound": 0.1810362725220846,
+    "bound_text": "0 errors in 15 audits -> true error rate < 18.1% (95% confidence)",
     "examples": 6,
     "versions": 1
    },
@@ -2885,7 +4456,7 @@
     "active": "V03-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 168,
+    "docs": 319,
     "audits": 21,
     "audit_errors": 0,
     "error_bound": 0.13294591102652337,
@@ -2900,12 +4471,12 @@
     "active": "V04-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 144,
-    "audits": 33,
+    "docs": 334,
+    "audits": 17,
     "audit_errors": 0,
-    "error_bound": 0.08678118929147488,
-    "bound_text": "0 errors in 33 audits -> true error rate < 8.7% (95% confidence)",
-    "examples": 12,
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
+    "examples": 6,
     "versions": 1
    },
    {
@@ -2915,28 +4486,28 @@
     "active": "V05-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 72,
-    "audits": 23,
+    "docs": 150,
+    "audits": 18,
     "audit_errors": 0,
-    "error_bound": 0.12212338890652304,
-    "bound_text": "0 errors in 23 audits -> true error rate < 12.2% (95% confidence)",
-    "examples": 10,
+    "error_bound": 0.15331755395727814,
+    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
+    "examples": 12,
     "versions": 1
    },
    {
     "vendor_id": "V06",
     "vendor": "Gulf Packaging Factory",
     "state": "stable",
-    "active": "V06-p2",
+    "active": "V06-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 23,
-    "audits": 12,
+    "docs": 197,
+    "audits": 17,
     "audit_errors": 0,
-    "error_bound": 0.22092219194555582,
-    "bound_text": "0 errors in 12 audits -> true error rate < 22.1% (95% confidence)",
-    "examples": 7,
-    "versions": 2
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
+    "examples": 9,
+    "versions": 1
    },
    {
     "vendor_id": "V07",
@@ -2945,12 +4516,12 @@
     "active": "V07-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 71,
-    "audits": 52,
+    "docs": 127,
+    "audits": 57,
     "audit_errors": 0,
-    "error_bound": 0.05598218012623552,
-    "bound_text": "0 errors in 52 audits -> true error rate < 5.6% (95% confidence)",
-    "examples": 8,
+    "error_bound": 0.05119948367703925,
+    "bound_text": "0 errors in 57 audits -> true error rate < 5.1% (95% confidence)",
+    "examples": 11,
     "versions": 1
    },
    {
@@ -2960,11 +4531,11 @@
     "active": "V08-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 86,
-    "audits": 19,
+    "docs": 166,
+    "audits": 17,
     "audit_errors": 0,
-    "error_bound": 0.1458685033122434,
-    "bound_text": "0 errors in 19 audits -> true error rate < 14.6% (95% confidence)",
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
     "examples": 7,
     "versions": 1
    },
@@ -2975,11 +4546,11 @@
     "active": "V09-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 89,
-    "audits": 28,
+    "docs": 193,
+    "audits": 17,
     "audit_errors": 0,
-    "error_bound": 0.10146573557272472,
-    "bound_text": "0 errors in 28 audits -> true error rate < 10.1% (95% confidence)",
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
     "examples": 7,
     "versions": 1
    },
@@ -2990,12 +4561,12 @@
     "active": "V10-p4",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 67,
+    "docs": 290,
     "audits": 17,
     "audit_errors": 0,
     "error_bound": 0.16156611126074014,
     "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
-    "examples": 9,
+    "examples": 10,
     "versions": 4
    },
    {
@@ -3005,12 +4576,12 @@
     "active": "V11-p2",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 118,
-    "audits": 91,
+    "docs": 398,
+    "audits": 205,
     "audit_errors": 0,
-    "error_bound": 0.032384164736434407,
-    "bound_text": "0 errors in 91 audits -> true error rate < 3.2% (95% confidence)",
-    "examples": 8,
+    "error_bound": 0.014507071700215757,
+    "bound_text": "0 errors in 205 audits -> true error rate < 1.5% (95% confidence)",
+    "examples": 12,
     "versions": 2
    },
    {
@@ -3020,27 +4591,27 @@
     "active": "V12-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 184,
-    "audits": 24,
+    "docs": 389,
+    "audits": 22,
     "audit_errors": 0,
-    "error_bound": 0.11734615615494877,
-    "bound_text": "0 errors in 24 audits -> true error rate < 11.7% (95% confidence)",
-    "examples": 11,
+    "error_bound": 0.1273054316548387,
+    "bound_text": "0 errors in 22 audits -> true error rate < 12.7% (95% confidence)",
+    "examples": 10,
     "versions": 1
    },
    {
     "vendor_id": "V13",
     "vendor": "Cascade Cloud Inc.",
-    "state": "stable",
+    "state": "suspect",
     "active": "V13-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 87,
-    "audits": 49,
-    "audit_errors": 0,
-    "error_bound": 0.059306014189697116,
-    "bound_text": "0 errors in 49 audits -> true error rate < 5.9% (95% confidence)",
-    "examples": 10,
+    "docs": 186,
+    "audits": 62,
+    "audit_errors": 1,
+    "error_bound": 0.07424215898301662,
+    "bound_text": "1 errors in 62 audits -> true error rate < 7.4% (95% confidence)",
+    "examples": 12,
     "versions": 1
    },
    {
@@ -3050,26 +4621,26 @@
     "active": "V14-p2",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 301,
-    "audits": 25,
+    "docs": 780,
+    "audits": 28,
     "audit_errors": 0,
-    "error_bound": 0.11292814500684319,
-    "bound_text": "0 errors in 25 audits -> true error rate < 11.3% (95% confidence)",
-    "examples": 7,
+    "error_bound": 0.10146573557272472,
+    "bound_text": "0 errors in 28 audits -> true error rate < 10.1% (95% confidence)",
+    "examples": 8,
     "versions": 2
    },
    {
     "vendor_id": "V15",
     "vendor": "Pacific Print Works",
-    "state": "suspect",
+    "state": "stable",
     "active": "V15-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 102,
-    "audits": 44,
+    "docs": 212,
+    "audits": 27,
     "audit_errors": 0,
-    "error_bound": 0.06581877114493391,
-    "bound_text": "0 errors in 44 audits -> true error rate < 6.6% (95% confidence)",
+    "error_bound": 0.10501923017634425,
+    "bound_text": "0 errors in 27 audits -> true error rate < 10.5% (95% confidence)",
     "examples": 12,
     "versions": 1
    },
@@ -3080,11 +4651,11 @@
     "active": "V16-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 102,
-    "audits": 22,
+    "docs": 217,
+    "audits": 17,
     "audit_errors": 0,
-    "error_bound": 0.1273054316548387,
-    "bound_text": "0 errors in 22 audits -> true error rate < 12.7% (95% confidence)",
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
     "examples": 7,
     "versions": 1
    },
@@ -3095,12 +4666,12 @@
     "active": "V17-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 155,
-    "audits": 68,
+    "docs": 359,
+    "audits": 22,
     "audit_errors": 0,
-    "error_bound": 0.0430985648200884,
-    "bound_text": "0 errors in 68 audits -> true error rate < 4.3% (95% confidence)",
-    "examples": 10,
+    "error_bound": 0.1273054316548387,
+    "bound_text": "0 errors in 22 audits -> true error rate < 12.7% (95% confidence)",
+    "examples": 12,
     "versions": 1
    },
    {
@@ -3110,11 +4681,11 @@
     "active": "V18-p2",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 190,
-    "audits": 27,
+    "docs": 535,
+    "audits": 31,
     "audit_errors": 0,
-    "error_bound": 0.10501923017634425,
-    "bound_text": "0 errors in 27 audits -> true error rate < 10.5% (95% confidence)",
+    "error_bound": 0.09211405994732375,
+    "bound_text": "0 errors in 31 audits -> true error rate < 9.2% (95% confidence)",
     "examples": 8,
     "versions": 2
    },
@@ -3125,11 +4696,11 @@
     "active": "V19-p1",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 130,
-    "audits": 22,
+    "docs": 288,
+    "audits": 18,
     "audit_errors": 0,
-    "error_bound": 0.1273054316548387,
-    "bound_text": "0 errors in 22 audits -> true error rate < 12.7% (95% confidence)",
+    "error_bound": 0.15331755395727814,
+    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
     "examples": 7,
     "versions": 1
    },
@@ -3140,12 +4711,12 @@
     "active": "V20-p3",
     "shadow": null,
     "generator": "induce_strict",
-    "docs": 354,
-    "audits": 60,
+    "docs": 1214,
+    "audits": 35,
     "audit_errors": 0,
-    "error_bound": 0.04870291331009752,
-    "bound_text": "0 errors in 60 audits -> true error rate < 4.9% (95% confidence)",
-    "examples": 12,
+    "error_bound": 0.08203163585667046,
+    "bound_text": "0 errors in 35 audits -> true error rate < 8.2% (95% confidence)",
+    "examples": 8,
     "versions": 3
    }
   ]

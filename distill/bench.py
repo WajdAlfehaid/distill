@@ -6,7 +6,7 @@
   distill          the full system
 
 Usage
-  python -m distill.bench                     # simulated LLM tiers, 4,000 documents
+  python -m distill.bench                     # simulated LLM tiers, 8,000 documents
   python -m distill.bench --n 300 --real      # real Claude calls (needs ANTHROPIC_API_KEY, costs money)
 """
 from __future__ import annotations
@@ -31,6 +31,20 @@ DEFAULT_SCHEDULE = [
     (2700, "V10", "number_style"),   # loud
     (3000, "V12", "new_fields"),     # structural
 ]
+
+def auto_schedule(seed: int, n: int) -> list:
+    """Pick, for each drift kind, the busiest vendor it applies to (works for any seed)."""
+    st = InvoiceStream(seed=seed, vendor_overrides=DEMO_OVERRIDES)
+    by_volume = [v.vendor_id for v, _ in sorted(zip(st.vendors, st.weights), key=lambda x: -x[1])]
+    plan, used = [], set()
+    for frac, kind in [(0.1875, "inline_swap"), (0.225, "date_locale"), (0.2625, "relabel"),
+                       (0.30, "table_reflow"), (0.3375, "number_style"), (0.375, "new_fields")]:
+        vid = next((v for v in by_volume if v not in used and kind in st.eligible_drifts(v)), None)
+        if vid:
+            used.add(vid)
+            plan.append((int(frac * n), vid, kind))
+    return plan
+
 
 SYSTEMS = {
     "llm_only_large": Config(mode="llm_only", llm_only_tier="large"),
@@ -138,8 +152,13 @@ def to_markdown(results: list[dict]) -> str:
         dd = dist["drifts"][i] if dist else {}
         det = dd.get("detected_after_vendor_docs")
         rec = dd.get("recovered_after_vendor_docs")
-        out.append(f"| {row['vendor']} | {row['kind']} | {row['class']} | " + " | ".join(cells) +
-                   f" | {det if det is not None else '-'} docs | {rec if rec is not None else '-'} docs |")
+        absorbed = det is None and sum(int(c.split("/")[0]) for c in cells[-1:]) == 0
+        det_s = "not needed" if absorbed else (f"{det} docs" if det is not None else "-")
+        rec_s = "not needed" if absorbed else (f"{rec} docs" if rec is not None else "-")
+        out.append(f"| {row['vendor']} | {row['kind']} | {row['class']} | " + " | ".join(cells) + f" | {det_s} | {rec_s} |")
+    out.append("")
+    out.append("'Not needed': the change added lines the parser did not use; Distill checked those documents with the "
+               "model, found the parser still right, and learned the new layout without replacing the parser.")
     if sim:
         out.append("")
         out.append("_LLM tiers are simulated (ground truth + injected errors: small 5%, large 1.2% of documents; tokens billed "
@@ -149,7 +168,7 @@ def to_markdown(results: list[dict]) -> str:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--n", type=int, default=4000)
+    ap.add_argument("--n", type=int, default=8000)
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--real", action="store_true", help="call the real Claude API (ANTHROPIC_API_KEY)")
     ap.add_argument("--systems", default=",".join(SYSTEMS))
@@ -157,7 +176,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.real and args.n > 1000:
         print("note: --real with many documents costs money; consider --n 300 and adjust the drift schedule")
-    schedule = DEFAULT_SCHEDULE if args.n >= 3500 else [(int(k * args.n / 4000), v, kind) for k, v, kind in DEFAULT_SCHEDULE]
+    schedule = DEFAULT_SCHEDULE if (args.seed == 11 and args.n == 8000) else auto_schedule(args.seed, args.n)
     results = []
     for name in args.systems.split(","):
         print(f"running {name} ...", flush=True)

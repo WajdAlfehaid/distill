@@ -90,6 +90,9 @@ class Invoice:
 def _num(v: Any) -> float:
     if v is None or v == "":
         return 0.0
+    if isinstance(v, str):  # tolerate "1,234.56" or "SAR 1234.56" from a model
+        import re
+        v = re.sub(r"[^\d.\-]", "", v.replace(",", "")) or "nan"
     try:
         return round(float(v), 4)
     except (TypeError, ValueError):

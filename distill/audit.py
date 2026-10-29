@@ -51,11 +51,13 @@ def rule_of_three(n: int) -> float:
     return 1.0 if n <= 0 else min(1.0, 3.0 / n)
 
 
-def audit_rate(clean_audits: int, floor: float = 0.02, warmup: int = 3, half_life: int = 4) -> float:
-    """1.0 for the first `warmup` audits, then halves every `half_life` clean audits, never below `floor`."""
-    if clean_audits < warmup:
-        return 1.0
-    return max(floor, 0.5 ** ((clean_audits - warmup) / half_life))
+def audit_rate(clean_audits: int, floor: float = 0.02, half_life: int = 3) -> float:
+    """Starts at 100% and halves every `half_life` clean audits, never below `floor`.
+
+    Shadow agreements count as clean audits: they are the same comparison
+    (parser output vs an independent LLM extraction) made before promotion.
+    """
+    return max(floor, 0.5 ** (clean_audits / half_life))
 
 
 def sampled(doc_id: str, rate: float, salt: str = "audit") -> bool:

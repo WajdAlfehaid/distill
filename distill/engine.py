@@ -214,12 +214,19 @@ class Engine:
             # the parser was skipped because of novelty/failed checks: was it actually wrong?
             if active and code_inv is not None and inv is not None and rep.passed:
                 bad = diff(code_inv, inv)
+                if bad and anchors_ok and not code_rep.fails:
+                    # The parser's output passed every check too: before blaming it, ask the arbiter.
+                    arb = self._llm(rec, doc_id, text, "large", "arbiter")
+                    if arb.invoice is not None and not diff(code_inv, arb.invoice):
+                        rec["trace"].append(f"LLM disagreed with parser on {bad[:4]}; arbiter sided with the parser")
+                        rec["flags"].append("llm_error_corrected_by_parser")
+                        inv, rep, source, bad = code_inv, code_rep, "code", []
                 if bad:
                     rec["trace"].append(f"parser disagrees with verified LLM output on {bad[:4]}")
                     self._on_drift(vs, rec, f"parser output disagrees with verified extraction on {', '.join(bad[:3])}")
                     active = None
                 else:
-                    rec["trace"].append("parser agrees with LLM output; unseen lines were harmless")
+                    rec["trace"].append("parser agrees with verified output; unseen lines were harmless")
                     verified = True
 
         # ---- learn from trusted results
@@ -460,6 +467,7 @@ class Engine:
                 self.reg.save_parser(old)
             sh.status = "active"
             sh.promoted_seq = self.seq
+            sh.audits_clean = sh.shadow_agree  # shadow agreements are pre-promotion audits
             vs.active, vs.shadow = sh, None
             self.reg.save_parser(sh)
             vs.monitor.recovered(self.seq, f"{sh.parser_id} promoted")

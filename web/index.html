@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Distill live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F1F3F0; --panel:#FFFFFF; --ink:#16212B; --muted:#5B6873; --rule:#D3D9D4; --soft:#E6EAE6;
+  --code:#0E7C66; --audit:#4B53C2; --llm:#C3860C; --drift:#B3202E; --ok:#0E7C66;
+  --code-bg:#E2F1EC; --audit-bg:#E8E9F8; --llm-bg:#F8EFDA; --drift-bg:#F7E1E3;
+}
+@media (prefers-color-scheme: dark){
+  :root{--paper:#11181F; --panel:#18222B; --ink:#E5EBEF; --muted:#93A1AC; --rule:#2B3843; --soft:#202C36;
+    --code:#3FC4A6; --audit:#8F96F2; --llm:#E6AE3C; --drift:#F0606C;
+    --code-bg:#163A33; --audit-bg:#252A52; --llm-bg:#40321A; --drift-bg:#4A1E24;}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:15px;line-height:1.45;
+  font-variant-numeric:tabular-nums}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--audit);outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto;padding:18px 24px 40px}
+
+/* top bar */
+header{display:flex;flex-wrap:wrap;align-items:center;gap:14px 24px;margin-bottom:18px}
+.brand{display:flex;align-items:baseline;gap:12px;margin-right:auto}
+.brand h1{font-size:26px;font-weight:800;letter-spacing:-0.02em;margin:0}
+.brand p{margin:0;color:var(--muted)}
+.mode{font-size:13px;padding:3px 9px;border-radius:999px;background:var(--llm-bg);color:var(--ink)}
+.mode.real{background:var(--code-bg)}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.btn{border:1px solid var(--rule);background:var(--panel);padding:7px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.danger{background:var(--drift);border-color:var(--drift);color:#fff}
+label.inline{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+select{border:1px solid var(--rule);background:var(--panel);border-radius:8px;padding:6px 8px}
+
+/* the river: one bar per invoice */
+.river{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px 10px;margin-bottom:18px}
+.river-head{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;margin-bottom:10px}
+.river-head h2{font-size:16px;margin:0;font-weight:700}
+.legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:13px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+#river{width:100%;height:96px;display:block;cursor:pointer}
+.river-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:4px}
+
+/* layout */
+.grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;margin-bottom:18px}
+.panel{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:16px}
+.panel h2{font-size:16px;margin:0 0 4px;font-weight:700}
+.panel .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+#chart{width:100%;height:260px;display:block}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:3px;border-radius:9px}
+.tab{border:0;background:none;padding:5px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--muted);font-weight:600}
+.tab.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.saving{font-size:15px;margin:10px 0 0}
+.saving strong{font-weight:800}
+
+.numbers{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px}
+.num{padding:10px 0;border-bottom:1px solid var(--soft)}
+.num b{display:block;font-size:28px;font-weight:800;letter-spacing:-0.02em;line-height:1.1}
+.num span{color:var(--muted);font-size:13px}
+
+/* vendors */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:13px;padding:6px 8px;border-bottom:1px solid var(--rule)}
+td{padding:7px 8px;border-bottom:1px solid var(--soft);vertical-align:middle}
+tr.v{cursor:pointer}
+tr.v:hover td{background:var(--soft)}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600}
+.s-stable{background:var(--code-bg);color:var(--code)}
+.s-learning{background:var(--llm-bg);color:var(--llm)}
+.s-suspect{background:var(--audit-bg);color:var(--audit)}
+.s-drift{background:var(--drift-bg);color:var(--drift)}
+.muted{color:var(--muted)}
+.tablewrap{max-height:520px;overflow:auto}
+
+/* break panel */
+.break{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--rule)}
+.break select{width:100%}
+.break .full{grid-column:1/-1}
+.break p{margin:0;color:var(--muted);font-size:13px}
+
+/* event feed */
+.feed{list-style:none;margin:0;padding:0;max-height:380px;overflow:auto}
+.feed li{padding:8px 0 8px 12px;border-left:3px solid var(--rule);margin-bottom:6px;font-size:14px}
+.feed li small{display:block;color:var(--muted);font-size:12px}
+.feed li.drift,.feed li.template_changed{border-color:var(--drift)}
+.feed li.quarantine{border-color:var(--drift)}
+.feed li.candidate,.feed li.rejected{border-color:var(--audit)}
+.feed li.promoted,.feed li.rollback{border-color:var(--code)}
+
+/* drawer */
+.drawer{position:fixed;inset:0 0 0 auto;width:min(720px,100%);background:var(--panel);border-left:1px solid var(--rule);
+  box-shadow:-20px 0 40px rgba(10,20,30,.12);transform:translateX(102%);transition:transform .22s ease;z-index:10;
+  display:flex;flex-direction:column}
+.drawer.open{transform:none}
+.drawer header{padding:16px 20px;border-bottom:1px solid var(--rule);margin:0}
+.drawer .body{padding:16px 20px;overflow:auto}
+.drawer h3{font-size:15px;margin:18px 0 6px}
+.drawer pre{background:var(--soft);padding:12px;border-radius:8px;overflow:auto;font-size:12.5px;line-height:1.4;max-height:360px}
+.trace{margin:0;padding-left:18px}
+.trace li{margin:3px 0}
+.chk{display:flex;flex-wrap:wrap;gap:6px}
+.chk span{font-size:12px;padding:2px 8px;border-radius:6px;background:var(--code-bg)}
+.chk span.fail{background:var(--drift-bg);color:var(--drift);font-weight:600}
+.chk span.warn{background:var(--audit-bg);color:var(--audit);font-weight:600}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4px 16px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0}
+.bad{color:var(--drift);font-weight:700}
+@media (max-width:980px){.grid{grid-template-columns:1fr}.numbers{grid-template-columns:1fr 1fr}}
+@media (prefers-reduced-motion:reduce){.drawer{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <h1>Distill</h1>
+      <p>Invoice extraction that compiles itself into code, and proves it still works</p>
+      <span id="mode" class="mode">connecting</span>
+    </div>
+    <div class="controls">
+      <button id="run" class="btn primary">Start stream</button>
+      <label class="inline">Speed <input id="speed" type="range" min="1" max="60" value="8"><span id="speedv">8/s</span></label>
+      <label class="inline">Policy
+        <select id="profile"><option value="economy">Economy</option><option value="balanced" selected>Balanced</option><option value="assurance">Assurance</option></select>
+      </label>
+      <button id="reset" class="btn">Reset</button>
+    </div>
+  </header>
+
+  <section class="river" aria-label="Recent invoices">
+    <div class="river-head">
+      <h2>Every invoice, as it arrives</h2>
+      <div class="legend">
+        <span><i style="background:var(--code)"></i>Compiled parser, no AI</span>
+        <span><i style="background:var(--audit)"></i>Parser checked by AI</span>
+        <span><i style="background:var(--llm)"></i>Read by AI</span>
+        <span><i style="background:var(--drift)"></i>Drift caught</span>
+        <span><i style="background:none;border:2px solid var(--drift)"></i>Wrong result</span>
+      </div>
+    </div>
+    <svg id="river" role="img" aria-label="Bars for recent invoices, coloured by how each was processed"></svg>
+    <div class="river-foot"><span id="river-left"></span><span>Bar height is the AI cost of that invoice. Click a bar to see why.</span><span>now</span></div>
+  </section>
+
+  <div class="grid">
+    <section class="panel">
+      <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px">
+        <h2 style="margin-right:auto">What the AI bill looks like</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab on" data-view="rate" role="tab" aria-selected="true">Cost per 1,000 invoices</button>
+          <button class="tab" data-view="total" role="tab" aria-selected="false">Total spend</button>
+        </div>
+      </div>
+      <p class="sub" id="chart-sub">AI cost per 1,000 invoices over the last 50 invoices (log scale), compared with sending every invoice to one model</p>
+      <svg id="chart" role="img" aria-label="Cumulative cost chart"></svg>
+      <p class="saving" id="saving"></p>
+    </section>
+    <section class="panel">
+      <h2>Right now</h2>
+      <p class="sub" id="nsub">Waiting for invoices</p>
+      <div class="numbers">
+        <div class="num"><b id="n-acc">–</b><span>invoices extracted exactly right</span></div>
+        <div class="num"><b id="n-code">–</b><span>handled by code, last 200</span></div>
+        <div class="num"><b id="n-cost">–</b><span>AI cost per 1,000 invoices, last 200</span></div>
+        <div class="num"><b id="n-calls">–</b><span>LLM calls per invoice</span></div>
+        <div class="num"><b id="n-drift">–</b><span>drifts caught / documents quarantined</span></div>
+        <div class="num"><b id="n-human">–</b><span>sent to a person for review</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid">
+    <section class="panel">
+      <h2>Vendors and their parsers</h2>
+      <p class="sub">Each vendor gets its own compiled parser. The error bound comes from audits that compare it with the AI.</p>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Vendor</th><th>State</th><th>Parser</th><th>Invoices by code</th><th>Audit evidence</th></tr></thead>
+          <tbody id="vendors"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Change a vendor's template</h2>
+      <p class="sub">Pick a vendor and a change. Distill isn't told which one you picked.</p>
+      <div class="break">
+        <select id="b-vendor" aria-label="Vendor"></select>
+        <select id="b-kind" aria-label="Change"></select>
+        <p class="full" id="b-help"></p>
+        <label class="inline full"><input id="b-send" type="checkbox" checked> Send 15 invoices from this vendor straight away</label>
+        <button id="b-apply" class="btn danger full">Change the template</button>
+      </div>
+      <h2>What Distill did</h2>
+      <ul class="feed" id="feed"></ul>
+    </section>
+  </div>
+</div>
+
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <header style="display:flex;align-items:center;gap:12px">
+    <h2 id="d-title" style="margin:0;font-size:18px;margin-right:auto">Invoice</h2>
+    <button class="btn" id="d-close">Close</button>
+  </header>
+  <div class="body" id="d-body"></div>
+</aside>
+
+<script>
+const $ = s => document.querySelector(s);
+const KIND_HELP = {
+  relabel: "Loud: renames the total and invoice-number labels and moves the due date.",
+  table_reflow: "Loud: re-flows the line-item table with a new column order.",
+  number_style: "Loud: switches number format between 1,234.56 and 1.234,56.",
+  new_fields: "Structural: adds a customer reference, a ship date and discounts.",
+  date_locale: "Silent: dates switch from DD/MM/YYYY to MM/DD/YYYY. They still parse.",
+  inline_swap: "Silent: line items print price before quantity. Quantity x price still equals the amount."
+};
+const KIND_NAME = {relabel:"Rename labels", table_reflow:"Re-flow the item table", number_style:"Change number format",
+  new_fields:"Add new fields", date_locale:"Switch date order (silent)", inline_swap:"Swap price and quantity (silent)"};
+const COLORS = () => { const c = getComputedStyle(document.documentElement);
+  return {code:c.getPropertyValue('--code'), audit:c.getPropertyValue('--audit'), llm:c.getPropertyValue('--llm'),
+          drift:c.getPropertyValue('--drift'), rule:c.getPropertyValue('--rule'), muted:c.getPropertyValue('--muted'),
+          ink:c.getPropertyValue('--ink')}; };
+const money = (x, d=4) => x == null ? "–" : "$" + (x >= 100 ? x.toFixed(0) : x >= 1 ? x.toFixed(2) : x.toFixed(d));
+const pct = x => x == null ? "–" : (x*100).toFixed(x >= 0.9995 && x < 1 ? 2 : 1) + "%";
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let S = null, vendorsLoaded = false;
+
+async function post(url, body){ const r = await fetch(url,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)}); return r.json(); }
+
+/* ---------- river ---------- */
+function drawRiver(){
+  const svg = $("#river"), W = svg.clientWidth, H = 96, C = COLORS();
+  const ticks = S.ticks, n = 400, bw = W / n;
+  const maxCost = Math.max(1e-6, ...ticks.map(t => t.cost));
+  let out = "";
+  const off = n - ticks.length;
+  ticks.forEach((t, i) => {
+    const x = (off + i) * bw;
+    const h = t.kind === "code" ? 12 : Math.max(18, 18 + 70 * Math.sqrt(t.cost / maxCost));
+    const col = C[t.kind] || C.llm;
+    out += `<rect data-id="${t.doc_id}" x="${x.toFixed(2)}" y="${H - h}" width="${Math.max(bw - 0.6, 0.8).toFixed(2)}" height="${h}" fill="${col}" rx="1"><title>${t.doc_id} · ${t.vendor} · ${t.kind}${t.ok ? "" : " · WRONG"}</title></rect>`;
+    if (!t.ok) out += `<rect x="${(x - 0.5).toFixed(2)}" y="${H - h - 6}" width="${Math.max(bw, 2).toFixed(2)}" height="4" fill="${C.drift}"/>`;
+  });
+  svg.innerHTML = out;
+  $("#river-left").textContent = ticks.length ? `${ticks.length} most recent invoices` : "";
+}
+$("#river").addEventListener("click", e => { const id = e.target.dataset && e.target.dataset.id; if (id) openDoc(id); });
+
+/* ---------- cost chart ---------- */
+let chartView = "rate";
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
+  chartView = b.dataset.view;
+  document.querySelectorAll(".tab").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-selected", x === b); });
+  $("#chart-sub").textContent = chartView === "rate"
+    ? "AI cost per 1,000 invoices over the last 50 invoices (log scale), compared with sending every invoice to one model"
+    : "Cumulative AI spend for this stream, compared with sending every invoice to one model";
+  drawChart();
+});
+function rateSeries(pts){
+  const out = [];
+  for (let i = 1; i < pts.length; i++){
+    let j = i; while (j > 0 && pts[i].n - pts[j].n < 50) j--;
+    const dn = pts[i].n - pts[j].n; if (!dn) continue;
+    const r = {n: pts[i].n};
+    for (const k of ["distill","small","large"]) r[k] = Math.max(1e-4, 1000 * (pts[i][k] - pts[j][k]) / dn);
+    out.push(r);
+  }
+  return out;
+}
+function drawChart(){
+  const svg = $("#chart"), W = svg.clientWidth, H = 260, C = COLORS();
+  const raw = S.curve; if (raw.length < 3){ svg.innerHTML = `<text x="0" y="20" fill="${C.muted}">The chart starts when invoices flow.</text>`; return; }
+  const pts = chartView === "rate" ? rateSeries(raw) : raw;
+  if (pts.length < 2) return;
+  const L = 62, R = 132, T = 12, B = 26, w = W - L - R, h = H - T - B;
+  const minN = pts[0].n, maxN = pts[pts.length-1].n;
+  const X = n => L + w * (n - minN) / Math.max(1, maxN - minN);
+  let Y, ticks;
+  if (chartView === "rate"){
+    const lo = 1e-3, hi = Math.max(...pts.map(p => p.large)) * 2;
+    const a = Math.log10(lo), b = Math.log10(hi);
+    Y = v => T + h - h * (Math.log10(Math.max(v, lo)) - a) / (b - a);
+    ticks = []; for (let e = Math.ceil(a); e <= Math.floor(b); e++) ticks.push(Math.pow(10, e));
+  } else {
+    const maxY = Math.max(...pts.map(p => p.large)) * 1.05 || 1;
+    Y = v => T + h - h * v / maxY; ticks = [0,1,2,3,4].map(i => maxY * i / 4);
+  }
+  const line = key => pts.map((p,i) => `${i?"L":"M"}${X(p.n).toFixed(1)},${Y(p[key]).toFixed(1)}`).join("");
+  let g = "";
+  for (const v of ticks){ const y = Y(v);
+    g += `<line x1="${L}" x2="${L+w}" y1="${y}" y2="${y}" stroke="${C.rule}"/><text x="${L-8}" y="${y+4}" text-anchor="end" font-size="11" fill="${C.muted}">${money(v,3)}</text>`; }
+  g += `<text x="${L}" y="${H-6}" font-size="11" fill="${C.muted}">invoice ${minN.toLocaleString()}</text><text x="${L+w}" y="${H-6}" font-size="11" text-anchor="end" fill="${C.muted}">${maxN.toLocaleString()}</text>`;
+  const last = pts[pts.length-1];
+  const series = [["large", C.muted, "large model only", "6 4"], ["small", C.llm, "small model only", "3 3"], ["distill", C.code, "Distill", ""]];
+  const labels = series.map(([k, col, name]) => ({k, col, name, y: Y(last[k])})).sort((a,b) => a.y - b.y);
+  for (let i = 1; i < labels.length; i++) if (labels[i].y - labels[i-1].y < 30) labels[i].y = labels[i-1].y + 30;
+  const over = labels[labels.length-1].y - (H - 14); if (over > 0) labels.forEach(l => l.y -= over);
+  for (const [k, col, name, dash] of series)
+    g += `<path d="${line(k)}" fill="none" stroke="${col}" stroke-width="${k==="distill"?3:2}" ${dash?`stroke-dasharray="${dash}"`:""}/>`;
+  for (const l of labels)
+    g += `<text x="${L+w+8}" y="${l.y-2}" font-size="12" font-weight="700" fill="${l.col}">${money(last[l.k],4)}</text><text x="${L+w+8}" y="${l.y+12}" font-size="11" fill="${C.muted}">${l.name}</text>`;
+  svg.innerHTML = g;
+  const cf = S.counterfactual, d = S.totals.cost_usd;
+  $("#saving").innerHTML = d > 0 ? `Distill has spent <strong>${money(d)}</strong> on AI. Reading every invoice with ${esc(S.models.large)} would have cost <strong>${money(cf.large)}</strong> (${(cf.large/d).toFixed(0)}x more), and with ${esc(S.models.small)} <strong>${money(cf.small)}</strong> (${(cf.small/d).toFixed(1)}x).` : "";
+}
+
+/* ---------- numbers, vendors, feed ---------- */
+function drawNumbers(){
+  const T = S.totals;
+  $("#mode").textContent = S.mode; $("#mode").className = "mode" + (S.mode.startsWith("real") ? " real" : "");
+  $("#nsub").textContent = `${T.docs.toLocaleString()} invoices processed · policy: ${S.profile}`;
+  $("#n-acc").textContent = pct(S.accuracy);
+  $("#n-code").textContent = pct(S.code_share_recent);
+  $("#n-cost").textContent = money(S.cost_per_1k_recent, 4);
+  $("#n-calls").textContent = T.docs ? (T.llm_calls / T.docs).toFixed(3) : "–";
+  $("#n-drift").textContent = `${S.events ? countKind("drift") : 0} / ${T.quarantined}`;
+  $("#n-human").textContent = T.human_review;
+  $("#run").textContent = S.running ? "Pause stream" : "Start stream";
+}
+const driftCount = {total:0, seen:new Set()};
+function countKind(kind){ for (const e of S.events) if (e.kind===kind){ const k = e.seq+":"+e.vendor_id; if(!driftCount.seen.has(k)){driftCount.seen.add(k); driftCount.total++;} } return driftCount.total; }
+
+function drawVendors(){
+  const rows = S.vendors.slice().sort((a,b) => (b.state==="drift")-(a.state==="drift") || (b.state==="suspect")-(a.state==="suspect") || b.docs-a.docs);
+  $("#vendors").innerHTML = rows.map(v => `<tr class="v" data-v="${v.vendor_id}">
+    <td><strong>${esc(v.vendor)}</strong><br><span class="muted">${v.vendor_id}</span></td>
+    <td><span class="pill s-${v.state}">${v.state}</span></td>
+    <td>${v.active ? esc(v.active) : '<span class="muted">none yet</span>'}${v.shadow ? `<br><span class="muted">${esc(v.shadow)} in shadow</span>` : ""}</td>
+    <td>${v.docs.toLocaleString()}</td>
+    <td>${v.audits ? `${v.audit_errors} errors in ${v.audits}<br><span class="muted">error rate &lt; ${(v.error_bound*100).toFixed(1)}% at 95%</span>` : `<span class="muted">${v.examples} examples learned</span>`}</td></tr>`).join("");
+  if (!vendorsLoaded && S.vendors.length){
+    vendorsLoaded = true;
+    $("#b-vendor").innerHTML = S.vendors.map(v => `<option value="${v.vendor_id}">${esc(v.vendor)} (${v.vendor_id})</option>`).join("");
+    loadKinds();
+  }
+}
+$("#vendors").addEventListener("click", e => { const tr = e.target.closest("tr.v"); if (tr) openVendor(tr.dataset.v); });
+
+function drawFeed(){
+  const ev = S.events.filter(e => e.kind !== "error" || true).slice().reverse();
+  $("#feed").innerHTML = ev.length ? ev.map(e => `<li class="${e.kind}">${esc(e.message)}<small>invoice #${e.seq}${e.vendor_id ? " · " + e.vendor_id : ""}</small></li>`).join("")
+    : `<li>Start the stream. Distill reads the first invoices from each vendor with AI, then compiles a parser.</li>`;
+}
+
+async function loadKinds(){
+  const vid = $("#b-vendor").value; if (!vid) return;
+  const v = await (await fetch(`/api/vendor/${vid}`)).json();
+  $("#b-kind").innerHTML = v.drift_options.map(k => `<option value="${k}">${KIND_NAME[k]||k}</option>`).join("");
+  $("#b-help").textContent = KIND_HELP[$("#b-kind").value] || "";
+}
+$("#b-vendor").addEventListener("change", loadKinds);
+$("#b-kind").addEventListener("change", () => $("#b-help").textContent = KIND_HELP[$("#b-kind").value] || "");
+$("#b-apply").addEventListener("click", async () => {
+  const r = await post("/api/drift", {vendor_id: $("#b-vendor").value, kind: $("#b-kind").value, send: $("#b-send").checked ? 15 : 0});
+  if (!r.ok) alert(r.error); else loadKinds();
+});
+
+/* ---------- drawer ---------- */
+function openDrawer(title, html){ $("#d-title").textContent = title; $("#d-body").innerHTML = html; $("#drawer").classList.add("open"); $("#drawer").setAttribute("aria-hidden","false"); }
+$("#d-close").onclick = () => { $("#drawer").classList.remove("open"); $("#drawer").setAttribute("aria-hidden","true"); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("#d-close").click(); });
+
+async function openDoc(id){
+  const d = await (await fetch(`/api/doc/${id}`)).json();
+  const route = d.route || {};
+  const checks = (d.checks||[]).map(c => `<span class="${c.ok ? "" : c.severity}" title="${esc(c.detail)}">${esc(c.name)}${c.ok ? "" : ": " + esc(c.detail)}</span>`).join("");
+  const calls = (d.llm_calls||[]).map(c => `<li>${esc(c.purpose)}: ${esc(c.model)}, ${c.in}+${c.out} tokens, ${money(c.cost_usd,6)}${c.simulated ? " (simulated)" : ""}</li>`).join("") || "<li>none: no AI was used</li>";
+  const f = d.final || {}, t = d.truth || {};
+  const fields = ["invoice_number","invoice_date","due_date","po_number","currency","subtotal","discount","tax","total"];
+  const wrong = new Set(d.wrong_fields || []);
+  const rows = fields.map(k => `<dt>${k.replace("_"," ")}</dt><dd class="${wrong.has(k) ? "bad" : ""}">${esc(f[k])}${wrong.has(k) ? ` (truth: ${esc(t[k])})` : ""}</dd>`).join("");
+  const items = (f.line_items||[]).map((li,i) => `<dt>line ${i+1}</dt><dd class="${wrong.has(`line_items[${i}]`) ? "bad" : ""}">${esc(li.description)}: ${li.quantity} x ${li.unit_price} = ${li.amount}</dd>`).join("");
+  openDrawer(`${d.doc_id} from ${d.vendor_id}`, `
+    <dl class="kv"><dt>Result</dt><dd>${d.correct ? "exactly right" : `<span class="bad">wrong: ${esc((d.wrong_fields||[]).join(", "))}</span>`}</dd>
+    <dt>Produced by</dt><dd>${esc(d.source)}${d.parser_id ? " (" + esc(d.parser_id) + ")" : ""}</dd>
+    <dt>Route</dt><dd>${esc(route.path)} — ${esc((route.reasons||[]).join("; "))}</dd>
+    <dt>AI cost</dt><dd>${money(d.cost_usd,6)}</dd><dt>Flags</dt><dd>${esc((d.flags||[]).join(", ") || "none")}</dd></dl>
+    <h3>Decision trail</h3><ol class="trace">${(d.trace||[]).map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <h3>Checks</h3><div class="chk">${checks}</div>
+    <h3>AI calls</h3><ul class="trace">${calls}</ul>
+    <h3>Extracted</h3><dl class="kv">${rows}${items}</dl>
+    <h3>Document text</h3><pre>${esc(d.text)}</pre>`);
+}
+
+async function openVendor(vid){
+  const v = await (await fetch(`/api/vendor/${vid}`)).json();
+  const hist = v.history.slice().reverse().map(p => `<li><strong>${esc(p.parser_id)}</strong> ${esc(p.status)} · ${esc(p.generator)}${p.parent_id ? " · from " + esc(p.parent_id) : ""}<br>
+    <span class="muted">created at invoice ${p.created_seq}${p.promoted_seq ? ", promoted at " + p.promoted_seq : ""}${p.retire_reason ? " · " + esc(p.retire_reason) : ""}</span><br>
+    <span class="muted">evidence: ${esc(JSON.stringify(p.evidence))}</span></li>`).join("") || "<li>No parser yet.</li>";
+  openDrawer(`${v.name}`, `
+    <dl class="kv"><dt>State</dt><dd><span class="pill s-${v.state}">${v.state}</span> ${esc(v.reason)}</dd><dt>Template revision</dt><dd>${v.template_rev}</dd></dl>
+    <p><button class="btn" id="rb">Roll back to the previous parser</button></p>
+    <h3>Parser versions</h3><ul class="trace">${hist}</ul>
+    <h3>Active parser spec</h3><pre>${esc(JSON.stringify(v.active_spec, null, 1))}</pre>
+    ${v.shadow_spec ? `<h3>Shadow candidate spec</h3><pre>${esc(JSON.stringify(v.shadow_spec, null, 1))}</pre>` : ""}`);
+  $("#rb").onclick = async () => { const r = await post("/api/rollback", {vendor_id: vid}); alert(r.ok ? `Now running ${r.parser_id}` : "No retired parser to roll back to."); };
+}
+
+/* ---------- controls ---------- */
+$("#run").onclick = () => post("/api/control", {action: S && S.running ? "pause" : "start"});
+$("#reset").onclick = () => { driftCount.total = 0; driftCount.seen.clear(); post("/api/control", {action: "reset"}); };
+$("#speed").oninput = e => { $("#speedv").textContent = e.target.value + "/s"; post("/api/control", {speed: +e.target.value}); };
+$("#profile").onchange = e => post("/api/control", {profile: e.target.value});
+
+function render(){ if (!S) return; drawNumbers(); drawRiver(); drawChart(); drawVendors(); drawFeed(); }
+const es = new EventSource("/api/stream");
+let synced = false;
+es.onmessage = m => { S = JSON.parse(m.data);
+  if (!synced){ synced = true; $("#speed").value = Math.min(60, Math.round(S.speed)); $("#speedv").textContent = Math.round(S.speed) + "/s"; $("#profile").value = S.profile; }
+  render(); };
+es.onerror = () => { $("#mode").textContent = "reconnecting"; };
+window.addEventListener("resize", render);
+</script>
+</body>
+</html>

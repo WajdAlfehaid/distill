@@ -19,9 +19,9 @@ FX_TO_USD = {"USD": 1.0, "SAR": 0.2667, "AED": 0.2723, "EUR": 1.08, "GBP": 1.27}
 
 PROFILES = {
     # risk threshold for a targeted audit, audit floor, value that counts as "high"
-    "economy": {"risk_threshold": 0.75, "audit_floor": 0.01, "high_value_usd": 50_000, "large_first_usd": 250_000},
-    "balanced": {"risk_threshold": 0.5, "audit_floor": 0.02, "high_value_usd": 25_000, "large_first_usd": 100_000},
-    "assurance": {"risk_threshold": 0.3, "audit_floor": 0.05, "high_value_usd": 10_000, "large_first_usd": 50_000},
+    "economy": {"risk_threshold": 0.75, "audit_floor": 0.01, "high_value_usd": 100_000, "large_first_usd": 250_000},
+    "balanced": {"risk_threshold": 0.5, "audit_floor": 0.02, "high_value_usd": 50_000, "large_first_usd": 100_000},
+    "assurance": {"risk_threshold": 0.3, "audit_floor": 0.05, "high_value_usd": 20_000, "large_first_usd": 50_000},
 }
 
 

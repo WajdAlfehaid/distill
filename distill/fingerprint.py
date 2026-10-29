@@ -13,6 +13,8 @@ from collections import Counter
 from typing import Optional
 
 _NUM_TOKEN = re.compile(r"\d[\d.,]*")
+_MONTH = re.compile(r"\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|"
+                    r"Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\b")
 
 
 def shape(line: str) -> Optional[str]:
@@ -22,6 +24,7 @@ def shape(line: str) -> Optional[str]:
     if len(_NUM_TOKEN.findall(s)) >= 3:
         return None  # item rows and other value-dense lines vary per document
     s = re.sub(r"([-=_*.|])\1{2,}", r"\1\1\1", s)  # separator rules vary in length
+    s = _MONTH.sub("Mon", s)  # dates written with month names
     s = re.sub(r"\d", "9", s)
     s = re.sub(r"9+", "9", s)
     return s
