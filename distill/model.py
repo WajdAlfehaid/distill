@@ -221,6 +221,11 @@ def line_equal(a: LineItem, b: LineItem) -> bool:
     )
 
 
+# Schemas whose reference answers are known to be incomplete (DocILE annotators do not label every printed
+# value): a field the reference leaves empty is unknown, not "absent", so a reading of it is not an error.
+INCOMPLETE_LABELS = {"docile"}
+
+
 def diff(pred: Record, truth: Record, fields: Optional[list[str]] = None) -> list[str]:
     """Names of fields where pred disagrees with truth ([] = exact match).
 
@@ -228,6 +233,8 @@ def diff(pred: Record, truth: Record, fields: Optional[list[str]] = None) -> lis
     """
     schema = truth.schema
     names = fields or schema.names
+    if schema.name in INCOMPLETE_LABELS:
+        names = [k for k in names if truth.values.get(k) not in (None, "")]
     bad = [k for k in names if not field_equal(k, pred.values.get(k), truth.values.get(k), schema.types[k])]
     if schema.items and fields is None:
         if len(pred.line_items) != len(truth.line_items):

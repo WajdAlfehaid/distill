@@ -45,7 +45,19 @@ DOCILE = Schema("docile", (
     FieldSpec("amount_due", "raw", optional=True, label="amount due, as printed"),
 ), items=False, description="business documents (invoices, orders, credit notes, utility bills)")
 
-SCHEMAS = {s.name: s for s in (INVOICE, RECEIPT, DOCILE)}
+FATURA = Schema("fatura", (
+    FieldSpec("invoice_number", "raw", optional=True, label="invoice number"),
+    FieldSpec("invoice_date", "raw", optional=True, label="invoice date as printed"),
+    FieldSpec("due_date", "raw", optional=True, label="due date as printed"),
+    FieldSpec("po_number", "raw", optional=True, label="purchase order number"),
+    FieldSpec("subtotal", "raw", optional=True, label="subtotal as printed"),
+    FieldSpec("tax", "raw", optional=True, label="tax amount as printed"),
+    FieldSpec("discount", "raw", optional=True, label="discount as printed"),
+    FieldSpec("total", "raw", optional=True, label="total as printed, with currency if printed"),
+    FieldSpec("amount_due", "raw", optional=True, label="amount due as printed"),
+), items=False, description="invoices")
+
+SCHEMAS = {s.name: s for s in (INVOICE, RECEIPT, DOCILE, FATURA)}
 
 # label words that make a line a better home for a field when several lines carry the same value
 FIELD_HINTS = {
@@ -237,3 +249,25 @@ class DocileType(_ClusteredType):
             if v is not None:
                 return abs(v), "USD"
         return 0.0, "USD"
+
+
+class FaturaType(_ClusteredType):
+    """FATURA invoices (Limam et al. 2023): 50 invoice templates; the source is the template, as a vendor would be."""
+    name = "fatura"
+    schema = FATURA
+
+    def checks(self, rec, received_at, master, history):
+        r = CheckReport()
+        for k in ("subtotal", "tax", "total", "amount_due"):
+            if getattr(rec, k) is not None:
+                r.checks.append(Check(f"{k}_numeric", "format", loose_amount(getattr(rec, k)) is not None,
+                                      detail=f"{k} {getattr(rec, k)!r} is not a number"))
+        for k in ("invoice_date", "due_date"):
+            if getattr(rec, k):
+                r.checks.append(Check(f"{k}_has_digits", "format", bool(re.search(r"\d", getattr(rec, k))),
+                                      detail=f"{k} {getattr(rec, k)!r} has no digits"))
+        r.checks.append(Check("invoice_number_present", "format", bool(rec.invoice_number) or True))
+        return r
+
+    def new_history(self):
+        return VendorHistory()

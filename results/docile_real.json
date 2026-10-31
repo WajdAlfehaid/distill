@@ -1,0 +1,191 @@
+[
+ {
+  "dataset": "docile",
+  "system": "llm_only",
+  "teacher": "real Claude",
+  "docs": 300,
+  "sources": 10,
+  "doc_exact": 0.01,
+  "field_accuracy": 0.721111111111111,
+  "doc_exact_annotated": 0.01,
+  "field_accuracy_annotated": 0.6807840392019602,
+  "doc_exact_answerable": 0.11,
+  "field_accuracy_answerable": 0.7216856892010536,
+  "answerable_share": 0.7973398669933497,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 351,
+  "llm_calls_per_doc": 1.17,
+  "cost_usd": 0.530692,
+  "cost_all_small_usd": 0.14985600000000002,
+  "cost_all_large_usd": 2.2308115384615386,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 30,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "4th-10th": {
+    "docs": 70,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "11th onward": {
+    "docs": 200,
+    "code_share": 0.0,
+    "exact": 0.015
+   }
+  },
+  "field_errors": {
+   "customer_billing_name": 235,
+   "vendor_address": 192,
+   "amount_total_net": 162,
+   "amount_total_gross": 129,
+   "order_id": 124,
+   "customer_id": 102,
+   "payment_terms": 101,
+   "vendor_name": 86,
+   "document_id": 50,
+   "amount_due": 24,
+   "date_issue": 13,
+   "amount_total_tax": 13,
+   "currency_code_amount_due": 11,
+   "date_due": 8,
+   "vendor_tax_id": 5
+  },
+  "wall_seconds": 0.15791287899997997
+ },
+ {
+  "dataset": "docile",
+  "system": "static",
+  "teacher": "real Claude",
+  "docs": 300,
+  "sources": 10,
+  "doc_exact": 0.01,
+  "field_accuracy": 0.721111111111111,
+  "doc_exact_annotated": 0.01,
+  "field_accuracy_annotated": 0.6807840392019602,
+  "doc_exact_answerable": 0.11,
+  "field_accuracy_answerable": 0.7216856892010536,
+  "answerable_share": 0.7973398669933497,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 351,
+  "llm_calls_per_doc": 1.17,
+  "cost_usd": 0.530692,
+  "cost_all_small_usd": 0.14985600000000002,
+  "cost_all_large_usd": 2.2308115384615386,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 30,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "4th-10th": {
+    "docs": 70,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "11th onward": {
+    "docs": 200,
+    "code_share": 0.0,
+    "exact": 0.015
+   }
+  },
+  "field_errors": {
+   "customer_billing_name": 235,
+   "vendor_address": 192,
+   "amount_total_net": 162,
+   "amount_total_gross": 129,
+   "order_id": 124,
+   "customer_id": 102,
+   "payment_terms": 101,
+   "vendor_name": 86,
+   "document_id": 50,
+   "amount_due": 24,
+   "date_issue": 13,
+   "amount_total_tax": 13,
+   "currency_code_amount_due": 11,
+   "date_due": 8,
+   "vendor_tax_id": 5
+  },
+  "wall_seconds": 20.103800831
+ },
+ {
+  "dataset": "docile",
+  "system": "distill",
+  "teacher": "real Claude",
+  "docs": 300,
+  "sources": 10,
+  "doc_exact": 0.01,
+  "field_accuracy": 0.721111111111111,
+  "doc_exact_annotated": 0.01,
+  "field_accuracy_annotated": 0.6807840392019602,
+  "doc_exact_answerable": 0.11,
+  "field_accuracy_answerable": 0.7216856892010536,
+  "answerable_share": 0.7973398669933497,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 352,
+  "llm_calls_per_doc": 1.1733333333333333,
+  "cost_usd": 0.5365300000000003,
+  "cost_all_small_usd": 0.14985600000000002,
+  "cost_all_large_usd": 2.2308115384615386,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 30,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "4th-10th": {
+    "docs": 70,
+    "code_share": 0.0,
+    "exact": 0.0
+   },
+   "11th onward": {
+    "docs": 200,
+    "code_share": 0.0,
+    "exact": 0.015
+   }
+  },
+  "field_errors": {
+   "customer_billing_name": 235,
+   "vendor_address": 192,
+   "amount_total_net": 162,
+   "amount_total_gross": 129,
+   "order_id": 124,
+   "customer_id": 102,
+   "payment_terms": 101,
+   "vendor_name": 86,
+   "document_id": 50,
+   "amount_due": 24,
+   "date_issue": 13,
+   "amount_total_tax": 13,
+   "currency_code_amount_due": 11,
+   "date_due": 8,
+   "vendor_tax_id": 5
+  },
+  "wall_seconds": 49.82060665300003
+ }
+]

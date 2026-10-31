@@ -11,6 +11,8 @@ real drift, re-synthesizes, shadow-tests, promotes and keeps auditing. See READM
 - `python -m distill.realdata sroie --sroie-ocr <dir of .txt> --sroie-keys <dir of .json>` — SROIE receipts
 - add `--real` to either to use real Claude (ANTHROPIC_API_KEY); without it the model tier is simulated or a perfect teacher
 - `python -m distill.server [--real] [--port 8000]` — dashboard (web/index.html), SSE at /api/stream
+- `python -m distill.server --dataset fatura --warm 5000` — dashboard on FATURA (data/fatura_invoices.jsonl.gz, see scripts/prepare_fatura.py)
+- `python -m distill.realdata fatura` — FATURA benchmark (third-party invoices, 50 layouts)
 - `python scripts/smoke_real.py 3` — real-API sanity check
 
 ## Rules
@@ -34,7 +36,5 @@ real drift, re-synthesizes, shadow-tests, promotes and keeps auditing. See READM
 
 ## Open work, in priority order
 1. Real-API runs: `python -m distill.realdata docile --real --limit 400` and `python -m distill.bench --real --n 400`.
-2. Record a backup video of the dashboard demo.
-3. Pitch slides from results/*.md.
 4. Batch API (50% cheaper) for audits and quarantine re-checks.
 5. Multi-line values in line rules; line items for DocILE (LIR).

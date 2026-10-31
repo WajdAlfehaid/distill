@@ -1,105 +1,49 @@
 [
  {
   "dataset": "docile",
-  "system": "distill",
+  "system": "llm_only",
   "teacher": "human labels (perfect teacher)",
-  "docs": 5680,
-  "sources": 1063,
-  "doc_exact": 0.9996478873239436,
-  "field_accuracy": 0.9999765258215962,
-  "code_share": 0.0031690140845070424,
-  "code_doc_exact": 1.0,
-  "code_field_accuracy": 1.0,
+  "docs": 50,
+  "sources": 10,
+  "doc_exact": 1.0,
+  "field_accuracy": 1.0,
+  "doc_exact_annotated": 1.0,
+  "field_accuracy_annotated": 1.0,
+  "doc_exact_answerable": 1.0,
+  "field_accuracy_answerable": 1.0,
+  "answerable_share": 0.7835051546391752,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
   "silent_wrong_docs": 0,
-  "llm_calls": 5902,
-  "llm_calls_per_doc": 1.0390845070422534,
-  "cost_usd": 1.6563580000000078,
-  "cost_all_small_usd": 0.9142281999999989,
-  "cost_all_large_usd": 18.284564000000007,
-  "noise_disagreements": 5,
-  "drifts": 3,
-  "quarantined": 0,
-  "quarantine_corrected": 0,
-  "parsers_promoted": 9,
-  "by_position": {
-   "first 3 from a source": {
-    "docs": 1866,
-    "code_share": 0.0,
-    "exact": 0.9994640943193998
-   },
-   "4th-10th": {
-    "docs": 1157,
-    "code_share": 0.0,
-    "exact": 1.0
-   },
-   "11th onward": {
-    "docs": 2657,
-    "code_share": 0.006774557771923222,
-    "exact": 0.9996236356793377
-   }
-  },
-  "field_errors": {
-   "order_id": 1,
-   "document_id": 1
-  },
-  "wall_seconds": 793.327476063
- },
- {
-  "dataset": "docile",
-  "system": "static",
-  "teacher": "human labels (perfect teacher)",
-  "docs": 5680,
-  "sources": 1063,
-  "doc_exact": 0.9695422535211268,
-  "field_accuracy": 0.9964671361502347,
-  "code_share": 0.044366197183098595,
-  "code_doc_exact": 0.32142857142857145,
-  "code_field_accuracy": 0.9208994708994709,
-  "silent_wrong_docs": 171,
-  "llm_calls": 5563,
-  "llm_calls_per_doc": 0.9794014084507042,
-  "cost_usd": 1.345465200000008,
-  "cost_all_small_usd": 0.9142281999999989,
-  "cost_all_large_usd": 18.284564000000007,
+  "llm_calls": 50,
+  "llm_calls_per_doc": 1.0,
+  "cost_usd": 0.013780700000000005,
+  "cost_all_small_usd": 0.013780700000000005,
+  "cost_all_large_usd": 0.275614,
   "noise_disagreements": 0,
   "drifts": 0,
   "quarantined": 0,
   "quarantine_corrected": 0,
-  "parsers_promoted": 37,
+  "parsers_promoted": 0,
   "by_position": {
    "first 3 from a source": {
-    "docs": 1866,
+    "docs": 29,
     "code_share": 0.0,
-    "exact": 0.9994640943193998
+    "exact": 1.0
    },
    "4th-10th": {
-    "docs": 1157,
-    "code_share": 0.07087294727744166,
-    "exact": 0.9490060501296457
+    "docs": 20,
+    "code_share": 0.0,
+    "exact": 1.0
    },
    "11th onward": {
-    "docs": 2657,
-    "code_share": 0.06398193451260821,
-    "exact": 0.9574708317651487
+    "docs": 1,
+    "code_share": 0.0,
+    "exact": 1.0
    }
   },
-  "field_errors": {
-   "vendor_address": 67,
-   "amount_total_gross": 62,
-   "customer_billing_name": 58,
-   "date_issue": 19,
-   "order_id": 14,
-   "amount_due": 13,
-   "amount_total_tax": 12,
-   "customer_id": 12,
-   "document_id": 11,
-   "vendor_name": 9,
-   "amount_total_net": 8,
-   "currency_code_amount_due": 6,
-   "payment_terms": 5,
-   "vendor_tax_id": 4,
-   "date_due": 1
-  },
-  "wall_seconds": 264.62619178199975
+  "field_errors": {},
+  "wall_seconds": 0.035885532999998304
  }
 ]

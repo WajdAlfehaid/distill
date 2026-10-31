@@ -5,3 +5,13 @@ __pycache__/
 .pytest_cache/
 data/
 results_*.log
+# real-API caches and per-document predictions contain dataset content (DocILE terms): keep local
+results/llm_cache_*.jsonl
+results/*_predictions.jsonl
+*.db-journal
+docs/*.mp4
+.venv/
+.DS_Store
+# demo materials, kept local
+Distill_intro.pptx
+web/how.html

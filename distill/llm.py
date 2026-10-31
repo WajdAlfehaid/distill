@@ -41,7 +41,25 @@ Return ONLY a JSON object with exactly these keys:
   subtotal, discount, tax, total (numbers; discount is 0 when absent),
   line_items: list of {description, quantity, unit_price, amount} (numbers as JSON numbers).
 Rules: interpret dates and number separators using the document's own conventions and the
-vendor's country; copy descriptions exactly; never invent values; do not include currency symbols."""
+vendor's country; copy descriptions exactly; never invent values; do not include currency symbols.
+Output: compact JSON on a single line, no spaces after separators, no markdown fences, no explanation."""
+
+
+# Labelling conventions of a dataset, given to the model the way a deployment would give its own field definitions.
+SCHEMA_NOTES = {
+    "docile": [
+        "Field conventions (follow them exactly):",
+        "- vendor_address: the supplier's full address block as printed, starting with the supplier name line.",
+        "- customer_billing_name: the bill-to name block as printed, including an attention / person line above the company.",
+        "- vendor_name: the supplier's name as printed in its letterhead or remit-to block.",
+        "- amount_total_gross: the document's grand total. Fill it even when no tax is shown; it is often the same number as amount_due.",
+        "- amount_due: the amount payable (balance / total due).",
+        "- amount_total_net, amount_total_tax: only when a total before tax or a tax total is printed.",
+        "- currency_code_amount_due: the currency symbol or code printed with the amount due, exactly as printed (e.g. \"$\"); do not convert it.",
+        "- amounts and dates: copy exactly as printed, including any currency symbol; do not reformat.",
+        "- document_id is the invoice / document number; order_id the purchase or order number; customer_id the customer or account number.",
+    ],
+}
 
 
 def prompt_for(schema: Schema) -> str:
@@ -53,9 +71,43 @@ def prompt_for(schema: Schema) -> str:
     for f in schema.fields:
         kind = "a number" if f.type == "money" else "a string"
         lines.append(f"  {f.name}: {kind} - {f.label}{' (null if not on the document)' if f.optional else ''}")
+    lines += SCHEMA_NOTES.get(schema.name, [])
     lines.append("Rules: copy printed values as they appear on the document (repair obvious OCR slips such as O for 0),")
     lines.append("never invent values, use null for anything that is not on the document.")
+    lines.append("Output: compact JSON on a single line, no markdown fences, no explanation.")
     return "\n".join(lines)
+
+
+FIELD_HELP = {
+    "invoice_number": "invoice_number (string)", "invoice_date": "invoice_date (YYYY-MM-DD)",
+    "due_date": "due_date (YYYY-MM-DD)", "po_number": "po_number (string or null)",
+    "vendor_tax_id": "vendor_tax_id (string)", "currency": "currency (ISO 4217 code)",
+    "subtotal": "subtotal (number)", "discount": "discount (number; 0 when absent)",
+    "tax": "tax (number)", "total": "total (number)",
+}
+
+
+def scoped_prompt(schema: Schema, fields: list[str]) -> str:
+    """Prompt asking only for the named fields: the answer (the expensive, output-token part) shrinks to them."""
+    if schema.name != "invoice":
+        return prompt_for(schema)
+    plain = [f for f in fields if not f.startswith("line_items[")]
+    rows = [int(f[11:-1]) + 1 for f in fields if f.startswith("line_items[")]
+    keys = [FIELD_HELP.get(f, f) for f in plain]
+    if rows:
+        keys.append("line_items: list of {description, quantity, unit_price, amount} for ONLY the line-item rows "
+                    f"numbered {', '.join(map(str, rows))} (counting from 1, in table order), in that order")
+    return ("You extract structured data from supplier invoices (plain text from PDF/OCR).\n"
+            f"Return ONLY a JSON object with exactly these keys: {'; '.join(keys)}.\n"
+            "Rules: interpret dates and number separators using the document's own conventions and the\n"
+            "vendor's country; never invent values; do not include currency symbols.\n"
+            "Output: compact JSON on a single line, no markdown fences, no explanation.")
+
+
+def prompt_version(schema: Schema) -> str:
+    """Short hash of the prompt, so cached answers from an older prompt are not reused."""
+    import hashlib
+    return schema.name + "@" + hashlib.sha1(prompt_for(schema).encode()).hexdigest()[:8]
 
 
 @dataclass
@@ -88,37 +140,82 @@ class AnthropicLLM:
     simulated = False
 
     def __init__(self, api_key: Optional[str] = None, small: str = SMALL_MODEL, large: str = LARGE_MODEL,
-                 timeout: float = 60.0):
+                 timeout: float = 90.0, thinking: Optional[str] = None):
         self.api_key = api_key or os.environ.get("ANTHROPIC_API_KEY")
         if not self.api_key:
             raise RuntimeError("ANTHROPIC_API_KEY is not set")
         self.models = {"small": small, "large": large}
         self.timeout = timeout
+        # Extraction does not need the model to reason first. Haiku 5.5 thinks by default and thinking is
+        # billed as output tokens. DISTILL_THINKING=off|low|on (default low: thinking kept, low effort).
+        self.thinking = (thinking or os.environ.get("DISTILL_THINKING", "low")).lower()
+        self._reasoning_rejected: set[str] = set()
+        self._effort_rejected: set[str] = set()
 
-    def _call(self, model: str, system: str, user: str, max_tokens: int = 2000) -> tuple[str, int, int, float]:
-        body = json.dumps({"model": model, "max_tokens": max_tokens, "temperature": 0,
-                           "system": system, "messages": [{"role": "user", "content": user}]}).encode()
-        req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=body, method="POST", headers={
-            "x-api-key": self.api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"})
+    def _reasoning_params(self, model: str) -> dict:
+        # off: thinking disabled + low effort; low: the model's default thinking at low effort; on: API defaults
+        if self.thinking == "on":
+            return {}
+        p: dict = {}
+        if self.thinking == "low":
+            if model not in self._effort_rejected:
+                p["output_config"] = {"effort": "low"}
+            return p
+        if model in self._reasoning_rejected:
+            return {}
+        if "haiku" in model:
+            p["thinking"] = {"type": "disabled"}
+        elif "sonnet" in model:
+            p["thinking"] = {"type": "between_tools"}
+        if model not in self._effort_rejected:
+            p["output_config"] = {"effort": "low"}
+        return p
+
+    def _call(self, model: str, system: str, user: str, max_tokens: int = 4000) -> tuple[str, int, int, float]:
+        payload = {"model": model, "max_tokens": max_tokens, "system": system,
+                   "messages": [{"role": "user", "content": user}], **self._reasoning_params(model)}
         t0 = time.perf_counter()
-        for attempt in range(4):
+        data = None
+        for attempt in range(5):
+            req = urllib.request.Request("https://api.anthropic.com/v1/messages", data=json.dumps(payload).encode(),
+                                         method="POST", headers={"x-api-key": self.api_key,
+                                                                 "anthropic-version": "2023-06-01",
+                                                                 "content-type": "application/json"})
             try:
                 with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                     data = json.loads(resp.read())
                 break
             except urllib.error.HTTPError as e:
-                if e.code in (429, 500, 502, 503, 529) and attempt < 3:
+                body = e.read()[:400]
+                if e.code == 400 and "output_config" in payload:
+                    # effort setting rejected: keep thinking off, drop the effort hint, retry
+                    self._effort_rejected.add(model)
+                    payload.pop("output_config", None)
+                    continue
+                if e.code == 400 and "thinking" in payload:
+                    # thinking setting rejected too: fall back to the model's defaults from now on
+                    self._reasoning_rejected.add(model)
+                    payload.pop("thinking", None)
+                    continue
+                if e.code in (429, 500, 502, 503, 529) and attempt < 4:
                     time.sleep(2 ** attempt)
                     continue
-                raise RuntimeError(f"Anthropic API error {e.code}: {e.read()[:300]!r}") from e
+                raise RuntimeError(f"Anthropic API error {e.code}: {body!r}") from e
+            except (urllib.error.URLError, TimeoutError) as e:
+                if attempt < 4:
+                    time.sleep(2 ** attempt)
+                    continue
+                raise RuntimeError(f"network error: {e}") from e
         text = "".join(b.get("text", "") for b in data.get("content", []) if b.get("type") == "text")
         u = data.get("usage", {})
         return text, int(u.get("input_tokens", 0)), int(u.get("output_tokens", 0)), (time.perf_counter() - t0) * 1000
 
-    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE) -> LLMResult:
+    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE,
+                fields: Optional[list] = None) -> LLMResult:
         model = self.models[tier]
+        system = scoped_prompt(schema, fields) if fields else prompt_for(schema)
         try:
-            out, tin, tout, ms = self._call(model, prompt_for(schema), f"Document text:\n<<<\n{text}\n>>>")
+            out, tin, tout, ms = self._call(model, system, f"Document text:\n<<<\n{text}\n>>>")
             inv = Record.from_dict(_parse_json_obj(out), schema)
             return LLMResult(inv, model, tin, tout, cost_of(model, tin, tout), ms, raw=out)
         except Exception as e:  # network/JSON problems become a failed extraction, never a crash
@@ -140,12 +237,77 @@ class AnthropicLLM:
             return [], 0.0
 
 
+# ------------------------------------------------------------------ caching + parallel prefetch
+class CachedLLM:
+    """Wraps a real client: answers are cached on disk (one JSON line per call), and documents can be
+    prefetched in parallel. An interrupted run resumes where it stopped and re-runs cost nothing extra.
+    Cached answers are billed again in the run's totals, so cost numbers stay comparable."""
+
+    def __init__(self, inner, path: str):
+        import threading
+        self.inner, self.path = inner, path
+        self.models = inner.models
+        self.simulated = getattr(inner, "simulated", False)
+        self.lock = threading.Lock()
+        self.cache: dict = {}
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as fh:
+                for line in fh:
+                    try:
+                        d = json.loads(line)
+                        self.cache[(d["doc_id"], d["tier"], d["schema"])] = d
+                    except (ValueError, KeyError):
+                        pass
+
+    def _ver(self, schema: Schema) -> str:
+        return prompt_version(schema) + "/" + str(getattr(self.inner, "thinking", ""))
+
+    def _to_result(self, d: dict, schema: Schema) -> LLMResult:
+        inv = Record.from_dict(d["record"], schema) if d.get("record") is not None else None
+        return LLMResult(inv, d["model"], d["in"], d["out"], d["cost"], d["ms"], error=d.get("error", ""), raw=d.get("raw", ""))
+
+    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE,
+                fields: Optional[list] = None) -> LLMResult:
+        ver = self._ver(schema) + ("|" + ",".join(fields) if fields else "")
+        key = (doc_id, tier, ver)
+        hit = self.cache.get(key)
+        if hit is not None:
+            return self._to_result(hit, schema)
+        r = self.inner.extract(doc_id, text, tier, schema, fields) if fields else self.inner.extract(doc_id, text, tier, schema)
+        if r.invoice is None and r.error:
+            return r  # do not cache failures
+        d = {"doc_id": doc_id, "tier": tier, "schema": ver, "model": r.model, "in": r.input_tokens,
+             "out": r.output_tokens, "cost": r.cost_usd, "ms": r.latency_ms, "raw": r.raw,
+             "record": r.invoice.to_dict() if r.invoice is not None else None}
+        with self.lock:
+            self.cache[key] = d
+            with open(self.path, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(d) + "\n")
+        return r
+
+    def prefetch(self, docs: list[tuple[str, str]], tier: str, schema: Schema, workers: int = 8,
+                 progress: Optional[Callable[[int, int], None]] = None) -> None:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        todo = [(d, t) for d, t in docs if (d, tier, self._ver(schema)) not in self.cache]
+        done = 0
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            futs = [ex.submit(self.extract, d, t, tier, schema) for d, t in todo]
+            for _ in as_completed(futs):
+                done += 1
+                if progress and (done % 25 == 0 or done == len(todo)):
+                    progress(done, len(todo))
+
+    def propose_spec(self, examples: list, dsl_doc: str):
+        return self.inner.propose_spec(examples, dsl_doc)
+
+
 # ------------------------------------------------------------------ simulated client
 TIER_PROFILE = {
     # base P(document contains an extraction error), extra per line of text, base latency (ms), ms per output token,
     # P(a damaged value is read back correctly)
-    "small": {"p_err": 0.03, "per_line": 0.0008, "lat": 700, "per_tok": 4, "recover": 0.6},
-    "large": {"p_err": 0.008, "per_line": 0.0002, "lat": 1800, "per_tok": 12, "recover": 0.8},
+    # latency calibrated on real calls: ~3.3-3.7 s (Haiku 5.5) and ~3.8-4.2 s (Sonnet 5.5) for ~700 output tokens
+    "small": {"p_err": 0.03, "per_line": 0.0008, "lat": 900, "per_tok": 3.5, "recover": 0.6},
+    "large": {"p_err": 0.008, "per_line": 0.0002, "lat": 1200, "per_tok": 4.5, "recover": 0.8},
 }
 
 
@@ -171,11 +333,16 @@ class SimulatedLLM:
 
     @staticmethod
     def tokens_for(text: str, inv: Record) -> tuple[int, int]:
-        tin = int(len(text) / 3.6) + len(SYSTEM_PROMPT) // 4 + 20
-        tout = 40 + 9 * len(inv.schema.fields) + 32 * len(inv.line_items)
+        """Token counts calibrated on real Claude calls (scripts/smoke_real.py, Oct 2026):
+        input ~ 250 + 0.6 per character of OCR text (digits and codes tokenize densely);
+        output ~ the compact JSON answer at ~2.6 characters per token."""
+        tin = int(250 + 0.6 * len(text))
+        body = json.dumps(inv.to_dict(), separators=(",", ":"))
+        tout = int(20 + len(body) / 2.6)
         return tin, tout
 
-    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE) -> LLMResult:
+    def extract(self, doc_id: str, text: str, tier: str = "small", schema: Schema = INVOICE,
+                fields: Optional[list] = None) -> LLMResult:
         model = self.models[tier]
         prof = self.profiles[tier]
         truth = self.oracle(doc_id)
@@ -191,6 +358,20 @@ class SimulatedLLM:
                     _apply_misread(inv, fname, misread)
                     notes.append(f"misread damaged {fname}")
         tin, tout = self.tokens_for(text, truth)
+        if fields:
+            # Asked only for some fields: the model answers only those (a mistake elsewhere is never made),
+            # and the answer is a few fields instead of the whole record with its line items.
+            part = Record(truth.schema)
+            rows = [int(f[11:-1]) for f in fields if f.startswith("line_items[")]
+            for f in fields:
+                if f in part.values:
+                    part.values[f] = inv.values.get(f)
+            part.line_items = [copy.deepcopy(inv.line_items[i]) for i in rows if i < len(inv.line_items)]
+            inv = part
+            body = json.dumps({**{f: truth.values.get(f) for f in fields if f in truth.values},
+                               "line_items": [truth.line_items[i].to_dict() for i in rows if i < len(truth.line_items)]},
+                              separators=(",", ":"))
+            tin, tout = tin - 40, int(20 + len(body) / 2.6)
         ms = prof["lat"] + prof["per_tok"] * tout
         return LLMResult(inv, model, tin, tout, cost_of(model, tin, tout), ms, simulated=True, raw="; ".join(notes))
 

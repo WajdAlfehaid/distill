@@ -129,8 +129,8 @@ def _strict_same(rule: dict, lines: list[str]) -> Optional[str]:
 def _fuzzy_same(rule: dict, lines: list[str]) -> Optional[str]:
     vp = rule.get("value")
     lab = rule.get("label_text", "")
-    if not vp or not lab:
-        return None
+    if not vp or not lab or vp in (".+?", r"\S+"):
+        return None  # an open-ended value has no shape to anchor a fuzzy search on
     vrx = _rx(vp)
     for ln in lines:
         for m in vrx.finditer(ln):

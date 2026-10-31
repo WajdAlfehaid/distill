@@ -180,3 +180,26 @@ def test_distill_beats_static_baseline_on_silent_drift():
     _, wrong_static = _run("static", {800: (vid, "inline_swap")})
     _, wrong_distill = _run("distill", {800: (vid, "inline_swap")})
     assert wrong_distill.get(vid, 0) < wrong_static.get(vid, 0)
+
+
+# ------------------------------------------------------------------ invariant repair
+def _chk(inv):
+    return run_checks(inv, "2026-01-11T09:00:00", VENDOR, {}, None)
+
+
+def test_repair_recomputes_a_smudged_total():
+    from distill.repair import repair
+    fixed, what = repair(_inv(total=175.0), _chk, VENDOR)  # printed 115.00, scanned as 175.00
+    assert fixed.total == 115.0 and what == ["total"] and _chk(fixed).passed
+
+
+def test_repair_recomputes_a_smudged_line_and_due_date():
+    from distill.repair import repair
+    damaged = _inv(due_date="2026-02-19", line_items=[LineItem("Widget", 4, 25.0, 700.0)])
+    fixed, what = repair(damaged, _chk, VENDOR)
+    assert fixed.line_items[0].amount == 100.0 and fixed.due_date == "2026-02-09" and _chk(fixed).passed
+
+
+def test_repair_refuses_ambiguous_or_unrepairable_damage():
+    from distill.repair import repair
+    assert repair(_inv(invoice_number=""), _chk, VENDOR) is None  # nothing determines an invoice number

@@ -76,6 +76,31 @@ def _ordered(words: list[Word]) -> list[Word]:
     return o
 
 
+def locate_fuzzy(words: list[Word], value: str, limit: int = 4) -> list[list[Word]]:
+    """Runs of words on one line that spell `value` up to OCR slips ('NET 101 DAYS' for 'NET 10 DAYS')."""
+    from .ocr import _edits
+    target = norm(value)
+    if len(target) < 5:
+        return []
+    budget = max(1, len(target) // 6)
+    ordered = _ordered(words)
+    n_words = len(str(value).split())
+    found = []
+    for i in range(len(ordered)):
+        run = []
+        for j in range(i, min(len(ordered), i + n_words + 2)):
+            if ordered[j][0] != ordered[i][0] or abs(ordered[j][2] - ordered[i][2]) > 0.008:
+                break
+            run.append(ordered[j])
+            got = norm("".join(w[5] for w in run))
+            if abs(len(got) - len(target)) <= budget and _edits(got, target, budget) <= budget:
+                found.append(list(run))
+                break
+        if len(found) >= limit:
+            break
+    return found
+
+
 def locate_all(words: list[Word], value: str, max_rows: int = 6, limit: int = 8) -> list[list[Word]]:
     """Every run of OCR words that spells `value` (letters and digits only), other words allowed in between."""
     target = norm(value)
@@ -278,11 +303,12 @@ def learn_zones(examples: list[tuple[list[Word], dict]], fields: list[str]) -> t
     for f in fields:
         vals = [values.get(f) for _, values, _ in aligned]
         present = [(w, v) for (w, _, _), v in zip(aligned, vals) if v]
-        if len(present) < max(2, len(aligned) - 1):
+        if len(present) < max(2, (len(aligned) + 1) // 2):  # labels may be incomplete: half the examples is enough
             continue
-        occs = [locate_all(w, v) for w, v in present]
+        exact = [locate_all(w, v) for w, v in present]
+        occs = [e or locate_fuzzy(w, v) for e, (w, v) in zip(exact, present)]
         missing = sum(1 for o in occs if not o)
-        if missing > (1 if len(present) >= 3 else 0):
+        if missing > (max(1, len(present) // 3) if len(present) >= 3 else 0):  # OCR may garble a few copies
             continue
         chosen = _consistent_occurrences(occs)
         if not chosen:
@@ -299,7 +325,8 @@ def learn_zones(examples: list[tuple[list[Word], dict]], fields: list[str]) -> t
                           "box": [round(min(b[0] for b in boxes) - MARGIN_X, 4), round(min(b[1] for b in boxes) - MARGIN_Y, 4),
                                   round(max(b[2] for b in boxes) + MARGIN_X, 4), round(max(b[3] for b in boxes) + MARGIN_Y, 4)]})
         cands += _anchored(pairs, page)
-        checks = [(w, v) for (w, v), ws in zip(present, chosen) if ws]
+        # verify on the copies where the value is printed legibly (a garbled copy cannot match exactly)
+        checks = [(w, v) for (w, v), ws, e in zip(present, chosen, exact) if ws and e]
         for r in cands:
             if all(norm(execute_zone(r, w) or "") == norm(v) for w, v in checks):
                 rules[f] = r

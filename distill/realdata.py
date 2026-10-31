@@ -19,16 +19,17 @@ import gzip
 import json
 import os
 import random
+import re
 import statistics
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Optional
 
-from .doctypes import DOCILE, RECEIPT, DocileType, ReceiptType, loose_amount
+from .doctypes import DOCILE, FATURA, RECEIPT, DocileType, FaturaType, ReceiptType, loose_amount
 from .engine import Config, Engine
-from .llm import AnthropicLLM, SimulatedLLM, cost_of, LARGE_MODEL, SMALL_MODEL
-from .model import Record, field_equal
+from .llm import AnthropicLLM, CachedLLM, SimulatedLLM, cost_of, LARGE_MODEL, SMALL_MODEL
+from .model import Record, field_equal, _norm_raw
 
 PERFECT = {"small": {"p_err": 0.0, "per_line": 0.0, "lat": 700, "per_tok": 4, "recover": 1.0},
            "large": {"p_err": 0.0, "per_line": 0.0, "lat": 1800, "per_tok": 12, "recover": 1.0}}
@@ -51,6 +52,47 @@ def load_docile(path: str = "data/docile_trainval_words.jsonl.gz") -> list[dict]
     return items
 
 
+_FATURA_LABEL = re.compile(r"^\s*[A-Za-z][A-Za-z .()#/&%\d_-]{0,40}?\s*(?::|#|\s{2,})\s*")
+
+
+_LABEL_WORDS = {"invoice", "number", "no", "id", "#", "date", "due", "bill", "total", "sub", "subtotal", "tax", "vat",
+                "gst", "discount", "amount", "po", "order", "purchase", "payment", "issue", "issued", "balance",
+                "grand", "ref", "reference", "num"}
+
+
+def fatura_value(text: str) -> str:
+    """A FATURA region's value: its text after the printed label(s) ('TAX:VAT (3.85%): 10.26 $' -> '10.26 $')."""
+    t = " ".join(str(text).split())
+    for _ in range(2):
+        m = _FATURA_LABEL.match(t)
+        if not (m and m.end() < len(t) and re.search(r"[A-Za-z]", m.group(0))):
+            break
+        t = t[m.end():].strip()
+    # labels printed without a colon ('INVOICE ID 0923-334', 'Invoice number 7Y5M7d-024'): drop leading label words
+    toks = t.split()
+    while len(toks) > 1 and re.sub(r"[^a-z#]", "", toks[0].lower()) in _LABEL_WORDS:
+        toks = toks[1:]
+    return " ".join(toks)
+
+
+def load_fatura(path: str = "data/fatura_invoices.jsonl.gz", per_template: Optional[int] = None) -> list[dict]:
+    """FATURA (Limam et al. 2023, CC BY 4.0): 10,000 invoices from 50 templates, with the page's text layer.
+    Prepared by scripts/prepare_fatura.py. The source is the template, as a vendor would be in AP."""
+    names = FATURA.names
+    items, seen = [], Counter()
+    for line in gzip.open(path, "rt", encoding="utf-8"):
+        d = json.loads(line)
+        if per_template and seen[d["template"]] >= per_template:
+            continue
+        seen[d["template"]] += 1
+        vals = {k: fatura_value(v) for k, v in d["fields"].items() if k in names and str(v).strip()}
+        items.append({"doc_id": d["docid"], "text": d["text"], "truth": Record(FATURA, **vals),
+                      "alts": {k: [v] for k, v in vals.items()},
+                      "meta": {"cluster_id": d["template"], "document_type": "invoice", "words": None},
+                      "source": f"T{d['template']}"})
+    return items
+
+
 def load_sroie(ocr_dir: str, key_dir: str) -> list[dict]:
     items = []
     for f in sorted(Path(ocr_dir).glob("*.txt")):
@@ -69,13 +111,73 @@ def load_sroie(ocr_dir: str, key_dir: str) -> list[dict]:
 
 
 # ---------------------------------------------------------------- scoring
-def score(pred: Optional[Record], item: dict) -> list[str]:
-    """Wrong fields of a prediction, accepting any annotated alternative."""
+_CURRENCY = {"$": "USD", "us$": "USD", "usd": "USD", "dollars": "USD", "€": "EUR", "eur": "EUR", "euro": "EUR",
+             "£": "GBP", "gbp": "GBP", "chf": "CHF", "kč": "CZK", "czk": "CZK", "sar": "SAR"}
+_DATE_FMTS = ["%m/%d/%y", "%m/%d/%Y", "%d/%m/%y", "%d/%m/%Y", "%m %d %y", "%m %d %Y", "%d %m %y", "%d %m %Y",
+              "%m-%d-%y", "%m-%d-%Y", "%d-%m-%y", "%d-%m-%Y", "%d.%m.%y", "%d.%m.%Y", "%Y-%m-%d", "%Y/%m/%d",
+              "%B %d, %Y", "%b %d, %Y", "%B %d %Y", "%b %d %Y", "%d %B %Y", "%d %b %Y", "%d-%b-%y", "%d-%b-%Y",
+              "%b. %d, %Y", "%B %d. %Y", "%m.%d.%y", "%m.%d.%Y"]
+AMOUNT_FIELDS = {"amount_total_net", "amount_total_tax", "amount_total_gross", "amount_due", "total", "subtotal", "tax",
+                 "discount"}
+DATE_FIELDS = {"date_issue", "date_due", "date"}
+
+
+def _dates(s: str) -> set:
+    from datetime import datetime
+    t = " ".join(str(s).replace(",", ", ").split()).replace(" ,", ",")
+    out = set()
+    for f in _DATE_FMTS:
+        try:
+            out.add(datetime.strptime(t, f).date())
+        except ValueError:
+            pass
+    return out
+
+
+def same_value(field: str, p, a) -> bool:
+    """Do a predicted and an annotated value mean the same thing? Exact after dropping spacing and punctuation,
+    or equal as amounts / dates / currencies. Used for DocILE, whose labels are the printed text."""
+    if p is None or a is None:
+        return False
+    if _norm_raw(str(p)) == _norm_raw(str(a)):
+        return True
+    if field in AMOUNT_FIELDS:
+        x, y = loose_amount(p), loose_amount(a)
+        return x is not None and y is not None and abs(x - y) < 0.006
+    if field in DATE_FIELDS:
+        return bool(_dates(p) & _dates(a))
+    if field.startswith("currency"):
+        c = lambda v: _CURRENCY.get(str(v).strip().lower(), str(v).strip().upper())
+        return c(p) == c(a)
+    return False
+
+
+def answerable(item: dict, field: str) -> bool:
+    """Is any annotated value for this field present in the OCR text we send the model? DocILE's labels come
+    from the PDF, its OCR (DocTR) sometimes cuts or garbles them; a field the text does not contain cannot be read."""
+    key = "_norm_text"
+    if key not in item:
+        item[key] = _norm_raw(item["text"])
+    return any(_norm_raw(a) and _norm_raw(a) in item[key] for a in item["alts"].get(field, []))
+
+
+def score(pred: Optional[Record], item: dict, annotated_only: bool = False, answerable_only: bool = False) -> list[str]:
+    """Wrong fields of a prediction, accepting any annotated alternative.
+
+    annotated_only: ignore fields the annotators did not label on this document. DocILE does not label
+    every printed value (e.g. a net total), so a model that reads an unlabelled value is not necessarily wrong.
+    answerable_only: also ignore labelled fields whose value does not appear in the OCR text.
+    """
     schema = item["truth"].schema
+    value_aware = schema.name in ("docile", "fatura")
     bad = []
     for f in schema.fields:
         p = pred.values.get(f.name) if pred is not None else None
         alts = item["alts"].get(f.name)
+        if not alts and (annotated_only or answerable_only):
+            continue
+        if answerable_only and not answerable(item, f.name):
+            continue
         if not alts:
             if p not in (None, "") and not (f.type == "money" and p == 0):
                 bad.append(f.name)
@@ -83,31 +185,98 @@ def score(pred: Optional[Record], item: dict) -> list[str]:
         if p in (None, ""):
             bad.append(f.name)
             continue
-        if not any(field_equal(f.name, p, a if f.type != "money" else loose_amount(a), f.type) for a in alts):
+        ok = any(field_equal(f.name, p, a if f.type != "money" else loose_amount(a), f.type) for a in alts)
+        if not ok and value_aware:
+            ok = any(same_value(f.name, p, a) for a in alts)
+        if not ok:
             bad.append(f.name)
     return bad
 
 
+def rescore(pred_path: str, dataset_items: list[dict]) -> dict:
+    """Score a saved predictions file again (no model calls)."""
+    by_id = {it["doc_id"]: it for it in dataset_items}
+    schema = dataset_items[0]["truth"].schema
+    tot = Counter()
+    for line in open(pred_path, encoding="utf-8"):
+        r = json.loads(line)
+        it = by_id[r["doc_id"]]
+        pred = Record.from_dict(r["prediction"], schema) if r["prediction"] else None
+        for name, kw in (("strict", {}), ("labelled", {"annotated_only": True}), ("answerable", {"answerable_only": True})):
+            bad = score(pred, it, **kw)
+            n = len(schema.fields) if name == "strict" else sum(
+                1 for f in schema.fields if it["alts"].get(f.name) and (name == "labelled" or answerable(it, f.name)))
+            tot[name + "_fields"] += n
+            tot[name + "_wrong"] += len(bad)
+            tot[name + "_docs_right"] += not bad
+        tot["docs"] += 1
+    return {k: (1 - tot[k + "_wrong"] / max(1, tot[k + "_fields"]), tot[k + "_docs_right"] / tot["docs"])
+            for k in ("strict", "labelled", "answerable")}
+
+
 # ---------------------------------------------------------------- run one system
+def make_llm(dataset: str, real: bool, truth: dict, seed: int, out_dir: str = "results"):
+    if not real:
+        return SimulatedLLM(lambda d: truth[d], seed=seed, profiles=PERFECT)
+    Path(out_dir).mkdir(exist_ok=True)
+    return CachedLLM(AnthropicLLM(), str(Path(out_dir) / f"llm_cache_{dataset}.jsonl"))
+
+
+def prefetch(llm, dataset: str, order: list[dict], workers: int = 8) -> None:
+    """Real runs: read every document with the small model in parallel (cached), then re-read with the
+    large model the ones whose small-model answer fails the checks. The systems then replay from cache."""
+    if not isinstance(llm, CachedLLM):
+        return
+    doctype = DocileType() if dataset == "docile" else FaturaType() if dataset == "fatura" else ReceiptType()
+    schema = doctype.schema
+    say = lambda tier: (lambda d, n: print(f"  {tier} model: {d}/{n} documents read", flush=True))
+    print(f"reading {len(order)} documents with the small model ({workers} at a time; cached in results/) ...", flush=True)
+    llm.prefetch([(it["doc_id"], it["text"]) for it in order], "small", schema, workers, say("small"))
+    retry = []
+    for it in order:
+        r = llm.extract(it["doc_id"], it["text"], "small", schema)
+        if r.invoice is None or not doctype.checks(r.invoice, "2019-01-01T00:00:00", None, None).passed:
+            retry.append((it["doc_id"], it["text"]))
+    if retry:
+        print(f"re-reading {len(retry)} documents whose answers failed checks with the large model ...", flush=True)
+        llm.prefetch(retry, "large", schema, workers, say("large"))
+
+
 def run(dataset: str, items: list[dict], mode: str, real: bool = False, seed: int = 0, given_clusters: bool = True,
-        llm_only_tier: str = "small") -> dict:
+        llm_only_tier: str = "small", llm=None, predictions_path: Optional[str] = None) -> dict:
     order = items[:]
     random.Random(seed).shuffle(order)
     truth = {it["doc_id"]: it["truth"] for it in order}
-    doctype = DocileType(use_given_clusters=given_clusters) if dataset == "docile" else ReceiptType(threshold=0.4)
-    llm = AnthropicLLM() if real else SimulatedLLM(lambda d: truth[d], seed=seed, profiles=PERFECT)
+    doctype = (DocileType(use_given_clusters=given_clusters) if dataset == "docile" else
+               FaturaType(use_given_clusters=given_clusters) if dataset == "fatura" else ReceiptType(threshold=0.4))
+    llm = llm or make_llm(dataset, real, truth, seed)
     eng = Engine(doctype, llm, Config(mode=mode, llm_only_tier=llm_only_tier))
     seen = Counter()
     rows = []
     t0 = time.perf_counter()
-    for it in order:
+    pf = open(predictions_path, "w", encoding="utf-8") if predictions_path else None
+    for k, it in enumerate(order, 1):
         r = eng.process(it["doc_id"], it["text"], "2019-01-01T00:00:00", it["meta"])
         pred = Record.from_dict(r["final"], doctype.schema) if r["final"] else None
         bad = score(pred, it)
+        bad_annotated = score(pred, it, annotated_only=True)
+        bad_answerable = score(pred, it, answerable_only=True)
         prior = seen[r["vendor_id"]]
         seen[r["vendor_id"]] += 1
         rows.append({"doc_id": it["doc_id"], "source": r["vendor_id"], "prior": prior, "path": (r["route"] or {}).get("path"),
-                     "by_code": r["source"] == "code", "bad": bad, "cost": r["cost_usd"], "flags": r["flags"]})
+                     "by_code": r["source"] == "code", "bad": bad, "bad_annotated": bad_annotated,
+                     "n_annotated": sum(1 for f in doctype.schema.fields if it["alts"].get(f.name)),
+                     "bad_answerable": bad_answerable,
+                     "n_answerable": sum(1 for f in doctype.schema.fields if it["alts"].get(f.name) and answerable(it, f.name)),
+                     "cost": r["cost_usd"], "flags": r["flags"]})
+        if pf:
+            pf.write(json.dumps({"doc_id": it["doc_id"], "system": mode, "source": r["vendor_id"], "by_code": r["source"] == "code",
+                                 "prediction": r["final"], "annotations": it["alts"], "wrong": bad,
+                                 "wrong_annotated_only": bad_annotated, "wrong_answerable_only": bad_answerable}, ensure_ascii=False) + "\n")
+        if real and k % 50 == 0:
+            print(f"  {mode}: {k}/{len(order)} documents, ${eng.totals['cost_usd']:.3f} so far", flush=True)
+    if pf:
+        pf.close()
     wall = time.perf_counter() - t0
     # what reading every document with one model would cost (same token accounting)
     cf = {"small": 0.0, "large": 0.0}
@@ -115,6 +284,12 @@ def run(dataset: str, items: list[dict], mode: str, real: bool = False, seed: in
         tin, tout = SimulatedLLM.tokens_for(it["text"], it["truth"])
         cf["small"] += cost_of(SMALL_MODEL, tin, tout)
         cf["large"] += cost_of(LARGE_MODEL, tin, tout)
+    if isinstance(llm, CachedLLM):  # real runs: use the measured cost of real calls instead of the token model
+        ver = llm._ver(doctype.schema)
+        for tier in ("small", "large"):
+            got = [llm.cache[(it["doc_id"], tier, ver)]["cost"] for it in order if (it["doc_id"], tier, ver) in llm.cache]
+            if got:
+                cf[tier] = sum(got) / len(got) * len(order)
     return summarize(dataset, mode, real, rows, eng, cf, wall, doctype.schema)
 
 
@@ -136,6 +311,11 @@ def summarize(dataset, mode, real, rows, eng, cf, wall, schema) -> dict:
         "docs": n, "sources": len({r["source"] for r in rows}),
         "doc_exact": sum(not r["bad"] for r in rows) / n,
         "field_accuracy": 1 - sum(len(r["bad"]) for r in rows) / (n * nf),
+        "doc_exact_annotated": sum(not r["bad_annotated"] for r in rows) / n,
+        "field_accuracy_annotated": 1 - sum(len(r["bad_annotated"]) for r in rows) / max(1, sum(r["n_annotated"] for r in rows)),
+        "doc_exact_answerable": sum(not r["bad_answerable"] for r in rows) / n,
+        "field_accuracy_answerable": 1 - sum(len(r["bad_answerable"]) for r in rows) / max(1, sum(r["n_answerable"] for r in rows)),
+        "answerable_share": sum(r["n_answerable"] for r in rows) / max(1, sum(r["n_annotated"] for r in rows)),
         "code_share": len(code) / n,
         "code_doc_exact": (sum(not r["bad"] for r in code) / len(code)) if code else None,
         "code_field_accuracy": (1 - sum(len(r["bad"]) for r in code) / (len(code) * nf)) if code else None,
@@ -151,13 +331,16 @@ def summarize(dataset, mode, real, rows, eng, cf, wall, schema) -> dict:
 
 def to_markdown(results: list[dict]) -> str:
     r0 = results[0]
-    out = [f"# {r0['dataset'].upper()}: {r0['docs']:,} real documents, {r0['sources']} sources",
+    kind = ("third-party template invoices (FATURA, Limam et al. 2023), text layer as provided" if r0["dataset"] == "fatura"
+            else "real documents")
+    out = [f"# {r0['dataset'].upper()}: {r0['docs']:,} {kind}, {r0['sources']} sources",
            f"Teacher: {r0['teacher']}.", ""]
-    out.append("| System | Docs fully right | Fields right | Handled by code | Right when handled by code | Wrong but accepted by code | LLM calls / doc | LLM cost | Cost if every doc went to Haiku / Sonnet |")
-    out.append("|---|---|---|---|---|---|---|---|---|")
+    out.append("| System | Docs fully right (answerable fields) | Fields right | Labelled fields right | Answerable labelled fields right | Handled by code | Right when handled by code | Wrong but accepted by code | LLM calls / doc | LLM cost | Cost if every doc went to Haiku / Sonnet |")
+    out.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in results:
         ce = "-" if r["code_doc_exact"] is None else f"{r['code_doc_exact']:.1%}"
-        out.append(f"| {r['system']} | {r['doc_exact']:.1%} | {r['field_accuracy']:.1%} | {r['code_share']:.1%} | {ce} | "
+        out.append(f"| {r['system']} | {r.get('doc_exact_answerable', r['doc_exact']):.1%} | {r['field_accuracy']:.1%} | "
+                   f"{r.get('field_accuracy_annotated', r['field_accuracy']):.1%} | {r.get('field_accuracy_answerable', r['field_accuracy']):.1%} | {r['code_share']:.1%} | {ce} | "
                    f"{r['silent_wrong_docs']} | {r['llm_calls_per_doc']:.2f} | ${r['cost_usd']:.4f} | "
                    f"${r['cost_all_small_usd']:.4f} / ${r['cost_all_large_usd']:.2f} |")
     d = next((r for r in results if r["system"] == "distill"), None)
@@ -168,6 +351,14 @@ def to_markdown(results: list[dict]) -> str:
             out.append(f"| {k} | {v['docs']:,} | {v['code_share']:.1%} | {v['exact']:.1%} |")
         out += ["", f"Parsers promoted: {d['parsers_promoted']}. Disagreements recognised as OCR noise: "
                     f"{d['noise_disagreements']}. Drifts confirmed: {d['drifts']}.",
+                "", ("_FATURA's text layer has its own OCR-like damage (e.g. 'INVO1036008' for 'INV01036008'); the model "
+                     "is given the same text. " if r0["dataset"] == "fatura" else "") +
+                "_Fields right_ counts a value the annotators did not label as wrong; _labelled fields right_ scores only "
+                    "the fields DocILE labelled on that document (DocILE does not label every printed value); _answerable_ further "
+                    "drops labelled values that do not appear in the text the model is given "
+                    f"({1 - d.get('answerable_share', 1):.0%} of labelled fields here). "
+                    "Amounts, dates and currencies are compared by value ($ = USD). "
+                    "Per-document predictions are in the matching `_predictions.jsonl` file._",
                 "", "Fields Distill got wrong most often: " +
                 ", ".join(f"{k} ({v})" for k, v in list(d["field_errors"].items())[:6])]
     if not r0["teacher"].startswith("real"):
@@ -179,33 +370,51 @@ def to_markdown(results: list[dict]) -> str:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("dataset", choices=["docile", "sroie"])
+    ap.add_argument("dataset", choices=["docile", "sroie", "fatura"])
+    ap.add_argument("--fatura", default="data/fatura_invoices.jsonl.gz")
+    ap.add_argument("--per-template", type=int, help="FATURA: invoices per template (default all 200)")
     ap.add_argument("--docile", default="data/docile_trainval_words.jsonl.gz")
     ap.add_argument("--sroie-ocr", default="data/sroie_ocr")
     ap.add_argument("--sroie-keys", default="data/sroie_keys")
     ap.add_argument("--real", action="store_true")
     ap.add_argument("--limit", type=int)
+    ap.add_argument("--clusters", help="only documents from the N largest layout clusters (e.g. 10), or a rank range "
+                                       "(e.g. 11-20, for clusters the prompt was not tuned on)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--cluster", choices=["given", "learned"], default="given",
                     help="DocILE: identify the source by DocILE's layout cluster (like a vendor master) or by unsupervised clustering")
     ap.add_argument("--systems", default="llm_only,static,distill")
     ap.add_argument("--out", default="results")
+    ap.add_argument("--workers", type=int, default=8, help="parallel model calls in --real runs")
     a = ap.parse_args(argv)
-    items = load_docile(a.docile) if a.dataset == "docile" else load_sroie(a.sroie_ocr, a.sroie_keys)
+    items = (load_docile(a.docile) if a.dataset == "docile" else
+             load_fatura(a.fatura, a.per_template) if a.dataset == "fatura" else load_sroie(a.sroie_ocr, a.sroie_keys))
+    if a.clusters:
+        from collections import Counter as _C
+        lo, _, hi = a.clusters.partition("-")
+        lo, hi = (1, int(lo)) if not hi else (int(lo), int(hi))
+        top = {k for k, _ in _C(it["source"] for it in items).most_common(hi)[lo - 1:]}
+        items = [it for it in items if it["source"] in top]
     if a.limit:
         random.Random(a.seed).shuffle(items)
         items = items[:a.limit]
+    Path(a.out).mkdir(exist_ok=True)
+    tag = f"{a.dataset}{'_learned' if a.cluster == 'learned' and a.dataset == 'docile' else ''}{'_real' if a.real else ''}"
+    llm = None
+    if a.real:
+        llm = make_llm(a.dataset, True, {}, a.seed, a.out)
+        order = items[:]
+        random.Random(a.seed).shuffle(order)
+        prefetch(llm, a.dataset, order, workers=a.workers)
     results = []
     for sysname in a.systems.split(","):
         print(f"running {sysname} on {len(items)} {a.dataset} documents ...", flush=True)
-        results.append(run(a.dataset, items, sysname, real=a.real, seed=a.seed, given_clusters=a.cluster == "given"))
-    Path(a.out).mkdir(exist_ok=True)
-    tag = f"{a.dataset}{'_learned' if a.cluster == 'learned' and a.dataset == 'docile' else ''}{'_real' if a.real else ''}"
-    (Path(a.out) / f"{tag}.json").write_text(json.dumps(results, indent=1))
-    md = to_markdown(results)
-    (Path(a.out) / f"{tag}.md").write_text(md)
-    print(md)
-
+        results.append(run(a.dataset, items, sysname, real=a.real, seed=a.seed, given_clusters=a.cluster == "given",
+                           llm=llm, predictions_path=str(Path(a.out) / f"{tag}_{sysname}_predictions.jsonl")))
+        # save after every system so an interrupted run keeps what finished
+        (Path(a.out) / f"{tag}.json").write_text(json.dumps(results, indent=1))
+        (Path(a.out) / f"{tag}.md").write_text(to_markdown(results))
+    print(to_markdown(results))
 
 if __name__ == "__main__":
     main()

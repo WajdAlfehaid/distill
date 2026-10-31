@@ -50,6 +50,8 @@ def auto_schedule(seed: int, n: int) -> list:
 SYSTEMS = {
     "llm_only_large": Config(mode="llm_only", llm_only_tier="large"),
     "llm_only_small": Config(mode="llm_only", llm_only_tier="small"),
+    # ablation: the small-model baseline with Distill's invariant repair, to show what compiling adds on top
+    "llm_only_small_repair": Config(mode="llm_only", llm_only_tier="small", repair_in_baseline=True),
     "static": Config(mode="static"),
     "distill": Config(mode="distill"),
 }
@@ -82,6 +84,7 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
     wall = time.perf_counter() - t0
 
     wrong_docs, wrong_fields, total_fields, lat = 0, 0, 0, []
+    repaired, repaired_wrong = 0, 0
     per_vendor_after = {vid: {"docs": 0, "wrong": 0, "first_wrong_accept": None} for vid in drift_meta}
     for d in docs:
         r = eng.records[d.doc_id]
@@ -91,6 +94,9 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
         wrong_fields += len(bad) if "line_items" not in bad else len(bad) + 3 * len(d.truth.line_items)
         if bad:
             wrong_docs += 1
+        if "repaired" in r["flags"]:
+            repaired += 1
+            repaired_wrong += bool(bad)
         lat.append(r["latency_ms"])
         m = drift_meta.get(d.vendor_id)
         if m and r["seq"] >= m["at"]:
@@ -114,6 +120,10 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
 
     last = [eng.records[d.doc_id] for d in docs[-1000:]]
     T = eng.totals
+    calls = [c for d in docs for c in eng.records[d.doc_id]["llm_calls"]]
+    tok_in, tok_out = sum(c["in"] for c in calls), sum(c["out"] for c in calls)
+    esc_full = [c["out"] for c in calls if c["purpose"] == "escalate"]
+    esc_scoped = [c["out"] for c in calls if c["purpose"] == "escalate (fields)"]
     return {
         "system": name, "mode": cfg.mode, "simulated_llm": not real, "docs": n,
         "doc_accuracy": round(1 - wrong_docs / n, 5), "wrong_docs": wrong_docs,
@@ -123,7 +133,14 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
         "llm_calls": T["llm_calls"], "llm_calls_per_doc": round(T["llm_calls"] / n, 4),
         "code_share": round(T["code_docs"] / n, 4), "audit_share": round(T["audit_docs"] / n, 4),
         "code_share_last_1000": round(sum(1 for r in last if r["source"] == "code") / len(last), 4) if last else 0,
-        "human_review": T["human_review"], "quarantined": T["quarantined"],
+        "cost_per_1k_correct_docs": round(1000 * T["cost_usd"] / max(n - wrong_docs, 1), 5),
+        "tokens_per_doc": round((tok_in + tok_out) / n, 1), "input_tokens": tok_in, "output_tokens": tok_out,
+        "escalations_full": len(esc_full), "escalations_scoped": len(esc_scoped),
+        "escalation_out_tokens_full": round(statistics.fmean(esc_full), 1) if esc_full else None,
+        "escalation_out_tokens_scoped": round(statistics.fmean(esc_scoped), 1) if esc_scoped else None,
+        "scoped_resolved": T.get("scoped_escalations", 0),
+        "human_review": T["human_review"], "repaired": repaired, "repaired_wrong": repaired_wrong,
+        "quarantined": T["quarantined"],
         "quarantine_corrected": T["quarantine_corrected"],
         "latency_ms_p50": round(statistics.median(lat), 2), "latency_ms_mean": round(statistics.fmean(lat), 2),
         "wall_seconds": round(wall, 2), "drifts": drift_rows, "curve": curve,
@@ -135,10 +152,11 @@ def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: 
 def to_markdown(results: list[dict]) -> str:
     sim = results[0]["simulated_llm"]
     out = [f"# Distill benchmark ({results[0]['docs']:,} documents, {'SIMULATED LLM tiers' if sim else 'real Claude calls'})", ""]
-    out.append("| System | Doc accuracy | Wrong docs | LLM cost | Cost / 1k docs (last 1k) | LLM calls / doc | Code share (last 1k) | p50 latency | Human review |")
-    out.append("|---|---|---|---|---|---|---|---|---|")
+    out.append("| System | Doc accuracy | Wrong docs | LLM cost | Cost / 1k correct docs | Tokens / doc | Cost / 1k docs (last 1k) | LLM calls / doc | Code share (last 1k) | p50 latency | Human review |")
+    out.append("|---|---|---|---|---|---|---|---|---|---|---|")
     for r in results:
         out.append(f"| {r['system']} | {r['doc_accuracy']:.2%} | {r['wrong_docs']} | ${r['cost_usd']:.4f} | "
+                   f"${r['cost_per_1k_correct_docs']:.4f} | {r['tokens_per_doc']:,.0f} | "
                    f"${r['cost_per_1k_docs_last_1000']:.4f} | {r['llm_calls_per_doc']:.3f} | {r['code_share_last_1000']:.0%} | "
                    f"{r['latency_ms_p50']:.1f} ms | {r['human_review']} |")
     out.append("")
@@ -163,6 +181,19 @@ def to_markdown(results: list[dict]) -> str:
     out.append("")
     out.append("'Not needed': the change added lines the parser did not use; Distill checked those documents with the "
                "model, found the parser still right, and learned the new layout without replacing the parser.")
+    dr = next((r for r in results if r["system"] == "distill"), None)
+    if dr and dr.get("repaired"):
+        out.append("")
+        out.append(f"Repaired from the document's own invariants instead of a (further) model call: {dr['repaired']:,} of "
+                   f"{dr['docs']:,} documents ({dr['repaired'] / dr['docs']:.1%}); {dr['repaired'] - dr['repaired_wrong']:,} "
+                   f"of them exactly right ({1 - dr['repaired_wrong'] / dr['repaired']:.1%}).")
+    if dr and dr.get("escalations_scoped"):
+        out.append("")
+        out.append(f"Scoped escalation: when the small model's answer fails only some checks, the large model is asked "
+                   f"only for the fields (or the line-item rows) behind them, not the whole record. "
+                   f"{dr['escalations_scoped']} such calls, {dr['scoped_resolved']} of them settled every check; answers "
+                   f"averaged {dr['escalation_out_tokens_scoped']:.0f} output tokens against "
+                   f"{dr['escalation_out_tokens_full']:.0f} for a full re-read ({dr['escalations_full']} full re-reads remained).")
     if sim:
         out.append("")
         out.append("_LLM tiers are simulated (ground truth + injected errors: small 5%, large 1.2% of documents; tokens billed "

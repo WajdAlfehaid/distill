@@ -1,0 +1,161 @@
+[
+ {
+  "dataset": "fatura",
+  "system": "llm_only",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 10000,
+  "sources": 50,
+  "doc_exact": 1.0,
+  "field_accuracy": 1.0,
+  "doc_exact_annotated": 1.0,
+  "field_accuracy_annotated": 1.0,
+  "doc_exact_answerable": 1.0,
+  "field_accuracy_answerable": 1.0,
+  "answerable_share": 0.9874353910156742,
+  "code_share": 0.0,
+  "code_doc_exact": null,
+  "code_field_accuracy": null,
+  "silent_wrong_docs": 0,
+  "llm_calls": 10000,
+  "llm_calls_per_doc": 1.0,
+  "cost_usd": 1.0696613000000026,
+  "cost_all_small_usd": 1.0696613000000026,
+  "cost_all_large_usd": 21.393226000000045,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 0,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 150,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "4th-10th": {
+    "docs": 350,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "11th onward": {
+    "docs": 9500,
+    "code_share": 0.0,
+    "exact": 1.0
+   }
+  },
+  "field_errors": {},
+  "wall_seconds": 2.5942846609999606
+ },
+ {
+  "dataset": "fatura",
+  "system": "static",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 10000,
+  "sources": 50,
+  "doc_exact": 0.9883,
+  "field_accuracy": 0.9986888888888888,
+  "doc_exact_annotated": 0.9887,
+  "field_accuracy_annotated": 0.997604740093289,
+  "doc_exact_answerable": 0.9997,
+  "field_accuracy_answerable": 0.9999361647799813,
+  "answerable_share": 0.9874353910156742,
+  "code_share": 0.5478,
+  "code_doc_exact": 0.9786418400876232,
+  "code_field_accuracy": 0.9976065879680337,
+  "silent_wrong_docs": 117,
+  "llm_calls": 4522,
+  "llm_calls_per_doc": 0.4522,
+  "cost_usd": 0.4859266000000011,
+  "cost_all_small_usd": 1.0696613000000026,
+  "cost_all_large_usd": 21.393226000000045,
+  "noise_disagreements": 0,
+  "drifts": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 49,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 150,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "4th-10th": {
+    "docs": 350,
+    "code_share": 0.43714285714285717,
+    "exact": 0.9857142857142858
+   },
+   "11th onward": {
+    "docs": 9500,
+    "code_share": 0.5605263157894737,
+    "exact": 0.9882105263157894
+   }
+  },
+  "field_errors": {
+   "discount": 59,
+   "invoice_number": 30,
+   "invoice_date": 21,
+   "total": 3,
+   "subtotal": 3,
+   "due_date": 1,
+   "tax": 1
+  },
+  "wall_seconds": 14.365259595999987
+ },
+ {
+  "dataset": "fatura",
+  "system": "distill",
+  "teacher": "human labels (perfect teacher)",
+  "docs": 10000,
+  "sources": 50,
+  "doc_exact": 0.9887,
+  "field_accuracy": 0.9987222222222222,
+  "doc_exact_annotated": 0.9893,
+  "field_accuracy_annotated": 0.9977097953523554,
+  "doc_exact_answerable": 0.9996,
+  "field_accuracy_answerable": 0.9999148863733084,
+  "answerable_share": 0.9874353910156742,
+  "code_share": 0.8201,
+  "code_doc_exact": 0.9862211925374954,
+  "code_field_accuracy": 0.9984419244265604,
+  "silent_wrong_docs": 113,
+  "llm_calls": 2913,
+  "llm_calls_per_doc": 0.2913,
+  "cost_usd": 0.36163600000000035,
+  "cost_all_small_usd": 1.0696613000000026,
+  "cost_all_large_usd": 21.393226000000045,
+  "noise_disagreements": 39,
+  "drifts": 14,
+  "quarantined": 5,
+  "quarantine_corrected": 0,
+  "parsers_promoted": 138,
+  "by_position": {
+   "first 3 from a source": {
+    "docs": 150,
+    "code_share": 0.0,
+    "exact": 1.0
+   },
+   "4th-10th": {
+    "docs": 350,
+    "code_share": 0.011428571428571429,
+    "exact": 1.0
+   },
+   "11th onward": {
+    "docs": 9500,
+    "code_share": 0.8628421052631579,
+    "exact": 0.9881052631578947
+   }
+  },
+  "field_errors": {
+   "discount": 69,
+   "invoice_number": 29,
+   "total": 4,
+   "due_date": 4,
+   "subtotal": 3,
+   "invoice_date": 3,
+   "amount_due": 1,
+   "tax": 1,
+   "po_number": 1
+  },
+  "wall_seconds": 77.89750945800006
+ }
+]

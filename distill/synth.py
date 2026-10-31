@@ -21,6 +21,7 @@ glue), and optionally LLM-written specs. All are validated identically.
 from __future__ import annotations
 
 import itertools
+import os
 import re
 from collections import Counter
 from difflib import SequenceMatcher
@@ -165,6 +166,7 @@ def _field_keys_uncached(fname: str, ftype: str, ex: Example) -> dict[tuple, set
                     continue
                 prefix, suffix = s[:a], s[b:]
                 if prefix.strip():
+                    prefix = _trim_label(prefix)
                     key = ("same", prefix, suffix if ftype in ("money", "date", "code") else masked(suffix), None)
                 elif li > 0 and lines[li - 1].strip():
                     key = ("next", "", masked(suffix), lines[li - 1])
@@ -200,7 +202,8 @@ def legible(ex: Example, fname: str) -> bool:
     ftype = ex.labels.schema.types[fname]
     value = getattr(ex.labels, fname)
     if not _has(ftype, value):
-        return True  # an absent value is checked as absent
+        from .model import INCOMPLETE_LABELS
+        return ex.labels.schema.name not in INCOMPLETE_LABELS  # absent = checked as absent, unless labels are incomplete
     key = ("_legible", fname)
     cache = ex.__dict__.setdefault("_cache", {})
     if key in cache:
@@ -254,7 +257,55 @@ def _similar_label(a: str, b: str) -> bool:
         return True
     if not na or not nb:
         return False
+    short, long_ = sorted((na, nb), key=len)
+    if len(short) >= 4 and long_.endswith(short):
+        return True  # 'Date:' and 'Invoice Date:': the same label with an optional qualifier
     return SequenceMatcher(None, na, nb).ratio() >= 0.75
+
+
+ALT_MARK, ALT_SEP = "\x00alt:", "\x00"
+FLOAT_MARK = "\x01"  # a label that may sit after other text on its line (several boxes printed on one row)
+LABEL_WORDS = {"invoice", "inv", "id", "no", "number", "num", "date", "due", "issue", "issued", "bill", "billing",
+               "total", "subtotal", "sub", "tax", "vat", "gst", "discount", "amount", "po", "order", "purchase",
+               "payment", "balance", "grand", "net", "terms", "ref", "reference", "#"}
+
+
+def _label_token(tok: str) -> bool:
+    """'INVOICE', '#', 'TAX:VAT', '(5.12%):', 'SUB_TOTAL' are label-like; '640', 'View', 'Daniel' are not."""
+    t = re.sub(r"\([^)]*\)", "", tok)  # a printed rate '(5.12%)' belongs to the label
+    if re.search(r"\d", t):
+        return False
+    words = [w for w in re.split(r"[^a-z#]+", t.lower().replace("_", "")) if w]
+    return all(w in LABEL_WORDS for w in words)
+
+
+def _trim_label(prefix: str) -> str:
+    """'Address:07924 Daniel View INVOICE ID ' -> FLOAT_MARK + 'INVOICE ID ': keep the trailing label words when
+    the text before them belongs to another box on the same printed row."""
+    toks = prefix.split()
+    k = len(toks)
+    while k > 0 and _label_token(toks[k - 1]):
+        k -= 1
+    if 0 < k < len(toks) and any(re.search(r"[A-Za-z]", t) for t in toks[k:]):
+        return FLOAT_MARK + " ".join(toks[k:]) + (" " if prefix.endswith(" ") else "")
+    return prefix
+
+
+def _one_label_rx(a: str, relaxed: bool) -> str:
+    if a.startswith(FLOAT_MARK):
+        a = a[len(FLOAT_MARK):]
+        body = relaxed_label(a) if relaxed else masked(a.rstrip())
+        # anywhere on the row after other text, but never 'Due Date' for a 'Date' label
+        return r"(?:.*?\s)?(?<![Dd]ue\s)(?<!DUE\s)" + body
+    return relaxed_label(a) if relaxed else masked(a.rstrip())
+
+
+def _label_rx(prefix: str, relaxed: bool) -> str:
+    """Regex for a learned label; a set of alternative wordings becomes an alternation."""
+    if prefix.startswith(ALT_MARK):
+        alts = prefix[len(ALT_MARK):].split(ALT_SEP)
+        return "(?:" + "|".join(_one_label_rx(a, relaxed) for a in alts) + ")"
+    return _one_label_rx(prefix, relaxed)
 
 
 def _consensus(fname: str, ftype: str, examples: list[Example]):
@@ -286,7 +337,28 @@ def _consensus(fname: str, ftype: str, examples: list[Example]):
         if group is None or not allowed:
             continue
         exact = Counter(group).most_common(1)[0][0]
+        if key[0] == "same" and len({_label_norm(_label_of(k)) for k in group}) > 1:
+            # labels vary ('Date: ' / 'Invoice Date: '): anchor on the part they share at the end
+            labels = sorted({k[1].strip() for k in group}, key=len, reverse=True)
+            if len(labels) <= 6:
+                exact = ("same", ALT_MARK + ALT_SEP.join(labels), exact[2], None)
         survivors.append((exact, allowed, len(set(group)) > 1))
+    if not survivors:
+        # The layout prints this field's label in a few wordings ('INVOICE #', 'INVOICE ID', 'Invoice number').
+        # If every example has exactly one same-line location for the value, accept the set of wordings.
+        singles = []
+        for keys in per_ex:
+            same = [k for k in keys if k[0] == "same"]
+            if len(same) != 1:
+                singles = None
+                break
+            singles.append(same[0])
+        if singles:
+            labels = sorted({k[1].strip() for k in singles}, key=len, reverse=True)
+            if 1 < len(labels) <= 6 and all(re.search(r"[A-Za-z]{2}", l) for l in labels):
+                alt = ("same", ALT_MARK + ALT_SEP.join(labels), singles[0][2], None)
+                allowed = set().union(*(per_ex[i][k] for i, k in enumerate(singles)))
+                survivors.append((alt, allowed, True))
     # prefer: a label that names the field, then a label OCR read identically every time, then same-line
     ranked = sorted(survivors, key=lambda kv: (_hint_score(fname, kv[0]) == 0, kv[2], -_hint_score(fname, kv[0]),
                                                kv[0][0] != "same", -len(_label_of(kv[0]) or "")))
@@ -463,7 +535,11 @@ def induce(examples: list[Example], relaxed: bool = False, max_candidates: int =
         if fs.type in ("raw",) and field_rules.get(fs.name, ("",))[0] == "line":
             shapes = sorted({value_shape(str(getattr(ex.labels, fs.name))) for ex in examples
                              if _has(fs.type, getattr(ex.labels, fs.name))})
-            raw_shapes[fs.name] = "|".join(f"(?:{s})" for s in shapes) if len(shapes) <= 4 else ".+?"
+            if len(shapes) == 1:
+                raw_shapes[fs.name] = shapes[0]
+            else:  # the value's format varies (e.g. random invoice-number schemes): read the token(s) after the label
+                spaced = any(" " in str(getattr(ex.labels, fs.name) or "") for ex in examples)
+                raw_shapes[fs.name] = ".+?" if spaced else r"\S+"
 
     specs = []
     for ns, ds in itertools.product(num_choices, date_choices):
@@ -477,14 +553,17 @@ def induce(examples: list[Example], relaxed: bool = False, max_candidates: int =
             vp = value_pattern(ftype, ns, ds, raw_shapes.get(fname))
             bare = vp[len("(?P<v>"):-1]
             suf_rx = suffix if ftype not in ("money", "date", "code") else lit(suffix)
+            if len(re.sub(r"[^A-Za-z]", "", suffix)) > 4:
+                suf_rx = r"(?:\s.*)?"  # text after the value belongs to another box on the same row
             if relaxed:
                 suf_rx = r"(?:\s.*)?" if ftype in ("raw", "text") else r"(?:\s*[A-Z]{2,3})?.*"
             if mode == "same":
                 if relaxed:
-                    pat = relaxed_label(prefix) + vp + suf_rx
+                    pat = _label_rx(prefix, True) + vp + suf_rx
                 else:
-                    pat = masked(prefix.rstrip()) + r"\s*" + vp + suf_rx
-                fields[fname] = {"mode": "same", "pattern": pat, "type": ftype, "label_text": prefix.strip(),
+                    pat = _label_rx(prefix, False) + r"\s*" + vp + suf_rx
+                label_text = prefix.replace(ALT_MARK, "").split(ALT_SEP)[0].replace(FLOAT_MARK, "").strip()
+                fields[fname] = {"mode": "same", "pattern": pat, "type": ftype, "label_text": label_text,
                                  "value": bare}
             else:
                 lab = relaxed_label(label) + ".*" if relaxed else masked(label)
