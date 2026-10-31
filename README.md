@@ -1,5 +1,7 @@
 # Distill
 
+[![tests](https://github.com/WajdAlfehaid/distill/actions/workflows/tests.yml/badge.svg)](https://github.com/WajdAlfehaid/distill/actions/workflows/tests.yml)
+
 **Document extraction that compiles itself into code where that is safe, and knows when it isn't.**
 
 Companies send the same kinds of documents through language models over and over, even though most suppliers' layouts barely change. Distill reads a source's first documents with a model, compiles what it learned into a small parser (JSON data, never generated code), and from then on extracts that source's documents without AI, while checking every result, auditing its parsers against the model, and telling scan damage apart from a real change of template.
@@ -29,7 +31,7 @@ On FATURA (10,000 third-party invoices) Distill is 3.0x cheaper than Haiku on ev
 
 ## Results
 
-Two benchmarks and one measurement with the real Claude API, each answering a different question. All numbers come from scripts in this repository.
+Two benchmarks, a held-out and ablation validation, and one measurement with the real Claude API, each answering a different question. All numbers come from scripts in this repository, and every run of a script gives the same numbers.
 
 ### 1. Synthetic invoice stream with realistic scan damage, and injected template changes
 
@@ -61,7 +63,28 @@ Distill is **3.0x cheaper** than reading every invoice with Haiku, cheaper than 
 
 What it took: labels learned as a set of wordings, labels found after other text on the same printed row, a missing value treated as "learn the new wording" rather than drift, new content lines that keep proving harmless (a new buyer's address) no longer sending a vendor's invoices to the model, and a disagreement where the parser's value is printed on the page but the model's is not counted as damaged print, not as a broken parser.
 
-### 3. Real Claude: the cheapest correct way to call it
+### 3. Held-out streams and ablations
+
+`python scripts/validate.py` ([results/validation.md](results/validation.md)). Development used one generated stream (seed 11). Seeds 101, 202 and 303 generate three more streams of 8,000 invoices each, with suppliers, layouts, scan damage and template changes never seen during development:
+
+| Held-out stream | Distill: exactly right | Haiku: exactly right | Distill: cost per 1k correct | Haiku | Sonnet | Wrong after template changes (Distill / compile once) |
+|---|---|---|---|---|---|---|
+| seed 101 | **97.2%** | 95.3% | **$0.17** | $0.65 | $4.02 | 80 / 700 |
+| seed 202 | **98.0%** | 95.7% | **$0.11** | $0.53 | $3.85 | 46 / 702 |
+| seed 303 | **94.9%** | 91.7% | **$0.31** | $0.98 | $4.15 | 160 / 1,369 |
+
+On every unseen stream Distill is the most accurate system and costs 3.2–4.7x less than Haiku and 13–34x less than Sonnet per correct invoice. Ablations on the main stream show what each component contributes:
+
+| System | Exactly right | Wrong invoices | AI cost | Cost per 1k correct |
+|---|---|---|---|---|
+| **Distill** | **96.84%** | **253** | **$1.42** | **$0.18** |
+| without invariant repair | 96.29% | 297 | $3.26 | $0.42 |
+| without scoped escalation | 96.84% | 253 | $1.60 | $0.21 |
+| Haiku plus repair, no compiling (in result 1) | 96.09% | 313 | $2.72 | $0.35 |
+
+Repair more than halves the cost and removes 44 wrong invoices; scoped escalation saves 11% at the same accuracy; compiling on top of repair halves the cost again. The 37 tests run on every push (badge above).
+
+### 4. Real Claude: the cheapest correct way to call it
 
 `python scripts/smoke_real.py 10 --compare` extracts the same 10 generated invoices with each thinking setting ([results/thinking_modes.md](results/thinking_modes.md)): with thinking off Haiku got 7/10 right at $0.21 per 1k; with low effort 9/10 at $0.37; with defaults 9/10 at $0.42. A miss costs a Sonnet call (~$4-6 per 1k), so low effort is the cheapest correct setting and is Distill's default.
 
@@ -77,6 +100,7 @@ Python 3.10+.
 pip install -r requirements.txt
 python -m pytest -q
 python -m distill.bench                 # synthetic benchmark -> results/benchmark.md
+python scripts/validate.py              # held-out streams and ablations -> results/validation.md
 python -m distill.server --warm 1500    # dashboard on http://127.0.0.1:8000, starting with parsers in place
 python -m distill.server --dataset fatura --warm 9000   # starts on FATURA; both datasets warmed, switchable in the page
 ```
@@ -117,6 +141,7 @@ Real runs read documents 8 at a time (`--workers`), cache every answer in `resul
 | `distill/datagen.py` | Synthetic invoice stream with scan quality, layout quirks and drift mutations |
 | `distill/realdata.py`, `scripts/prepare_fatura.py` | FATURA loader, scoring and report |
 | `distill/bench.py`, `distill/server.py`, `web/index.html` | Benchmark and dashboard |
+| `scripts/validate.py`, `.github/workflows/tests.yml` | Held-out streams and ablations; the tests on every push |
 
 ## Limitations
 

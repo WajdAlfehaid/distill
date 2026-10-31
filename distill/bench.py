@@ -12,6 +12,9 @@ Usage
 from __future__ import annotations
 
 import argparse
+import os
+import subprocess
+import sys
 import json
 import statistics
 import time
@@ -54,7 +57,11 @@ SYSTEMS = {
     "llm_only_small_repair": Config(mode="llm_only", llm_only_tier="small", repair_in_baseline=True),
     "static": Config(mode="static"),
     "distill": Config(mode="distill"),
+    # ablations: Distill with one component switched off, to show each one contributes
+    "distill_no_repair": Config(mode="distill", repair=False),
+    "distill_no_scoped": Config(mode="distill", scoped_escalation=False),
 }
+DEFAULT_SYSTEMS = ["llm_only_large", "llm_only_small", "llm_only_small_repair", "static", "distill"]
 
 
 def run_system(name: str, cfg: Config, n: int, seed: int, schedule: list, real: bool = False, progress: bool = False,
@@ -202,11 +209,15 @@ def to_markdown(results: list[dict]) -> str:
 
 
 def main(argv=None):
+    if os.environ.get("PYTHONHASHSEED") != "0" and argv is None:
+        # Python randomises set ordering per process; pin it so every run gives identical numbers
+        os.environ["PYTHONHASHSEED"] = "0"
+        sys.exit(subprocess.call([sys.executable, "-m", "distill.bench"] + sys.argv[1:]))
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--n", type=int, default=8000)
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--real", action="store_true", help="call the real Claude API (ANTHROPIC_API_KEY)")
-    ap.add_argument("--systems", default=",".join(SYSTEMS))
+    ap.add_argument("--systems", default=",".join(DEFAULT_SYSTEMS))
     ap.add_argument("--out", default="results")
     args = ap.parse_args(argv)
     if args.real and args.n > 1000:

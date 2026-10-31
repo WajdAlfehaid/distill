@@ -1,0 +1,5340 @@
+[
+ {
+  "system": "llm_only_large",
+  "mode": "llm_only",
+  "simulated_llm": true,
+  "docs": 8000,
+  "doc_accuracy": 0.9405,
+  "wrong_docs": 476,
+  "field_accuracy": 0.996653,
+  "cost_usd": 30.224823,
+  "cost_per_1k_docs": 3.7781,
+  "cost_per_1k_docs_last_1000": 3.80859,
+  "llm_calls": 8003,
+  "llm_calls_per_doc": 1.0004,
+  "code_share": 0.0,
+  "audit_share": 0.0,
+  "code_share_last_1000": 0.0,
+  "cost_per_1k_correct_docs": 4.01712,
+  "tokens_per_doc": 918.5,
+  "input_tokens": 5396477,
+  "output_tokens": 1951318,
+  "escalations_full": 3,
+  "escalations_scoped": 0,
+  "escalation_out_tokens_full": 191.7,
+  "escalation_out_tokens_scoped": null,
+  "scoped_resolved": 0,
+  "human_review": 423,
+  "repaired": 0,
+  "repaired_wrong": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 2311.5,
+  "latency_ms_mean": 2296.49,
+  "wall_seconds": 3.66,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 1500,
+    "vendor_docs_after": 589,
+    "wrong_after": 7
+   },
+   {
+    "vendor": "V04",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 1800,
+    "vendor_docs_after": 1327,
+    "wrong_after": 119
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 2100,
+    "vendor_docs_after": 726,
+    "wrong_after": 8
+   },
+   {
+    "vendor": "V15",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 2400,
+    "vendor_docs_after": 378,
+    "wrong_after": 10
+   },
+   {
+    "vendor": "V14",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 2700,
+    "vendor_docs_after": 329,
+    "wrong_after": 8
+   },
+   {
+    "vendor": "V12",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 3000,
+    "vendor_docs_after": 249,
+    "wrong_after": 6
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.187884,
+    "llm_calls": 50
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.37696,
+    "llm_calls": 100
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.562274,
+    "llm_calls": 150
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.739813,
+    "llm_calls": 200
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.918047,
+    "llm_calls": 250
+   },
+   {
+    "doc": 300,
+    "cost_usd": 1.107681,
+    "llm_calls": 300
+   },
+   {
+    "doc": 350,
+    "cost_usd": 1.294613,
+    "llm_calls": 350
+   },
+   {
+    "doc": 400,
+    "cost_usd": 1.480203,
+    "llm_calls": 400
+   },
+   {
+    "doc": 450,
+    "cost_usd": 1.658563,
+    "llm_calls": 450
+   },
+   {
+    "doc": 500,
+    "cost_usd": 1.852583,
+    "llm_calls": 500
+   },
+   {
+    "doc": 550,
+    "cost_usd": 2.040549,
+    "llm_calls": 550
+   },
+   {
+    "doc": 600,
+    "cost_usd": 2.224577,
+    "llm_calls": 601
+   },
+   {
+    "doc": 650,
+    "cost_usd": 2.406159,
+    "llm_calls": 651
+   },
+   {
+    "doc": 700,
+    "cost_usd": 2.597733,
+    "llm_calls": 701
+   },
+   {
+    "doc": 750,
+    "cost_usd": 2.787623,
+    "llm_calls": 751
+   },
+   {
+    "doc": 800,
+    "cost_usd": 2.965203,
+    "llm_calls": 801
+   },
+   {
+    "doc": 850,
+    "cost_usd": 3.151847,
+    "llm_calls": 851
+   },
+   {
+    "doc": 900,
+    "cost_usd": 3.341911,
+    "llm_calls": 901
+   },
+   {
+    "doc": 950,
+    "cost_usd": 3.530235,
+    "llm_calls": 951
+   },
+   {
+    "doc": 1000,
+    "cost_usd": 3.719047,
+    "llm_calls": 1001
+   },
+   {
+    "doc": 1050,
+    "cost_usd": 3.906013,
+    "llm_calls": 1051
+   },
+   {
+    "doc": 1100,
+    "cost_usd": 4.094941,
+    "llm_calls": 1101
+   },
+   {
+    "doc": 1150,
+    "cost_usd": 4.284427,
+    "llm_calls": 1151
+   },
+   {
+    "doc": 1200,
+    "cost_usd": 4.466985,
+    "llm_calls": 1201
+   },
+   {
+    "doc": 1250,
+    "cost_usd": 4.658985,
+    "llm_calls": 1251
+   },
+   {
+    "doc": 1300,
+    "cost_usd": 4.845725,
+    "llm_calls": 1301
+   },
+   {
+    "doc": 1350,
+    "cost_usd": 5.029681,
+    "llm_calls": 1351
+   },
+   {
+    "doc": 1400,
+    "cost_usd": 5.222055,
+    "llm_calls": 1401
+   },
+   {
+    "doc": 1450,
+    "cost_usd": 5.412095,
+    "llm_calls": 1451
+   },
+   {
+    "doc": 1500,
+    "cost_usd": 5.599061,
+    "llm_calls": 1501
+   },
+   {
+    "doc": 1550,
+    "cost_usd": 5.785847,
+    "llm_calls": 1551
+   },
+   {
+    "doc": 1600,
+    "cost_usd": 5.968585,
+    "llm_calls": 1601
+   },
+   {
+    "doc": 1650,
+    "cost_usd": 6.158727,
+    "llm_calls": 1651
+   },
+   {
+    "doc": 1700,
+    "cost_usd": 6.335259,
+    "llm_calls": 1701
+   },
+   {
+    "doc": 1750,
+    "cost_usd": 6.521843,
+    "llm_calls": 1751
+   },
+   {
+    "doc": 1800,
+    "cost_usd": 6.708073,
+    "llm_calls": 1801
+   },
+   {
+    "doc": 1850,
+    "cost_usd": 6.90178,
+    "llm_calls": 1851
+   },
+   {
+    "doc": 1900,
+    "cost_usd": 7.08985,
+    "llm_calls": 1901
+   },
+   {
+    "doc": 1950,
+    "cost_usd": 7.271956,
+    "llm_calls": 1952
+   },
+   {
+    "doc": 2000,
+    "cost_usd": 7.462708,
+    "llm_calls": 2002
+   },
+   {
+    "doc": 2050,
+    "cost_usd": 7.65458,
+    "llm_calls": 2052
+   },
+   {
+    "doc": 2100,
+    "cost_usd": 7.849716,
+    "llm_calls": 2102
+   },
+   {
+    "doc": 2150,
+    "cost_usd": 8.039928,
+    "llm_calls": 2152
+   },
+   {
+    "doc": 2200,
+    "cost_usd": 8.229366,
+    "llm_calls": 2202
+   },
+   {
+    "doc": 2250,
+    "cost_usd": 8.42056,
+    "llm_calls": 2252
+   },
+   {
+    "doc": 2300,
+    "cost_usd": 8.603618,
+    "llm_calls": 2302
+   },
+   {
+    "doc": 2350,
+    "cost_usd": 8.78653,
+    "llm_calls": 2352
+   },
+   {
+    "doc": 2400,
+    "cost_usd": 8.981984,
+    "llm_calls": 2402
+   },
+   {
+    "doc": 2450,
+    "cost_usd": 9.178192,
+    "llm_calls": 2452
+   },
+   {
+    "doc": 2500,
+    "cost_usd": 9.368486,
+    "llm_calls": 2502
+   },
+   {
+    "doc": 2550,
+    "cost_usd": 9.554676,
+    "llm_calls": 2552
+   },
+   {
+    "doc": 2600,
+    "cost_usd": 9.74489,
+    "llm_calls": 2602
+   },
+   {
+    "doc": 2650,
+    "cost_usd": 9.933574,
+    "llm_calls": 2652
+   },
+   {
+    "doc": 2700,
+    "cost_usd": 10.126496,
+    "llm_calls": 2702
+   },
+   {
+    "doc": 2750,
+    "cost_usd": 10.317098,
+    "llm_calls": 2752
+   },
+   {
+    "doc": 2800,
+    "cost_usd": 10.501914,
+    "llm_calls": 2802
+   },
+   {
+    "doc": 2850,
+    "cost_usd": 10.684432,
+    "llm_calls": 2852
+   },
+   {
+    "doc": 2900,
+    "cost_usd": 10.873876,
+    "llm_calls": 2902
+   },
+   {
+    "doc": 2950,
+    "cost_usd": 11.070114,
+    "llm_calls": 2952
+   },
+   {
+    "doc": 3000,
+    "cost_usd": 11.253962,
+    "llm_calls": 3002
+   },
+   {
+    "doc": 3050,
+    "cost_usd": 11.451828,
+    "llm_calls": 3052
+   },
+   {
+    "doc": 3100,
+    "cost_usd": 11.639746,
+    "llm_calls": 3102
+   },
+   {
+    "doc": 3150,
+    "cost_usd": 11.82309,
+    "llm_calls": 3152
+   },
+   {
+    "doc": 3200,
+    "cost_usd": 12.020376,
+    "llm_calls": 3202
+   },
+   {
+    "doc": 3250,
+    "cost_usd": 12.214712,
+    "llm_calls": 3252
+   },
+   {
+    "doc": 3300,
+    "cost_usd": 12.401529,
+    "llm_calls": 3302
+   },
+   {
+    "doc": 3350,
+    "cost_usd": 12.597809,
+    "llm_calls": 3352
+   },
+   {
+    "doc": 3400,
+    "cost_usd": 12.785489,
+    "llm_calls": 3402
+   },
+   {
+    "doc": 3450,
+    "cost_usd": 12.976293,
+    "llm_calls": 3452
+   },
+   {
+    "doc": 3500,
+    "cost_usd": 13.169359,
+    "llm_calls": 3502
+   },
+   {
+    "doc": 3550,
+    "cost_usd": 13.355925,
+    "llm_calls": 3552
+   },
+   {
+    "doc": 3600,
+    "cost_usd": 13.541992,
+    "llm_calls": 3602
+   },
+   {
+    "doc": 3650,
+    "cost_usd": 13.732642,
+    "llm_calls": 3652
+   },
+   {
+    "doc": 3700,
+    "cost_usd": 13.921056,
+    "llm_calls": 3702
+   },
+   {
+    "doc": 3750,
+    "cost_usd": 14.119992,
+    "llm_calls": 3752
+   },
+   {
+    "doc": 3800,
+    "cost_usd": 14.308082,
+    "llm_calls": 3802
+   },
+   {
+    "doc": 3850,
+    "cost_usd": 14.495038,
+    "llm_calls": 3852
+   },
+   {
+    "doc": 3900,
+    "cost_usd": 14.679141,
+    "llm_calls": 3902
+   },
+   {
+    "doc": 3950,
+    "cost_usd": 14.857673,
+    "llm_calls": 3952
+   },
+   {
+    "doc": 4000,
+    "cost_usd": 15.041559,
+    "llm_calls": 4002
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 15.236359,
+    "llm_calls": 4052
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 15.424449,
+    "llm_calls": 4102
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 15.624087,
+    "llm_calls": 4152
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 15.814784,
+    "llm_calls": 4202
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 16.014414,
+    "llm_calls": 4252
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 16.201146,
+    "llm_calls": 4302
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 16.396154,
+    "llm_calls": 4352
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 16.576169,
+    "llm_calls": 4402
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 16.768285,
+    "llm_calls": 4452
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 16.953781,
+    "llm_calls": 4502
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 17.154487,
+    "llm_calls": 4552
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 17.349797,
+    "llm_calls": 4602
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 17.538713,
+    "llm_calls": 4652
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 17.728287,
+    "llm_calls": 4702
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 17.931963,
+    "llm_calls": 4752
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 18.119307,
+    "llm_calls": 4802
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 18.315913,
+    "llm_calls": 4852
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 18.494953,
+    "llm_calls": 4902
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 18.682159,
+    "llm_calls": 4952
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 18.867189,
+    "llm_calls": 5002
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 19.060257,
+    "llm_calls": 5052
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 19.253779,
+    "llm_calls": 5102
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 19.444831,
+    "llm_calls": 5152
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 19.638831,
+    "llm_calls": 5202
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 19.826007,
+    "llm_calls": 5252
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 20.022131,
+    "llm_calls": 5302
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 20.216681,
+    "llm_calls": 5352
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 20.409085,
+    "llm_calls": 5402
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 20.606329,
+    "llm_calls": 5452
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 20.796703,
+    "llm_calls": 5502
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 20.982003,
+    "llm_calls": 5552
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 21.178059,
+    "llm_calls": 5602
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 21.358261,
+    "llm_calls": 5652
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 21.547966,
+    "llm_calls": 5702
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 21.742802,
+    "llm_calls": 5752
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 21.93325,
+    "llm_calls": 5802
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 22.128444,
+    "llm_calls": 5852
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 22.308329,
+    "llm_calls": 5902
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 22.497765,
+    "llm_calls": 5952
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 22.698433,
+    "llm_calls": 6002
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 22.871776,
+    "llm_calls": 6052
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 23.047896,
+    "llm_calls": 6102
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 23.22862,
+    "llm_calls": 6152
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 23.413466,
+    "llm_calls": 6202
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 23.605516,
+    "llm_calls": 6252
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 23.78646,
+    "llm_calls": 6302
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 23.978428,
+    "llm_calls": 6352
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 24.1623,
+    "llm_calls": 6402
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 24.35976,
+    "llm_calls": 6452
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 24.549248,
+    "llm_calls": 6502
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 24.738686,
+    "llm_calls": 6552
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 24.925834,
+    "llm_calls": 6602
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 25.120168,
+    "llm_calls": 6652
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 25.313052,
+    "llm_calls": 6702
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 25.498878,
+    "llm_calls": 6752
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 25.684222,
+    "llm_calls": 6802
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 25.860866,
+    "llm_calls": 6852
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 26.04835,
+    "llm_calls": 6902
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 26.235576,
+    "llm_calls": 6952
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 26.416232,
+    "llm_calls": 7002
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 26.605262,
+    "llm_calls": 7052
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 26.797398,
+    "llm_calls": 7102
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 26.99138,
+    "llm_calls": 7152
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 27.18148,
+    "llm_calls": 7202
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 27.379144,
+    "llm_calls": 7252
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 27.57463,
+    "llm_calls": 7302
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 27.761874,
+    "llm_calls": 7352
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 27.956998,
+    "llm_calls": 7402
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 28.138394,
+    "llm_calls": 7452
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 28.33279,
+    "llm_calls": 7502
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 28.521916,
+    "llm_calls": 7552
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 28.705548,
+    "llm_calls": 7602
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 28.88713,
+    "llm_calls": 7652
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 29.077894,
+    "llm_calls": 7702
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 29.275962,
+    "llm_calls": 7752
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 29.462269,
+    "llm_calls": 7802
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 29.652751,
+    "llm_calls": 7852
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 29.846803,
+    "llm_calls": 7902
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 30.033883,
+    "llm_calls": 7952
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 30.224823,
+    "llm_calls": 8003
+   }
+  ],
+  "events": [],
+  "parsers": []
+ },
+ {
+  "system": "llm_only_small",
+  "mode": "llm_only",
+  "simulated_llm": true,
+  "docs": 8000,
+  "doc_accuracy": 0.953,
+  "wrong_docs": 376,
+  "field_accuracy": 0.99805,
+  "cost_usd": 4.956941,
+  "cost_per_1k_docs": 0.61962,
+  "cost_per_1k_docs_last_1000": 0.62578,
+  "llm_calls": 8909,
+  "llm_calls_per_doc": 1.1136,
+  "code_share": 0.0,
+  "audit_share": 0.0,
+  "code_share_last_1000": 0.0,
+  "cost_per_1k_correct_docs": 0.65018,
+  "tokens_per_doc": 1023.3,
+  "input_tokens": 6015476,
+  "output_tokens": 2170777,
+  "escalations_full": 909,
+  "escalations_scoped": 0,
+  "escalation_out_tokens_full": 242.1,
+  "escalation_out_tokens_scoped": null,
+  "scoped_resolved": 0,
+  "human_review": 200,
+  "repaired": 0,
+  "repaired_wrong": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 1880.0,
+  "latency_ms_mean": 2013.57,
+  "wall_seconds": 3.55,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 1500,
+    "vendor_docs_after": 589,
+    "wrong_after": 16
+   },
+   {
+    "vendor": "V04",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 1800,
+    "vendor_docs_after": 1327,
+    "wrong_after": 82
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 2100,
+    "vendor_docs_after": 726,
+    "wrong_after": 17
+   },
+   {
+    "vendor": "V15",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 2400,
+    "vendor_docs_after": 378,
+    "wrong_after": 5
+   },
+   {
+    "vendor": "V14",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 2700,
+    "vendor_docs_after": 329,
+    "wrong_after": 7
+   },
+   {
+    "vendor": "V12",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 3000,
+    "vendor_docs_after": 249,
+    "wrong_after": 2
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.035988,
+    "llm_calls": 57
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.061558,
+    "llm_calls": 112
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.08777,
+    "llm_calls": 167
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.116322,
+    "llm_calls": 222
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.156608,
+    "llm_calls": 281
+   },
+   {
+    "doc": 300,
+    "cost_usd": 0.183007,
+    "llm_calls": 335
+   },
+   {
+    "doc": 350,
+    "cost_usd": 0.206798,
+    "llm_calls": 389
+   },
+   {
+    "doc": 400,
+    "cost_usd": 0.225353,
+    "llm_calls": 442
+   },
+   {
+    "doc": 450,
+    "cost_usd": 0.250758,
+    "llm_calls": 496
+   },
+   {
+    "doc": 500,
+    "cost_usd": 0.288171,
+    "llm_calls": 553
+   },
+   {
+    "doc": 550,
+    "cost_usd": 0.304965,
+    "llm_calls": 605
+   },
+   {
+    "doc": 600,
+    "cost_usd": 0.341048,
+    "llm_calls": 663
+   },
+   {
+    "doc": 650,
+    "cost_usd": 0.360411,
+    "llm_calls": 716
+   },
+   {
+    "doc": 700,
+    "cost_usd": 0.402316,
+    "llm_calls": 774
+   },
+   {
+    "doc": 750,
+    "cost_usd": 0.430884,
+    "llm_calls": 829
+   },
+   {
+    "doc": 800,
+    "cost_usd": 0.455533,
+    "llm_calls": 884
+   },
+   {
+    "doc": 850,
+    "cost_usd": 0.484655,
+    "llm_calls": 940
+   },
+   {
+    "doc": 900,
+    "cost_usd": 0.504897,
+    "llm_calls": 993
+   },
+   {
+    "doc": 950,
+    "cost_usd": 0.532321,
+    "llm_calls": 1048
+   },
+   {
+    "doc": 1000,
+    "cost_usd": 0.550203,
+    "llm_calls": 1100
+   },
+   {
+    "doc": 1050,
+    "cost_usd": 0.582958,
+    "llm_calls": 1156
+   },
+   {
+    "doc": 1100,
+    "cost_usd": 0.61076,
+    "llm_calls": 1212
+   },
+   {
+    "doc": 1150,
+    "cost_usd": 0.637256,
+    "llm_calls": 1267
+   },
+   {
+    "doc": 1200,
+    "cost_usd": 0.672202,
+    "llm_calls": 1323
+   },
+   {
+    "doc": 1250,
+    "cost_usd": 0.723816,
+    "llm_calls": 1383
+   },
+   {
+    "doc": 1300,
+    "cost_usd": 0.768256,
+    "llm_calls": 1442
+   },
+   {
+    "doc": 1350,
+    "cost_usd": 0.810751,
+    "llm_calls": 1501
+   },
+   {
+    "doc": 1400,
+    "cost_usd": 0.847402,
+    "llm_calls": 1558
+   },
+   {
+    "doc": 1450,
+    "cost_usd": 0.874724,
+    "llm_calls": 1613
+   },
+   {
+    "doc": 1500,
+    "cost_usd": 0.910776,
+    "llm_calls": 1670
+   },
+   {
+    "doc": 1550,
+    "cost_usd": 0.937471,
+    "llm_calls": 1725
+   },
+   {
+    "doc": 1600,
+    "cost_usd": 0.980768,
+    "llm_calls": 1784
+   },
+   {
+    "doc": 1650,
+    "cost_usd": 1.011019,
+    "llm_calls": 1840
+   },
+   {
+    "doc": 1700,
+    "cost_usd": 1.038834,
+    "llm_calls": 1896
+   },
+   {
+    "doc": 1750,
+    "cost_usd": 1.066187,
+    "llm_calls": 1951
+   },
+   {
+    "doc": 1800,
+    "cost_usd": 1.086217,
+    "llm_calls": 2004
+   },
+   {
+    "doc": 1850,
+    "cost_usd": 1.1348,
+    "llm_calls": 2063
+   },
+   {
+    "doc": 1900,
+    "cost_usd": 1.177946,
+    "llm_calls": 2121
+   },
+   {
+    "doc": 1950,
+    "cost_usd": 1.220218,
+    "llm_calls": 2180
+   },
+   {
+    "doc": 2000,
+    "cost_usd": 1.244082,
+    "llm_calls": 2234
+   },
+   {
+    "doc": 2050,
+    "cost_usd": 1.28455,
+    "llm_calls": 2292
+   },
+   {
+    "doc": 2100,
+    "cost_usd": 1.316295,
+    "llm_calls": 2348
+   },
+   {
+    "doc": 2150,
+    "cost_usd": 1.343029,
+    "llm_calls": 2402
+   },
+   {
+    "doc": 2200,
+    "cost_usd": 1.391709,
+    "llm_calls": 2462
+   },
+   {
+    "doc": 2250,
+    "cost_usd": 1.418253,
+    "llm_calls": 2516
+   },
+   {
+    "doc": 2300,
+    "cost_usd": 1.451356,
+    "llm_calls": 2573
+   },
+   {
+    "doc": 2350,
+    "cost_usd": 1.476087,
+    "llm_calls": 2627
+   },
+   {
+    "doc": 2400,
+    "cost_usd": 1.503814,
+    "llm_calls": 2682
+   },
+   {
+    "doc": 2450,
+    "cost_usd": 1.526197,
+    "llm_calls": 2735
+   },
+   {
+    "doc": 2500,
+    "cost_usd": 1.558919,
+    "llm_calls": 2792
+   },
+   {
+    "doc": 2550,
+    "cost_usd": 1.596837,
+    "llm_calls": 2850
+   },
+   {
+    "doc": 2600,
+    "cost_usd": 1.637627,
+    "llm_calls": 2908
+   },
+   {
+    "doc": 2650,
+    "cost_usd": 1.669872,
+    "llm_calls": 2964
+   },
+   {
+    "doc": 2700,
+    "cost_usd": 1.690284,
+    "llm_calls": 3017
+   },
+   {
+    "doc": 2750,
+    "cost_usd": 1.714852,
+    "llm_calls": 3071
+   },
+   {
+    "doc": 2800,
+    "cost_usd": 1.765507,
+    "llm_calls": 3132
+   },
+   {
+    "doc": 2850,
+    "cost_usd": 1.794131,
+    "llm_calls": 3187
+   },
+   {
+    "doc": 2900,
+    "cost_usd": 1.827389,
+    "llm_calls": 3243
+   },
+   {
+    "doc": 2950,
+    "cost_usd": 1.860849,
+    "llm_calls": 3299
+   },
+   {
+    "doc": 3000,
+    "cost_usd": 1.888317,
+    "llm_calls": 3354
+   },
+   {
+    "doc": 3050,
+    "cost_usd": 1.936114,
+    "llm_calls": 3414
+   },
+   {
+    "doc": 3100,
+    "cost_usd": 1.970944,
+    "llm_calls": 3470
+   },
+   {
+    "doc": 3150,
+    "cost_usd": 2.005027,
+    "llm_calls": 3528
+   },
+   {
+    "doc": 3200,
+    "cost_usd": 2.035654,
+    "llm_calls": 3583
+   },
+   {
+    "doc": 3250,
+    "cost_usd": 2.077005,
+    "llm_calls": 3641
+   },
+   {
+    "doc": 3300,
+    "cost_usd": 2.099493,
+    "llm_calls": 3694
+   },
+   {
+    "doc": 3350,
+    "cost_usd": 2.130759,
+    "llm_calls": 3749
+   },
+   {
+    "doc": 3400,
+    "cost_usd": 2.165061,
+    "llm_calls": 3805
+   },
+   {
+    "doc": 3450,
+    "cost_usd": 2.205463,
+    "llm_calls": 3863
+   },
+   {
+    "doc": 3500,
+    "cost_usd": 2.23541,
+    "llm_calls": 3918
+   },
+   {
+    "doc": 3550,
+    "cost_usd": 2.262001,
+    "llm_calls": 3973
+   },
+   {
+    "doc": 3600,
+    "cost_usd": 2.288033,
+    "llm_calls": 4027
+   },
+   {
+    "doc": 3650,
+    "cost_usd": 2.311128,
+    "llm_calls": 4081
+   },
+   {
+    "doc": 3700,
+    "cost_usd": 2.330802,
+    "llm_calls": 4134
+   },
+   {
+    "doc": 3750,
+    "cost_usd": 2.361807,
+    "llm_calls": 4189
+   },
+   {
+    "doc": 3800,
+    "cost_usd": 2.39517,
+    "llm_calls": 4245
+   },
+   {
+    "doc": 3850,
+    "cost_usd": 2.412218,
+    "llm_calls": 4297
+   },
+   {
+    "doc": 3900,
+    "cost_usd": 2.457885,
+    "llm_calls": 4356
+   },
+   {
+    "doc": 3950,
+    "cost_usd": 2.474506,
+    "llm_calls": 4408
+   },
+   {
+    "doc": 4000,
+    "cost_usd": 2.503764,
+    "llm_calls": 4463
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 2.529628,
+    "llm_calls": 4517
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 2.546962,
+    "llm_calls": 4569
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 2.571282,
+    "llm_calls": 4623
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 2.600484,
+    "llm_calls": 4678
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 2.626598,
+    "llm_calls": 4732
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 2.662542,
+    "llm_calls": 4789
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 2.691363,
+    "llm_calls": 4844
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 2.710242,
+    "llm_calls": 4897
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 2.725918,
+    "llm_calls": 4949
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 2.767709,
+    "llm_calls": 5007
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 2.804376,
+    "llm_calls": 5063
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 2.834813,
+    "llm_calls": 5119
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 2.856749,
+    "llm_calls": 5172
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 2.881666,
+    "llm_calls": 5226
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 2.934284,
+    "llm_calls": 5287
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 2.960713,
+    "llm_calls": 5341
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 2.996419,
+    "llm_calls": 5397
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 3.022776,
+    "llm_calls": 5453
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 3.07008,
+    "llm_calls": 5513
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 3.095156,
+    "llm_calls": 5568
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 3.120379,
+    "llm_calls": 5622
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 3.145947,
+    "llm_calls": 5676
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 3.181146,
+    "llm_calls": 5732
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 3.21762,
+    "llm_calls": 5788
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 3.264103,
+    "llm_calls": 5848
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 3.294045,
+    "llm_calls": 5904
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 3.326882,
+    "llm_calls": 5960
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 3.356193,
+    "llm_calls": 6015
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 3.388953,
+    "llm_calls": 6071
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 3.438458,
+    "llm_calls": 6132
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 3.474817,
+    "llm_calls": 6189
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 3.504307,
+    "llm_calls": 6245
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 3.551438,
+    "llm_calls": 6306
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 3.578777,
+    "llm_calls": 6361
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 3.609375,
+    "llm_calls": 6416
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 3.629715,
+    "llm_calls": 6469
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 3.661837,
+    "llm_calls": 6524
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 3.694187,
+    "llm_calls": 6581
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 3.727634,
+    "llm_calls": 6637
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 3.766068,
+    "llm_calls": 6694
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 3.784638,
+    "llm_calls": 6747
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 3.820976,
+    "llm_calls": 6804
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 3.849906,
+    "llm_calls": 6859
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 3.880605,
+    "llm_calls": 6914
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 3.901777,
+    "llm_calls": 6967
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 3.918828,
+    "llm_calls": 7019
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 3.948039,
+    "llm_calls": 7074
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 3.990708,
+    "llm_calls": 7133
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 4.030075,
+    "llm_calls": 7190
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 4.073032,
+    "llm_calls": 7248
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 4.095814,
+    "llm_calls": 7302
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 4.123376,
+    "llm_calls": 7357
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 4.148016,
+    "llm_calls": 7411
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 4.179083,
+    "llm_calls": 7466
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 4.191392,
+    "llm_calls": 7517
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 4.219165,
+    "llm_calls": 7572
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 4.251591,
+    "llm_calls": 7629
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 4.279112,
+    "llm_calls": 7684
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 4.302639,
+    "llm_calls": 7738
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 4.331158,
+    "llm_calls": 7794
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 4.365868,
+    "llm_calls": 7851
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 4.401415,
+    "llm_calls": 7908
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 4.413772,
+    "llm_calls": 7959
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 4.459721,
+    "llm_calls": 8018
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 4.502748,
+    "llm_calls": 8077
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 4.538012,
+    "llm_calls": 8134
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 4.566117,
+    "llm_calls": 8188
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 4.588471,
+    "llm_calls": 8241
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 4.618127,
+    "llm_calls": 8297
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 4.65818,
+    "llm_calls": 8355
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 4.676765,
+    "llm_calls": 8407
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 4.709238,
+    "llm_calls": 8463
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 4.739863,
+    "llm_calls": 8519
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 4.767946,
+    "llm_calls": 8574
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 4.801281,
+    "llm_calls": 8630
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 4.82513,
+    "llm_calls": 8684
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 4.854302,
+    "llm_calls": 8739
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 4.879016,
+    "llm_calls": 8793
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 4.919704,
+    "llm_calls": 8852
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 4.956941,
+    "llm_calls": 8909
+   }
+  ],
+  "events": [],
+  "parsers": []
+ },
+ {
+  "system": "static",
+  "mode": "static",
+  "simulated_llm": true,
+  "docs": 8000,
+  "doc_accuracy": 0.801,
+  "wrong_docs": 1592,
+  "field_accuracy": 0.971764,
+  "cost_usd": 2.847813,
+  "cost_per_1k_docs": 0.35598,
+  "cost_per_1k_docs_last_1000": 0.39452,
+  "llm_calls": 4308,
+  "llm_calls_per_doc": 0.5385,
+  "code_share": 0.5335,
+  "audit_share": 0.0,
+  "code_share_last_1000": 0.446,
+  "cost_per_1k_correct_docs": 0.44442,
+  "tokens_per_doc": 490.9,
+  "input_tokens": 2903300,
+  "output_tokens": 1024270,
+  "escalations_full": 576,
+  "escalations_scoped": 0,
+  "escalation_out_tokens_full": 237.7,
+  "escalation_out_tokens_scoped": null,
+  "scoped_resolved": 0,
+  "human_review": 24,
+  "repaired": 0,
+  "repaired_wrong": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 0.5,
+  "latency_ms_mean": 971.75,
+  "wall_seconds": 18.36,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 1500,
+    "vendor_docs_after": 589,
+    "wrong_after": 589
+   },
+   {
+    "vendor": "V04",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 1800,
+    "vendor_docs_after": 1327,
+    "wrong_after": 82
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 2100,
+    "vendor_docs_after": 726,
+    "wrong_after": 17
+   },
+   {
+    "vendor": "V15",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 2400,
+    "vendor_docs_after": 378,
+    "wrong_after": 5
+   },
+   {
+    "vendor": "V14",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 2700,
+    "vendor_docs_after": 329,
+    "wrong_after": 7
+   },
+   {
+    "vendor": "V12",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 3000,
+    "vendor_docs_after": 249,
+    "wrong_after": 0
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.035483,
+    "llm_calls": 54
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.052544,
+    "llm_calls": 89
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.069165,
+    "llm_calls": 119
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.089037,
+    "llm_calls": 142
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.114554,
+    "llm_calls": 168
+   },
+   {
+    "doc": 300,
+    "cost_usd": 0.124289,
+    "llm_calls": 194
+   },
+   {
+    "doc": 350,
+    "cost_usd": 0.1382,
+    "llm_calls": 211
+   },
+   {
+    "doc": 400,
+    "cost_usd": 0.144932,
+    "llm_calls": 231
+   },
+   {
+    "doc": 450,
+    "cost_usd": 0.147885,
+    "llm_calls": 246
+   },
+   {
+    "doc": 500,
+    "cost_usd": 0.160176,
+    "llm_calls": 257
+   },
+   {
+    "doc": 550,
+    "cost_usd": 0.164259,
+    "llm_calls": 267
+   },
+   {
+    "doc": 600,
+    "cost_usd": 0.18121,
+    "llm_calls": 285
+   },
+   {
+    "doc": 650,
+    "cost_usd": 0.18572,
+    "llm_calls": 294
+   },
+   {
+    "doc": 700,
+    "cost_usd": 0.195356,
+    "llm_calls": 304
+   },
+   {
+    "doc": 750,
+    "cost_usd": 0.208558,
+    "llm_calls": 316
+   },
+   {
+    "doc": 800,
+    "cost_usd": 0.215101,
+    "llm_calls": 325
+   },
+   {
+    "doc": 850,
+    "cost_usd": 0.22686,
+    "llm_calls": 336
+   },
+   {
+    "doc": 900,
+    "cost_usd": 0.236099,
+    "llm_calls": 346
+   },
+   {
+    "doc": 950,
+    "cost_usd": 0.237097,
+    "llm_calls": 351
+   },
+   {
+    "doc": 1000,
+    "cost_usd": 0.244675,
+    "llm_calls": 367
+   },
+   {
+    "doc": 1050,
+    "cost_usd": 0.25883,
+    "llm_calls": 378
+   },
+   {
+    "doc": 1100,
+    "cost_usd": 0.268842,
+    "llm_calls": 390
+   },
+   {
+    "doc": 1150,
+    "cost_usd": 0.278277,
+    "llm_calls": 399
+   },
+   {
+    "doc": 1200,
+    "cost_usd": 0.291144,
+    "llm_calls": 409
+   },
+   {
+    "doc": 1250,
+    "cost_usd": 0.323321,
+    "llm_calls": 431
+   },
+   {
+    "doc": 1300,
+    "cost_usd": 0.335232,
+    "llm_calls": 444
+   },
+   {
+    "doc": 1350,
+    "cost_usd": 0.347508,
+    "llm_calls": 455
+   },
+   {
+    "doc": 1400,
+    "cost_usd": 0.359809,
+    "llm_calls": 466
+   },
+   {
+    "doc": 1450,
+    "cost_usd": 0.361114,
+    "llm_calls": 473
+   },
+   {
+    "doc": 1500,
+    "cost_usd": 0.370318,
+    "llm_calls": 483
+   },
+   {
+    "doc": 1550,
+    "cost_usd": 0.377239,
+    "llm_calls": 491
+   },
+   {
+    "doc": 1600,
+    "cost_usd": 0.380419,
+    "llm_calls": 496
+   },
+   {
+    "doc": 1650,
+    "cost_usd": 0.384411,
+    "llm_calls": 502
+   },
+   {
+    "doc": 1700,
+    "cost_usd": 0.390375,
+    "llm_calls": 509
+   },
+   {
+    "doc": 1750,
+    "cost_usd": 0.390867,
+    "llm_calls": 512
+   },
+   {
+    "doc": 1800,
+    "cost_usd": 0.402993,
+    "llm_calls": 523
+   },
+   {
+    "doc": 1850,
+    "cost_usd": 0.418546,
+    "llm_calls": 541
+   },
+   {
+    "doc": 1900,
+    "cost_usd": 0.44395,
+    "llm_calls": 563
+   },
+   {
+    "doc": 1950,
+    "cost_usd": 0.472894,
+    "llm_calls": 586
+   },
+   {
+    "doc": 2000,
+    "cost_usd": 0.482913,
+    "llm_calls": 609
+   },
+   {
+    "doc": 2050,
+    "cost_usd": 0.504212,
+    "llm_calls": 627
+   },
+   {
+    "doc": 2100,
+    "cost_usd": 0.525834,
+    "llm_calls": 647
+   },
+   {
+    "doc": 2150,
+    "cost_usd": 0.542085,
+    "llm_calls": 671
+   },
+   {
+    "doc": 2200,
+    "cost_usd": 0.567919,
+    "llm_calls": 699
+   },
+   {
+    "doc": 2250,
+    "cost_usd": 0.581739,
+    "llm_calls": 723
+   },
+   {
+    "doc": 2300,
+    "cost_usd": 0.603497,
+    "llm_calls": 751
+   },
+   {
+    "doc": 2350,
+    "cost_usd": 0.617313,
+    "llm_calls": 777
+   },
+   {
+    "doc": 2400,
+    "cost_usd": 0.638386,
+    "llm_calls": 798
+   },
+   {
+    "doc": 2450,
+    "cost_usd": 0.651264,
+    "llm_calls": 826
+   },
+   {
+    "doc": 2500,
+    "cost_usd": 0.665599,
+    "llm_calls": 852
+   },
+   {
+    "doc": 2550,
+    "cost_usd": 0.695664,
+    "llm_calls": 882
+   },
+   {
+    "doc": 2600,
+    "cost_usd": 0.732714,
+    "llm_calls": 919
+   },
+   {
+    "doc": 2650,
+    "cost_usd": 0.755268,
+    "llm_calls": 949
+   },
+   {
+    "doc": 2700,
+    "cost_usd": 0.765678,
+    "llm_calls": 974
+   },
+   {
+    "doc": 2750,
+    "cost_usd": 0.782337,
+    "llm_calls": 1004
+   },
+   {
+    "doc": 2800,
+    "cost_usd": 0.827273,
+    "llm_calls": 1047
+   },
+   {
+    "doc": 2850,
+    "cost_usd": 0.844759,
+    "llm_calls": 1077
+   },
+   {
+    "doc": 2900,
+    "cost_usd": 0.869651,
+    "llm_calls": 1113
+   },
+   {
+    "doc": 2950,
+    "cost_usd": 0.881165,
+    "llm_calls": 1140
+   },
+   {
+    "doc": 3000,
+    "cost_usd": 0.900725,
+    "llm_calls": 1170
+   },
+   {
+    "doc": 3050,
+    "cost_usd": 0.934419,
+    "llm_calls": 1205
+   },
+   {
+    "doc": 3100,
+    "cost_usd": 0.952131,
+    "llm_calls": 1239
+   },
+   {
+    "doc": 3150,
+    "cost_usd": 0.979484,
+    "llm_calls": 1277
+   },
+   {
+    "doc": 3200,
+    "cost_usd": 1.00081,
+    "llm_calls": 1311
+   },
+   {
+    "doc": 3250,
+    "cost_usd": 1.021433,
+    "llm_calls": 1344
+   },
+   {
+    "doc": 3300,
+    "cost_usd": 1.034296,
+    "llm_calls": 1372
+   },
+   {
+    "doc": 3350,
+    "cost_usd": 1.057526,
+    "llm_calls": 1407
+   },
+   {
+    "doc": 3400,
+    "cost_usd": 1.070763,
+    "llm_calls": 1437
+   },
+   {
+    "doc": 3450,
+    "cost_usd": 1.107309,
+    "llm_calls": 1476
+   },
+   {
+    "doc": 3500,
+    "cost_usd": 1.127677,
+    "llm_calls": 1504
+   },
+   {
+    "doc": 3550,
+    "cost_usd": 1.145931,
+    "llm_calls": 1540
+   },
+   {
+    "doc": 3600,
+    "cost_usd": 1.158057,
+    "llm_calls": 1569
+   },
+   {
+    "doc": 3650,
+    "cost_usd": 1.168856,
+    "llm_calls": 1598
+   },
+   {
+    "doc": 3700,
+    "cost_usd": 1.183184,
+    "llm_calls": 1624
+   },
+   {
+    "doc": 3750,
+    "cost_usd": 1.205643,
+    "llm_calls": 1654
+   },
+   {
+    "doc": 3800,
+    "cost_usd": 1.221627,
+    "llm_calls": 1684
+   },
+   {
+    "doc": 3850,
+    "cost_usd": 1.23323,
+    "llm_calls": 1708
+   },
+   {
+    "doc": 3900,
+    "cost_usd": 1.267363,
+    "llm_calls": 1746
+   },
+   {
+    "doc": 3950,
+    "cost_usd": 1.272636,
+    "llm_calls": 1775
+   },
+   {
+    "doc": 4000,
+    "cost_usd": 1.288395,
+    "llm_calls": 1806
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 1.297714,
+    "llm_calls": 1831
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 1.303391,
+    "llm_calls": 1861
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 1.312878,
+    "llm_calls": 1889
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 1.335407,
+    "llm_calls": 1924
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 1.349758,
+    "llm_calls": 1953
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 1.371024,
+    "llm_calls": 1984
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 1.387721,
+    "llm_calls": 2011
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 1.403114,
+    "llm_calls": 2046
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 1.415139,
+    "llm_calls": 2079
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 1.434616,
+    "llm_calls": 2109
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 1.461761,
+    "llm_calls": 2135
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 1.487222,
+    "llm_calls": 2167
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 1.505323,
+    "llm_calls": 2201
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 1.526477,
+    "llm_calls": 2236
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 1.562047,
+    "llm_calls": 2269
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 1.579193,
+    "llm_calls": 2297
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 1.601057,
+    "llm_calls": 2328
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 1.609808,
+    "llm_calls": 2351
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 1.632395,
+    "llm_calls": 2383
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 1.649596,
+    "llm_calls": 2410
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 1.66981,
+    "llm_calls": 2438
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 1.679199,
+    "llm_calls": 2463
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 1.700566,
+    "llm_calls": 2494
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 1.722659,
+    "llm_calls": 2523
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 1.749586,
+    "llm_calls": 2556
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 1.774728,
+    "llm_calls": 2589
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 1.792604,
+    "llm_calls": 2620
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 1.811054,
+    "llm_calls": 2654
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 1.832921,
+    "llm_calls": 2688
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 1.865862,
+    "llm_calls": 2721
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 1.891864,
+    "llm_calls": 2761
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 1.913633,
+    "llm_calls": 2791
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 1.942459,
+    "llm_calls": 2829
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 1.962779,
+    "llm_calls": 2865
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 1.974949,
+    "llm_calls": 2892
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 1.983655,
+    "llm_calls": 2922
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 2.001256,
+    "llm_calls": 2948
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 2.029027,
+    "llm_calls": 2981
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 2.049015,
+    "llm_calls": 3009
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 2.083542,
+    "llm_calls": 3047
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 2.09051,
+    "llm_calls": 3073
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 2.112589,
+    "llm_calls": 3112
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 2.129888,
+    "llm_calls": 3143
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 2.152084,
+    "llm_calls": 3175
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 2.16493,
+    "llm_calls": 3204
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 2.174166,
+    "llm_calls": 3237
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 2.193721,
+    "llm_calls": 3272
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 2.22364,
+    "llm_calls": 3311
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 2.252695,
+    "llm_calls": 3342
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 2.28347,
+    "llm_calls": 3379
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 2.298719,
+    "llm_calls": 3411
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 2.321935,
+    "llm_calls": 3443
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 2.334299,
+    "llm_calls": 3471
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 2.34834,
+    "llm_calls": 3497
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 2.355566,
+    "llm_calls": 3522
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 2.37433,
+    "llm_calls": 3553
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 2.394793,
+    "llm_calls": 3578
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 2.413903,
+    "llm_calls": 3612
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 2.428481,
+    "llm_calls": 3638
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 2.45329,
+    "llm_calls": 3674
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 2.476614,
+    "llm_calls": 3711
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 2.500971,
+    "llm_calls": 3747
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 2.509592,
+    "llm_calls": 3779
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 2.542154,
+    "llm_calls": 3816
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 2.564501,
+    "llm_calls": 3848
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 2.590535,
+    "llm_calls": 3880
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 2.604017,
+    "llm_calls": 3904
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 2.607876,
+    "llm_calls": 3926
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 2.621284,
+    "llm_calls": 3954
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 2.653079,
+    "llm_calls": 3985
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 2.657813,
+    "llm_calls": 4010
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 2.681266,
+    "llm_calls": 4042
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 2.697036,
+    "llm_calls": 4076
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 2.712311,
+    "llm_calls": 4102
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 2.731052,
+    "llm_calls": 4133
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 2.743701,
+    "llm_calls": 4163
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 2.765424,
+    "llm_calls": 4196
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 2.78162,
+    "llm_calls": 4231
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 2.819207,
+    "llm_calls": 4274
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 2.847813,
+    "llm_calls": 4308
+   }
+  ],
+  "events": [
+   {
+    "seq": 23,
+    "kind": "promoted",
+    "vendor_id": "V14",
+    "message": "static parser V14-p1 compiled"
+   },
+   {
+    "seq": 31,
+    "kind": "promoted",
+    "vendor_id": "V01",
+    "message": "static parser V01-p1 compiled"
+   },
+   {
+    "seq": 37,
+    "kind": "promoted",
+    "vendor_id": "V11",
+    "message": "static parser V11-p1 compiled"
+   },
+   {
+    "seq": 48,
+    "kind": "promoted",
+    "vendor_id": "V19",
+    "message": "static parser V19-p1 compiled"
+   },
+   {
+    "seq": 60,
+    "kind": "promoted",
+    "vendor_id": "V09",
+    "message": "static parser V09-p1 compiled"
+   },
+   {
+    "seq": 63,
+    "kind": "promoted",
+    "vendor_id": "V10",
+    "message": "static parser V10-p1 compiled"
+   },
+   {
+    "seq": 69,
+    "kind": "promoted",
+    "vendor_id": "V12",
+    "message": "static parser V12-p1 compiled"
+   },
+   {
+    "seq": 86,
+    "kind": "promoted",
+    "vendor_id": "V06",
+    "message": "static parser V06-p1 compiled"
+   },
+   {
+    "seq": 105,
+    "kind": "promoted",
+    "vendor_id": "V07",
+    "message": "static parser V07-p1 compiled"
+   },
+   {
+    "seq": 120,
+    "kind": "promoted",
+    "vendor_id": "V15",
+    "message": "static parser V15-p1 compiled"
+   },
+   {
+    "seq": 121,
+    "kind": "promoted",
+    "vendor_id": "V08",
+    "message": "static parser V08-p1 compiled"
+   },
+   {
+    "seq": 136,
+    "kind": "promoted",
+    "vendor_id": "V03",
+    "message": "static parser V03-p1 compiled"
+   },
+   {
+    "seq": 267,
+    "kind": "promoted",
+    "vendor_id": "V16",
+    "message": "static parser V16-p1 compiled"
+   },
+   {
+    "seq": 310,
+    "kind": "promoted",
+    "vendor_id": "V17",
+    "message": "static parser V17-p1 compiled"
+   },
+   {
+    "seq": 436,
+    "kind": "promoted",
+    "vendor_id": "V20",
+    "message": "static parser V20-p1 compiled"
+   },
+   {
+    "seq": 444,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "static parser V04-p1 compiled"
+   },
+   {
+    "seq": 635,
+    "kind": "promoted",
+    "vendor_id": "V18",
+    "message": "static parser V18-p1 compiled"
+   },
+   {
+    "seq": 1459,
+    "kind": "promoted",
+    "vendor_id": "V13",
+    "message": "static parser V13-p1 compiled"
+   }
+  ],
+  "parsers": [
+   {
+    "vendor_id": "V01",
+    "vendor": "Al-Noor Industrial Supplies",
+    "state": "learning",
+    "active": "V01-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 713,
+    "seen": 716,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V02",
+    "vendor": "Najd Office Solutions",
+    "state": "learning",
+    "active": null,
+    "shadow": null,
+    "generator": null,
+    "docs": 0,
+    "seen": 173,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 12,
+    "versions": 0
+   },
+   {
+    "vendor_id": "V03",
+    "vendor": "Red Sea Logistics Co.",
+    "state": "learning",
+    "active": "V03-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 191,
+    "seen": 217,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V04",
+    "vendor": "Qassim Fresh Foods",
+    "state": "learning",
+    "active": "V04-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 253,
+    "seen": 1705,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V05",
+    "vendor": "Desert Peak IT Services",
+    "state": "learning",
+    "active": null,
+    "shadow": null,
+    "generator": null,
+    "docs": 0,
+    "seen": 273,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 12,
+    "versions": 0
+   },
+   {
+    "vendor_id": "V06",
+    "vendor": "Gulf Packaging Factory",
+    "state": "learning",
+    "active": "V06-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 159,
+    "seen": 162,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V07",
+    "vendor": "Baltic Freight GmbH",
+    "state": "learning",
+    "active": "V07-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 176,
+    "seen": 217,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V08",
+    "vendor": "Rheinwerk Maschinenbau AG",
+    "state": "learning",
+    "active": "V08-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 167,
+    "seen": 170,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V09",
+    "vendor": "Lumi\u00e8re Bureau SARL",
+    "state": "learning",
+    "active": "V09-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 216,
+    "seen": 239,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V10",
+    "vendor": "Iberia Componentes S.L.",
+    "state": "learning",
+    "active": "V10-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 207,
+    "seen": 210,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V11",
+    "vendor": "Thames Consulting Ltd",
+    "state": "learning",
+    "active": "V11-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 204,
+    "seen": 243,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V12",
+    "vendor": "Northwind Electrical Ltd",
+    "state": "learning",
+    "active": "V12-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 400,
+    "seen": 403,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V13",
+    "vendor": "Cascade Cloud Inc.",
+    "state": "learning",
+    "active": "V13-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 225,
+    "seen": 325,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V14",
+    "vendor": "Lone Star Fasteners LLC",
+    "state": "learning",
+    "active": "V14-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 187,
+    "seen": 519,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V15",
+    "vendor": "Pacific Print Works",
+    "state": "learning",
+    "active": "V15-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 156,
+    "seen": 539,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 5,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V16",
+    "vendor": "Emirates Steel Trading",
+    "state": "learning",
+    "active": "V16-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 168,
+    "seen": 171,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V17",
+    "vendor": "Falcon Security Systems",
+    "state": "learning",
+    "active": "V17-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 157,
+    "seen": 160,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V18",
+    "vendor": "Riyadh Medical Supply",
+    "state": "learning",
+    "active": "V18-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 182,
+    "seen": 246,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V19",
+    "vendor": "Al-Qassim Cold Chain",
+    "state": "learning",
+    "active": "V19-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 249,
+    "seen": 978,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 3,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V20",
+    "vendor": "Hijaz Construction Materials",
+    "state": "learning",
+    "active": "V20-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 258,
+    "seen": 310,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "no audits yet",
+    "examples": 12,
+    "versions": 1
+   }
+  ]
+ },
+ {
+  "system": "distill",
+  "mode": "distill",
+  "simulated_llm": true,
+  "docs": 8000,
+  "doc_accuracy": 0.97237,
+  "wrong_docs": 221,
+  "field_accuracy": 0.998896,
+  "cost_usd": 1.290529,
+  "cost_per_1k_docs": 0.16132,
+  "cost_per_1k_docs_last_1000": 0.15812,
+  "llm_calls": 3916,
+  "llm_calls_per_doc": 0.4895,
+  "code_share": 0.5469,
+  "audit_share": 0.2457,
+  "code_share_last_1000": 0.797,
+  "cost_per_1k_correct_docs": 0.1659,
+  "tokens_per_doc": 453.0,
+  "input_tokens": 2695719,
+  "output_tokens": 928620,
+  "escalations_full": 47,
+  "escalations_scoped": 189,
+  "escalation_out_tokens_full": 251.4,
+  "escalation_out_tokens_scoped": 55.1,
+  "scoped_resolved": 142,
+  "human_review": 63,
+  "repaired": 1339,
+  "repaired_wrong": 60,
+  "quarantined": 42,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 0.41,
+  "latency_ms_mean": 850.44,
+  "wall_seconds": 65.52,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 1500,
+    "vendor_docs_after": 589,
+    "wrong_after": 1,
+    "detected_after_vendor_docs": 1,
+    "recovered_after_vendor_docs": 6,
+    "detection_reason": "audit proved parser wrong on line_items[0], line_items[1]. Parser suspended."
+   },
+   {
+    "vendor": "V04",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 1800,
+    "vendor_docs_after": 1327,
+    "wrong_after": 76,
+    "detected_after_vendor_docs": 4,
+    "recovered_after_vendor_docs": 26,
+    "detection_reason": "parser output disagrees with verified extraction on due_date. Parser suspended."
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 2100,
+    "vendor_docs_after": 726,
+    "wrong_after": 1,
+    "detected_after_vendor_docs": 1,
+    "recovered_after_vendor_docs": 6,
+    "detection_reason": "parser output disagrees with verified extraction on invoice_number, due_date, total. Parser suspended."
+   },
+   {
+    "vendor": "V15",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 2400,
+    "vendor_docs_after": 378,
+    "wrong_after": 2,
+    "detected_after_vendor_docs": 4,
+    "recovered_after_vendor_docs": 9,
+    "detection_reason": "parser output disagrees with verified extraction on line_items. Parser suspended."
+   },
+   {
+    "vendor": "V14",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 2700,
+    "vendor_docs_after": 329,
+    "wrong_after": 0,
+    "detected_after_vendor_docs": 4,
+    "recovered_after_vendor_docs": 9,
+    "detection_reason": "parser output disagrees with verified extraction on total. Parser suspended."
+   },
+   {
+    "vendor": "V12",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 3000,
+    "vendor_docs_after": 249,
+    "wrong_after": 0,
+    "detected_after_vendor_docs": null,
+    "recovered_after_vendor_docs": null,
+    "detection_reason": null
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.021868,
+    "llm_calls": 54
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.03077,
+    "llm_calls": 100
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.038747,
+    "llm_calls": 143
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.048627,
+    "llm_calls": 187
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.062793,
+    "llm_calls": 231
+   },
+   {
+    "doc": 300,
+    "cost_usd": 0.0706,
+    "llm_calls": 262
+   },
+   {
+    "doc": 350,
+    "cost_usd": 0.079758,
+    "llm_calls": 296
+   },
+   {
+    "doc": 400,
+    "cost_usd": 0.083613,
+    "llm_calls": 317
+   },
+   {
+    "doc": 450,
+    "cost_usd": 0.086507,
+    "llm_calls": 333
+   },
+   {
+    "doc": 500,
+    "cost_usd": 0.106094,
+    "llm_calls": 364
+   },
+   {
+    "doc": 550,
+    "cost_usd": 0.117765,
+    "llm_calls": 394
+   },
+   {
+    "doc": 600,
+    "cost_usd": 0.133678,
+    "llm_calls": 431
+   },
+   {
+    "doc": 650,
+    "cost_usd": 0.139594,
+    "llm_calls": 463
+   },
+   {
+    "doc": 700,
+    "cost_usd": 0.149481,
+    "llm_calls": 496
+   },
+   {
+    "doc": 750,
+    "cost_usd": 0.163397,
+    "llm_calls": 527
+   },
+   {
+    "doc": 800,
+    "cost_usd": 0.170067,
+    "llm_calls": 556
+   },
+   {
+    "doc": 850,
+    "cost_usd": 0.179757,
+    "llm_calls": 582
+   },
+   {
+    "doc": 900,
+    "cost_usd": 0.190157,
+    "llm_calls": 611
+   },
+   {
+    "doc": 950,
+    "cost_usd": 0.200291,
+    "llm_calls": 640
+   },
+   {
+    "doc": 1000,
+    "cost_usd": 0.206377,
+    "llm_calls": 671
+   },
+   {
+    "doc": 1050,
+    "cost_usd": 0.214772,
+    "llm_calls": 702
+   },
+   {
+    "doc": 1100,
+    "cost_usd": 0.225272,
+    "llm_calls": 734
+   },
+   {
+    "doc": 1150,
+    "cost_usd": 0.23022,
+    "llm_calls": 760
+   },
+   {
+    "doc": 1200,
+    "cost_usd": 0.23706,
+    "llm_calls": 785
+   },
+   {
+    "doc": 1250,
+    "cost_usd": 0.247811,
+    "llm_calls": 810
+   },
+   {
+    "doc": 1300,
+    "cost_usd": 0.254234,
+    "llm_calls": 833
+   },
+   {
+    "doc": 1350,
+    "cost_usd": 0.266414,
+    "llm_calls": 856
+   },
+   {
+    "doc": 1400,
+    "cost_usd": 0.27789,
+    "llm_calls": 882
+   },
+   {
+    "doc": 1450,
+    "cost_usd": 0.284003,
+    "llm_calls": 907
+   },
+   {
+    "doc": 1500,
+    "cost_usd": 0.292037,
+    "llm_calls": 929
+   },
+   {
+    "doc": 1550,
+    "cost_usd": 0.303123,
+    "llm_calls": 972
+   },
+   {
+    "doc": 1600,
+    "cost_usd": 0.314462,
+    "llm_calls": 999
+   },
+   {
+    "doc": 1650,
+    "cost_usd": 0.325575,
+    "llm_calls": 1024
+   },
+   {
+    "doc": 1700,
+    "cost_usd": 0.329356,
+    "llm_calls": 1044
+   },
+   {
+    "doc": 1750,
+    "cost_usd": 0.340046,
+    "llm_calls": 1074
+   },
+   {
+    "doc": 1800,
+    "cost_usd": 0.343313,
+    "llm_calls": 1091
+   },
+   {
+    "doc": 1850,
+    "cost_usd": 0.352485,
+    "llm_calls": 1117
+   },
+   {
+    "doc": 1900,
+    "cost_usd": 0.365888,
+    "llm_calls": 1145
+   },
+   {
+    "doc": 1950,
+    "cost_usd": 0.382351,
+    "llm_calls": 1175
+   },
+   {
+    "doc": 2000,
+    "cost_usd": 0.390469,
+    "llm_calls": 1201
+   },
+   {
+    "doc": 2050,
+    "cost_usd": 0.394439,
+    "llm_calls": 1221
+   },
+   {
+    "doc": 2100,
+    "cost_usd": 0.400227,
+    "llm_calls": 1241
+   },
+   {
+    "doc": 2150,
+    "cost_usd": 0.410911,
+    "llm_calls": 1289
+   },
+   {
+    "doc": 2200,
+    "cost_usd": 0.430882,
+    "llm_calls": 1323
+   },
+   {
+    "doc": 2250,
+    "cost_usd": 0.436218,
+    "llm_calls": 1350
+   },
+   {
+    "doc": 2300,
+    "cost_usd": 0.445403,
+    "llm_calls": 1382
+   },
+   {
+    "doc": 2350,
+    "cost_usd": 0.450657,
+    "llm_calls": 1411
+   },
+   {
+    "doc": 2400,
+    "cost_usd": 0.460466,
+    "llm_calls": 1433
+   },
+   {
+    "doc": 2450,
+    "cost_usd": 0.468368,
+    "llm_calls": 1464
+   },
+   {
+    "doc": 2500,
+    "cost_usd": 0.473463,
+    "llm_calls": 1492
+   },
+   {
+    "doc": 2550,
+    "cost_usd": 0.479834,
+    "llm_calls": 1518
+   },
+   {
+    "doc": 2600,
+    "cost_usd": 0.487373,
+    "llm_calls": 1548
+   },
+   {
+    "doc": 2650,
+    "cost_usd": 0.494714,
+    "llm_calls": 1577
+   },
+   {
+    "doc": 2700,
+    "cost_usd": 0.499706,
+    "llm_calls": 1604
+   },
+   {
+    "doc": 2750,
+    "cost_usd": 0.50274,
+    "llm_calls": 1621
+   },
+   {
+    "doc": 2800,
+    "cost_usd": 0.518063,
+    "llm_calls": 1658
+   },
+   {
+    "doc": 2850,
+    "cost_usd": 0.52482,
+    "llm_calls": 1686
+   },
+   {
+    "doc": 2900,
+    "cost_usd": 0.534102,
+    "llm_calls": 1705
+   },
+   {
+    "doc": 2950,
+    "cost_usd": 0.540757,
+    "llm_calls": 1730
+   },
+   {
+    "doc": 3000,
+    "cost_usd": 0.543555,
+    "llm_calls": 1746
+   },
+   {
+    "doc": 3050,
+    "cost_usd": 0.556375,
+    "llm_calls": 1775
+   },
+   {
+    "doc": 3100,
+    "cost_usd": 0.566653,
+    "llm_calls": 1802
+   },
+   {
+    "doc": 3150,
+    "cost_usd": 0.574908,
+    "llm_calls": 1826
+   },
+   {
+    "doc": 3200,
+    "cost_usd": 0.584079,
+    "llm_calls": 1850
+   },
+   {
+    "doc": 3250,
+    "cost_usd": 0.592005,
+    "llm_calls": 1870
+   },
+   {
+    "doc": 3300,
+    "cost_usd": 0.594833,
+    "llm_calls": 1884
+   },
+   {
+    "doc": 3350,
+    "cost_usd": 0.599095,
+    "llm_calls": 1905
+   },
+   {
+    "doc": 3400,
+    "cost_usd": 0.608541,
+    "llm_calls": 1930
+   },
+   {
+    "doc": 3450,
+    "cost_usd": 0.619365,
+    "llm_calls": 1957
+   },
+   {
+    "doc": 3500,
+    "cost_usd": 0.623639,
+    "llm_calls": 1978
+   },
+   {
+    "doc": 3550,
+    "cost_usd": 0.631535,
+    "llm_calls": 1995
+   },
+   {
+    "doc": 3600,
+    "cost_usd": 0.637216,
+    "llm_calls": 2015
+   },
+   {
+    "doc": 3650,
+    "cost_usd": 0.639156,
+    "llm_calls": 2025
+   },
+   {
+    "doc": 3700,
+    "cost_usd": 0.648043,
+    "llm_calls": 2047
+   },
+   {
+    "doc": 3750,
+    "cost_usd": 0.661576,
+    "llm_calls": 2073
+   },
+   {
+    "doc": 3800,
+    "cost_usd": 0.668419,
+    "llm_calls": 2097
+   },
+   {
+    "doc": 3850,
+    "cost_usd": 0.674327,
+    "llm_calls": 2119
+   },
+   {
+    "doc": 3900,
+    "cost_usd": 0.67966,
+    "llm_calls": 2140
+   },
+   {
+    "doc": 3950,
+    "cost_usd": 0.682881,
+    "llm_calls": 2159
+   },
+   {
+    "doc": 4000,
+    "cost_usd": 0.695016,
+    "llm_calls": 2179
+   },
+   {
+    "doc": 4050,
+    "cost_usd": 0.704814,
+    "llm_calls": 2192
+   },
+   {
+    "doc": 4100,
+    "cost_usd": 0.708553,
+    "llm_calls": 2212
+   },
+   {
+    "doc": 4150,
+    "cost_usd": 0.716621,
+    "llm_calls": 2231
+   },
+   {
+    "doc": 4200,
+    "cost_usd": 0.72434,
+    "llm_calls": 2251
+   },
+   {
+    "doc": 4250,
+    "cost_usd": 0.729596,
+    "llm_calls": 2277
+   },
+   {
+    "doc": 4300,
+    "cost_usd": 0.739627,
+    "llm_calls": 2300
+   },
+   {
+    "doc": 4350,
+    "cost_usd": 0.741927,
+    "llm_calls": 2312
+   },
+   {
+    "doc": 4400,
+    "cost_usd": 0.745601,
+    "llm_calls": 2334
+   },
+   {
+    "doc": 4450,
+    "cost_usd": 0.749444,
+    "llm_calls": 2354
+   },
+   {
+    "doc": 4500,
+    "cost_usd": 0.763906,
+    "llm_calls": 2373
+   },
+   {
+    "doc": 4550,
+    "cost_usd": 0.766295,
+    "llm_calls": 2385
+   },
+   {
+    "doc": 4600,
+    "cost_usd": 0.770297,
+    "llm_calls": 2397
+   },
+   {
+    "doc": 4650,
+    "cost_usd": 0.773487,
+    "llm_calls": 2413
+   },
+   {
+    "doc": 4700,
+    "cost_usd": 0.778479,
+    "llm_calls": 2427
+   },
+   {
+    "doc": 4750,
+    "cost_usd": 0.792231,
+    "llm_calls": 2454
+   },
+   {
+    "doc": 4800,
+    "cost_usd": 0.797217,
+    "llm_calls": 2472
+   },
+   {
+    "doc": 4850,
+    "cost_usd": 0.802314,
+    "llm_calls": 2489
+   },
+   {
+    "doc": 4900,
+    "cost_usd": 0.804684,
+    "llm_calls": 2503
+   },
+   {
+    "doc": 4950,
+    "cost_usd": 0.813781,
+    "llm_calls": 2530
+   },
+   {
+    "doc": 5000,
+    "cost_usd": 0.817203,
+    "llm_calls": 2549
+   },
+   {
+    "doc": 5050,
+    "cost_usd": 0.823598,
+    "llm_calls": 2565
+   },
+   {
+    "doc": 5100,
+    "cost_usd": 0.831847,
+    "llm_calls": 2589
+   },
+   {
+    "doc": 5150,
+    "cost_usd": 0.837805,
+    "llm_calls": 2611
+   },
+   {
+    "doc": 5200,
+    "cost_usd": 0.845269,
+    "llm_calls": 2638
+   },
+   {
+    "doc": 5250,
+    "cost_usd": 0.853966,
+    "llm_calls": 2664
+   },
+   {
+    "doc": 5300,
+    "cost_usd": 0.863422,
+    "llm_calls": 2693
+   },
+   {
+    "doc": 5350,
+    "cost_usd": 0.872867,
+    "llm_calls": 2711
+   },
+   {
+    "doc": 5400,
+    "cost_usd": 0.87762,
+    "llm_calls": 2735
+   },
+   {
+    "doc": 5450,
+    "cost_usd": 0.885595,
+    "llm_calls": 2753
+   },
+   {
+    "doc": 5500,
+    "cost_usd": 0.893407,
+    "llm_calls": 2779
+   },
+   {
+    "doc": 5550,
+    "cost_usd": 0.905211,
+    "llm_calls": 2807
+   },
+   {
+    "doc": 5600,
+    "cost_usd": 0.923908,
+    "llm_calls": 2838
+   },
+   {
+    "doc": 5650,
+    "cost_usd": 0.928789,
+    "llm_calls": 2858
+   },
+   {
+    "doc": 5700,
+    "cost_usd": 0.933353,
+    "llm_calls": 2882
+   },
+   {
+    "doc": 5750,
+    "cost_usd": 0.939522,
+    "llm_calls": 2908
+   },
+   {
+    "doc": 5800,
+    "cost_usd": 0.944998,
+    "llm_calls": 2936
+   },
+   {
+    "doc": 5850,
+    "cost_usd": 0.955756,
+    "llm_calls": 2959
+   },
+   {
+    "doc": 5900,
+    "cost_usd": 0.97397,
+    "llm_calls": 2989
+   },
+   {
+    "doc": 5950,
+    "cost_usd": 0.989966,
+    "llm_calls": 3019
+   },
+   {
+    "doc": 6000,
+    "cost_usd": 0.997831,
+    "llm_calls": 3049
+   },
+   {
+    "doc": 6050,
+    "cost_usd": 1.005418,
+    "llm_calls": 3073
+   },
+   {
+    "doc": 6100,
+    "cost_usd": 1.017309,
+    "llm_calls": 3097
+   },
+   {
+    "doc": 6150,
+    "cost_usd": 1.023832,
+    "llm_calls": 3121
+   },
+   {
+    "doc": 6200,
+    "cost_usd": 1.032541,
+    "llm_calls": 3145
+   },
+   {
+    "doc": 6250,
+    "cost_usd": 1.033982,
+    "llm_calls": 3153
+   },
+   {
+    "doc": 6300,
+    "cost_usd": 1.037305,
+    "llm_calls": 3162
+   },
+   {
+    "doc": 6350,
+    "cost_usd": 1.041247,
+    "llm_calls": 3183
+   },
+   {
+    "doc": 6400,
+    "cost_usd": 1.057678,
+    "llm_calls": 3208
+   },
+   {
+    "doc": 6450,
+    "cost_usd": 1.06762,
+    "llm_calls": 3236
+   },
+   {
+    "doc": 6500,
+    "cost_usd": 1.071346,
+    "llm_calls": 3254
+   },
+   {
+    "doc": 6550,
+    "cost_usd": 1.079967,
+    "llm_calls": 3282
+   },
+   {
+    "doc": 6600,
+    "cost_usd": 1.091889,
+    "llm_calls": 3311
+   },
+   {
+    "doc": 6650,
+    "cost_usd": 1.098465,
+    "llm_calls": 3335
+   },
+   {
+    "doc": 6700,
+    "cost_usd": 1.102509,
+    "llm_calls": 3356
+   },
+   {
+    "doc": 6750,
+    "cost_usd": 1.105623,
+    "llm_calls": 3372
+   },
+   {
+    "doc": 6800,
+    "cost_usd": 1.108636,
+    "llm_calls": 3388
+   },
+   {
+    "doc": 6850,
+    "cost_usd": 1.117812,
+    "llm_calls": 3403
+   },
+   {
+    "doc": 6900,
+    "cost_usd": 1.121558,
+    "llm_calls": 3422
+   },
+   {
+    "doc": 6950,
+    "cost_usd": 1.128022,
+    "llm_calls": 3442
+   },
+   {
+    "doc": 7000,
+    "cost_usd": 1.132411,
+    "llm_calls": 3465
+   },
+   {
+    "doc": 7050,
+    "cost_usd": 1.140343,
+    "llm_calls": 3490
+   },
+   {
+    "doc": 7100,
+    "cost_usd": 1.150633,
+    "llm_calls": 3515
+   },
+   {
+    "doc": 7150,
+    "cost_usd": 1.154752,
+    "llm_calls": 3535
+   },
+   {
+    "doc": 7200,
+    "cost_usd": 1.157334,
+    "llm_calls": 3549
+   },
+   {
+    "doc": 7250,
+    "cost_usd": 1.176338,
+    "llm_calls": 3577
+   },
+   {
+    "doc": 7300,
+    "cost_usd": 1.182955,
+    "llm_calls": 3601
+   },
+   {
+    "doc": 7350,
+    "cost_usd": 1.188657,
+    "llm_calls": 3619
+   },
+   {
+    "doc": 7400,
+    "cost_usd": 1.19474,
+    "llm_calls": 3634
+   },
+   {
+    "doc": 7450,
+    "cost_usd": 1.201523,
+    "llm_calls": 3655
+   },
+   {
+    "doc": 7500,
+    "cost_usd": 1.207439,
+    "llm_calls": 3679
+   },
+   {
+    "doc": 7550,
+    "cost_usd": 1.211816,
+    "llm_calls": 3701
+   },
+   {
+    "doc": 7600,
+    "cost_usd": 1.221644,
+    "llm_calls": 3719
+   },
+   {
+    "doc": 7650,
+    "cost_usd": 1.223637,
+    "llm_calls": 3730
+   },
+   {
+    "doc": 7700,
+    "cost_usd": 1.228045,
+    "llm_calls": 3755
+   },
+   {
+    "doc": 7750,
+    "cost_usd": 1.236352,
+    "llm_calls": 3773
+   },
+   {
+    "doc": 7800,
+    "cost_usd": 1.244845,
+    "llm_calls": 3800
+   },
+   {
+    "doc": 7850,
+    "cost_usd": 1.256662,
+    "llm_calls": 3823
+   },
+   {
+    "doc": 7900,
+    "cost_usd": 1.269761,
+    "llm_calls": 3850
+   },
+   {
+    "doc": 7950,
+    "cost_usd": 1.281281,
+    "llm_calls": 3886
+   },
+   {
+    "doc": 8000,
+    "cost_usd": 1.290529,
+    "llm_calls": 3916
+   }
+  ],
+  "events": [
+   {
+    "seq": 13,
+    "kind": "candidate",
+    "vendor_id": "V05",
+    "message": "V05-p1 synthesized (induce_strict), validated 2/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V05-p1"
+   },
+   {
+    "seq": 23,
+    "kind": "candidate",
+    "vendor_id": "V14",
+    "message": "V14-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V14-p1"
+   },
+   {
+    "seq": 29,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p1 synthesized (induce_strict), validated 4/6 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p1"
+   },
+   {
+    "seq": 31,
+    "kind": "candidate",
+    "vendor_id": "V01",
+    "message": "V01-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V01-p1"
+   },
+   {
+    "seq": 36,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p1 promoted (first parser for this source) after 4/6 isolated + 3 shadow agreements",
+    "parser_id": "V04-p1"
+   },
+   {
+    "seq": 37,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p1"
+   },
+   {
+    "seq": 48,
+    "kind": "candidate",
+    "vendor_id": "V19",
+    "message": "V19-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V19-p1"
+   },
+   {
+    "seq": 51,
+    "kind": "promoted",
+    "vendor_id": "V14",
+    "message": "V14-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V14-p1"
+   },
+   {
+    "seq": 60,
+    "kind": "candidate",
+    "vendor_id": "V09",
+    "message": "V09-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V09-p1"
+   },
+   {
+    "seq": 63,
+    "kind": "candidate",
+    "vendor_id": "V10",
+    "message": "V10-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V10-p1"
+   },
+   {
+    "seq": 69,
+    "kind": "candidate",
+    "vendor_id": "V12",
+    "message": "V12-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V12-p1"
+   },
+   {
+    "seq": 72,
+    "kind": "promoted",
+    "vendor_id": "V19",
+    "message": "V19-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V19-p1"
+   },
+   {
+    "seq": 75,
+    "kind": "candidate",
+    "vendor_id": "V20",
+    "message": "V20-p1 synthesized (induce_strict), validated 1/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V20-p1"
+   },
+   {
+    "seq": 80,
+    "kind": "promoted",
+    "vendor_id": "V01",
+    "message": "V01-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V01-p1"
+   },
+   {
+    "seq": 82,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p2 synthesized (induce_strict), validated 7/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p2"
+   },
+   {
+    "seq": 86,
+    "kind": "candidate",
+    "vendor_id": "V06",
+    "message": "V06-p1 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V06-p1"
+   },
+   {
+    "seq": 96,
+    "kind": "candidate",
+    "vendor_id": "V15",
+    "message": "V15-p1 synthesized (induce_strict), validated 2/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V15-p1"
+   },
+   {
+    "seq": 100,
+    "kind": "candidate",
+    "vendor_id": "V18",
+    "message": "V18-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V18-p1"
+   },
+   {
+    "seq": 105,
+    "kind": "candidate",
+    "vendor_id": "V07",
+    "message": "V07-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V07-p1"
+   },
+   {
+    "seq": 121,
+    "kind": "candidate",
+    "vendor_id": "V08",
+    "message": "V08-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V08-p1"
+   },
+   {
+    "seq": 128,
+    "kind": "candidate",
+    "vendor_id": "V02",
+    "message": "V02-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V02-p1"
+   },
+   {
+    "seq": 129,
+    "kind": "promoted",
+    "vendor_id": "V15",
+    "message": "V15-p1 promoted (first parser for this source) after 2/3 isolated + 3 shadow agreements",
+    "parser_id": "V15-p1"
+   },
+   {
+    "seq": 136,
+    "kind": "candidate",
+    "vendor_id": "V03",
+    "message": "V03-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V03-p1"
+   },
+   {
+    "seq": 165,
+    "kind": "promoted",
+    "vendor_id": "V20",
+    "message": "V20-p1 promoted (first parser for this source) after 1/3 isolated + 3 shadow agreements",
+    "parser_id": "V20-p1"
+   },
+   {
+    "seq": 185,
+    "kind": "promoted",
+    "vendor_id": "V10",
+    "message": "V10-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V10-p1"
+   },
+   {
+    "seq": 200,
+    "kind": "candidate",
+    "vendor_id": "V20",
+    "message": "V20-p2 synthesized (induce_strict), validated 6/8 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V20-p2"
+   },
+   {
+    "seq": 217,
+    "kind": "promoted",
+    "vendor_id": "V09",
+    "message": "V09-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V09-p1"
+   },
+   {
+    "seq": 249,
+    "kind": "promoted",
+    "vendor_id": "V12",
+    "message": "V12-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V12-p1"
+   },
+   {
+    "seq": 252,
+    "kind": "candidate",
+    "vendor_id": "V09",
+    "message": "V09-p2 synthesized (induce_strict), validated 9/9 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V09-p2"
+   },
+   {
+    "seq": 259,
+    "kind": "candidate",
+    "vendor_id": "V13",
+    "message": "V13-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V13-p1"
+   },
+   {
+    "seq": 266,
+    "kind": "promoted",
+    "vendor_id": "V07",
+    "message": "V07-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V07-p1"
+   },
+   {
+    "seq": 267,
+    "kind": "candidate",
+    "vendor_id": "V16",
+    "message": "V16-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V16-p1"
+   },
+   {
+    "seq": 289,
+    "kind": "promoted",
+    "vendor_id": "V06",
+    "message": "V06-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V06-p1"
+   },
+   {
+    "seq": 296,
+    "kind": "promoted",
+    "vendor_id": "V08",
+    "message": "V08-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V08-p1"
+   },
+   {
+    "seq": 310,
+    "kind": "candidate",
+    "vendor_id": "V17",
+    "message": "V17-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V17-p1"
+   },
+   {
+    "seq": 314,
+    "kind": "promoted",
+    "vendor_id": "V13",
+    "message": "V13-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V13-p1"
+   },
+   {
+    "seq": 334,
+    "kind": "promoted",
+    "vendor_id": "V11",
+    "message": "V11-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V11-p1"
+   },
+   {
+    "seq": 389,
+    "kind": "promoted",
+    "vendor_id": "V03",
+    "message": "V03-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V03-p1"
+   },
+   {
+    "seq": 423,
+    "kind": "promoted",
+    "vendor_id": "V18",
+    "message": "V18-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V18-p1"
+   },
+   {
+    "seq": 468,
+    "kind": "promoted",
+    "vendor_id": "V17",
+    "message": "V17-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V17-p1"
+   },
+   {
+    "seq": 557,
+    "kind": "promoted",
+    "vendor_id": "V16",
+    "message": "V16-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V16-p1"
+   },
+   {
+    "seq": 607,
+    "kind": "candidate",
+    "vendor_id": "V18",
+    "message": "V18-p2 synthesized (induce_strict), validated 5/5 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V18-p2"
+   },
+   {
+    "seq": 704,
+    "kind": "promoted",
+    "vendor_id": "V09",
+    "message": "V09-p2 promoted (replaces V09-p1) after 9/9 isolated + 3 shadow agreements",
+    "parser_id": "V09-p2"
+   },
+   {
+    "seq": 726,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[2]. Parser suspended.",
+    "parser_id": "V04-p1"
+   },
+   {
+    "seq": 726,
+    "kind": "quarantine",
+    "vendor_id": "V04",
+    "message": "Quarantined 1 recent document(s); corrected 0.",
+    "n": 1,
+    "corrected": 0
+   },
+   {
+    "seq": 752,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p3 synthesized (induce_strict), validated 6/6 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p3"
+   },
+   {
+    "seq": 763,
+    "kind": "candidate",
+    "vendor_id": "V07",
+    "message": "V07-p2 synthesized (induce_strict), validated 5/5 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V07-p2"
+   },
+   {
+    "seq": 775,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p3 promoted (replaces V04-p1) after 6/6 isolated + 3 shadow agreements",
+    "parser_id": "V04-p3"
+   },
+   {
+    "seq": 844,
+    "kind": "promoted",
+    "vendor_id": "V05",
+    "message": "V05-p1 promoted (first parser for this source) after 2/3 isolated + 3 shadow agreements",
+    "parser_id": "V05-p1"
+   },
+   {
+    "seq": 868,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[4]. Parser suspended.",
+    "parser_id": "V04-p3"
+   },
+   {
+    "seq": 953,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p4 synthesized (induce_strict), validated 9/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p4"
+   },
+   {
+    "seq": 959,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p4 promoted (replaces V04-p3) after 9/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p4"
+   },
+   {
+    "seq": 966,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p5 synthesized (induce_strict), validated 8/8 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p5"
+   },
+   {
+    "seq": 1100,
+    "kind": "drift",
+    "vendor_id": "V05",
+    "message": "Drift confirmed for Desert Peak IT Services: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V05-p1"
+   },
+   {
+    "seq": 1219,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[3]. Parser suspended.",
+    "parser_id": "V04-p4"
+   },
+   {
+    "seq": 1257,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p6 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p6"
+   },
+   {
+    "seq": 1279,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p6 promoted (replaces V04-p4) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V04-p6"
+   },
+   {
+    "seq": 1373,
+    "kind": "promoted",
+    "vendor_id": "V02",
+    "message": "V02-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V02-p1"
+   },
+   {
+    "seq": 1504,
+    "kind": "drift",
+    "vendor_id": "V01",
+    "message": "Drift confirmed for Al-Noor Industrial Supplies: audit proved parser wrong on line_items[0], line_items[1]. Parser suspended.",
+    "parser_id": "V01-p1"
+   },
+   {
+    "seq": 1504,
+    "kind": "quarantine",
+    "vendor_id": "V01",
+    "message": "Quarantined 23 recent document(s); corrected 0.",
+    "n": 23,
+    "corrected": 0
+   },
+   {
+    "seq": 1511,
+    "kind": "candidate",
+    "vendor_id": "V01",
+    "message": "V01-p2 synthesized (induce_strict), validated 2/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V01-p2"
+   },
+   {
+    "seq": 1552,
+    "kind": "promoted",
+    "vendor_id": "V01",
+    "message": "V01-p2 promoted (replaces V01-p1) after 2/3 isolated + 3 shadow agreements",
+    "parser_id": "V01-p2"
+   },
+   {
+    "seq": 1677,
+    "kind": "candidate",
+    "vendor_id": "V03",
+    "message": "V03-p2 synthesized (induce_strict), validated 8/11 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V03-p2"
+   },
+   {
+    "seq": 1704,
+    "kind": "promoted",
+    "vendor_id": "V20",
+    "message": "V20-p2 promoted (replaces V20-p1) after 6/8 isolated + 3 shadow agreements",
+    "parser_id": "V20-p2"
+   },
+   {
+    "seq": 1817,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: parser output disagrees with verified extraction on due_date. Parser suspended.",
+    "parser_id": "V04-p6"
+   },
+   {
+    "seq": 1860,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p7 synthesized (induce_strict), validated 8/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p7"
+   },
+   {
+    "seq": 1915,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p7 promoted (replaces V04-p6) after 8/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p7"
+   },
+   {
+    "seq": 2106,
+    "kind": "drift",
+    "vendor_id": "V19",
+    "message": "Drift confirmed for Al-Qassim Cold Chain: parser output disagrees with verified extraction on invoice_number, due_date, total. Parser suspended.",
+    "parser_id": "V19-p1"
+   },
+   {
+    "seq": 2106,
+    "kind": "quarantine",
+    "vendor_id": "V19",
+    "message": "Quarantined 15 recent document(s); corrected 0.",
+    "n": 15,
+    "corrected": 0
+   },
+   {
+    "seq": 2124,
+    "kind": "candidate",
+    "vendor_id": "V19",
+    "message": "V19-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V19-p2"
+   },
+   {
+    "seq": 2127,
+    "kind": "drift",
+    "vendor_id": "V11",
+    "message": "Drift confirmed for Thames Consulting Ltd: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V11-p1"
+   },
+   {
+    "seq": 2153,
+    "kind": "promoted",
+    "vendor_id": "V19",
+    "message": "V19-p2 promoted (replaces V19-p1) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V19-p2"
+   },
+   {
+    "seq": 2175,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p2"
+   },
+   {
+    "seq": 2253,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: parser output disagrees with verified extraction on line_items[3]. Parser suspended.",
+    "parser_id": "V04-p7"
+   },
+   {
+    "seq": 2289,
+    "kind": "candidate",
+    "vendor_id": "V02",
+    "message": "V02-p2 synthesized (induce_strict), validated 4/4 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V02-p2"
+   },
+   {
+    "seq": 2305,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p8 synthesized (induce_strict), validated 10/10 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p8"
+   },
+   {
+    "seq": 2334,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p8 promoted (replaces V04-p7) after 10/10 isolated + 3 shadow agreements",
+    "parser_id": "V04-p8"
+   },
+   {
+    "seq": 2367,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: parser output disagrees with verified extraction on po_number. Parser suspended.",
+    "parser_id": "V04-p8"
+   },
+   {
+    "seq": 2372,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p9 synthesized (induce_strict), validated 11/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p9"
+   },
+   {
+    "seq": 2407,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p9 promoted (replaces V04-p8) after 11/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p9"
+   },
+   {
+    "seq": 2455,
+    "kind": "drift",
+    "vendor_id": "V15",
+    "message": "Drift confirmed for Pacific Print Works: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V15-p1"
+   },
+   {
+    "seq": 2458,
+    "kind": "promoted",
+    "vendor_id": "V11",
+    "message": "V11-p2 promoted (replaces V11-p1) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V11-p2"
+   },
+   {
+    "seq": 2480,
+    "kind": "candidate",
+    "vendor_id": "V15",
+    "message": "V15-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V15-p2"
+   },
+   {
+    "seq": 2495,
+    "kind": "drift",
+    "vendor_id": "V02",
+    "message": "Drift confirmed for Najd Office Solutions: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V02-p1"
+   },
+   {
+    "seq": 2497,
+    "kind": "drift",
+    "vendor_id": "V11",
+    "message": "Drift confirmed for Thames Consulting Ltd: parser output disagrees with verified extraction on invoice_date, line_items. Parser suspended.",
+    "parser_id": "V11-p2"
+   },
+   {
+    "seq": 2553,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p3 synthesized (induce_strict), validated 9/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p3"
+   },
+   {
+    "seq": 2586,
+    "kind": "promoted",
+    "vendor_id": "V15",
+    "message": "V15-p2 promoted (replaces V15-p1) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V15-p2"
+   },
+   {
+    "seq": 2664,
+    "kind": "promoted",
+    "vendor_id": "V11",
+    "message": "V11-p3 promoted (replaces V11-p2) after 9/12 isolated + 3 shadow agreements",
+    "parser_id": "V11-p3"
+   },
+   {
+    "seq": 2784,
+    "kind": "drift",
+    "vendor_id": "V14",
+    "message": "Drift confirmed for Lone Star Fasteners LLC: parser output disagrees with verified extraction on total. Parser suspended.",
+    "parser_id": "V14-p1"
+   },
+   {
+    "seq": 2800,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p4 synthesized (induce_strict), validated 9/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p4"
+   },
+   {
+    "seq": 2819,
+    "kind": "candidate",
+    "vendor_id": "V14",
+    "message": "V14-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V14-p2"
+   },
+   {
+    "seq": 2854,
+    "kind": "promoted",
+    "vendor_id": "V14",
+    "message": "V14-p2 promoted (replaces V14-p1) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V14-p2"
+   },
+   {
+    "seq": 3117,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[1]. Parser suspended.",
+    "parser_id": "V04-p9"
+   },
+   {
+    "seq": 3165,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p10 synthesized (induce_strict), validated 5/5 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p10"
+   },
+   {
+    "seq": 3177,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p10 promoted (replaces V04-p9) after 5/5 isolated + 3 shadow agreements",
+    "parser_id": "V04-p10"
+   },
+   {
+    "seq": 3259,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p11 synthesized (induce_strict), validated 8/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p11"
+   },
+   {
+    "seq": 3365,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[2]. Parser suspended.",
+    "parser_id": "V04-p10"
+   },
+   {
+    "seq": 3456,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p12 synthesized (induce_strict), validated 5/12 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p12"
+   },
+   {
+    "seq": 3494,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p12 promoted (replaces V04-p10) after 5/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p12"
+   },
+   {
+    "seq": 3872,
+    "kind": "candidate",
+    "vendor_id": "V05",
+    "message": "V05-p2 synthesized (induce_strict), validated 6/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V05-p2"
+   },
+   {
+    "seq": 4300,
+    "kind": "rejected",
+    "vendor_id": "V11",
+    "message": "V11-p4 rejected in shadow (disagreed on line_items[1]); re-synthesizing"
+   },
+   {
+    "seq": 4379,
+    "kind": "candidate",
+    "vendor_id": "V02",
+    "message": "V02-p3 synthesized (induce_strict), validated 6/6 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V02-p3"
+   },
+   {
+    "seq": 4627,
+    "kind": "promoted",
+    "vendor_id": "V05",
+    "message": "V05-p2 promoted (replaces V05-p1) after 6/12 isolated + 3 shadow agreements",
+    "parser_id": "V05-p2"
+   },
+   {
+    "seq": 5014,
+    "kind": "drift",
+    "vendor_id": "V11",
+    "message": "Drift confirmed for Thames Consulting Ltd: parser output disagrees with verified extraction on invoice_date. Parser suspended.",
+    "parser_id": "V11-p3"
+   },
+   {
+    "seq": 5045,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p5 synthesized (induce_strict), validated 1/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p5"
+   },
+   {
+    "seq": 5046,
+    "kind": "drift",
+    "vendor_id": "V13",
+    "message": "Drift confirmed for Cascade Cloud Inc.: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V13-p1"
+   },
+   {
+    "seq": 5203,
+    "kind": "promoted",
+    "vendor_id": "V11",
+    "message": "V11-p5 promoted (replaces V11-p3) after 1/3 isolated + 3 shadow agreements",
+    "parser_id": "V11-p5"
+   },
+   {
+    "seq": 5218,
+    "kind": "candidate",
+    "vendor_id": "V13",
+    "message": "V13-p2 synthesized (induce_strict), validated 7/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V13-p2"
+   },
+   {
+    "seq": 5258,
+    "kind": "promoted",
+    "vendor_id": "V13",
+    "message": "V13-p2 promoted (replaces V13-p1) after 7/12 isolated + 3 shadow agreements",
+    "parser_id": "V13-p2"
+   },
+   {
+    "seq": 5627,
+    "kind": "drift",
+    "vendor_id": "V05",
+    "message": "Drift confirmed for Desert Peak IT Services: parser output disagrees with verified extraction on subtotal. Parser suspended.",
+    "parser_id": "V05-p2"
+   },
+   {
+    "seq": 5663,
+    "kind": "drift",
+    "vendor_id": "V20",
+    "message": "Drift confirmed for Hijaz Construction Materials: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V20-p2"
+   },
+   {
+    "seq": 5765,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p6 synthesized (induce_strict), validated 8/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p6"
+   },
+   {
+    "seq": 5885,
+    "kind": "candidate",
+    "vendor_id": "V20",
+    "message": "V20-p3 synthesized (induce_strict), validated 9/12 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V20-p3"
+   },
+   {
+    "seq": 5923,
+    "kind": "promoted",
+    "vendor_id": "V20",
+    "message": "V20-p3 promoted (replaces V20-p2) after 9/12 isolated + 3 shadow agreements",
+    "parser_id": "V20-p3"
+   },
+   {
+    "seq": 6025,
+    "kind": "rejected",
+    "vendor_id": "V11",
+    "message": "V11-p6 rejected in shadow (disagreed on line_items[1]); re-synthesizing"
+   },
+   {
+    "seq": 6025,
+    "kind": "candidate",
+    "vendor_id": "V11",
+    "message": "V11-p7 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V11-p7"
+   },
+   {
+    "seq": 6107,
+    "kind": "drift",
+    "vendor_id": "V13",
+    "message": "Drift confirmed for Cascade Cloud Inc.: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V13-p2"
+   },
+   {
+    "seq": 6145,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p13 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p13"
+   },
+   {
+    "seq": 6349,
+    "kind": "candidate",
+    "vendor_id": "V20",
+    "message": "V20-p4 synthesized (induce_strict), validated 11/11 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V20-p4"
+   },
+   {
+    "seq": 6412,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V04-p12"
+   },
+   {
+    "seq": 6419,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p14 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p14"
+   },
+   {
+    "seq": 6427,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p14 promoted (replaces V04-p12) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V04-p14"
+   },
+   {
+    "seq": 6434,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: parser output disagrees with verified extraction on currency, line_items[4]. Parser suspended.",
+    "parser_id": "V04-p14"
+   },
+   {
+    "seq": 6443,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p15 synthesized (induce_strict), validated 8/12 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p15"
+   },
+   {
+    "seq": 6457,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p15 promoted (replaces V04-p14) after 8/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p15"
+   },
+   {
+    "seq": 6460,
+    "kind": "promoted",
+    "vendor_id": "V02",
+    "message": "V02-p3 promoted (replaces V02-p1) after 6/6 isolated + 3 shadow agreements",
+    "parser_id": "V02-p3"
+   },
+   {
+    "seq": 6554,
+    "kind": "candidate",
+    "vendor_id": "V13",
+    "message": "V13-p3 synthesized (induce_strict), validated 7/11 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V13-p3"
+   },
+   {
+    "seq": 6684,
+    "kind": "promoted",
+    "vendor_id": "V13",
+    "message": "V13-p3 promoted (replaces V13-p2) after 7/11 isolated + 3 shadow agreements",
+    "parser_id": "V13-p3"
+   },
+   {
+    "seq": 6747,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p16 synthesized (induce_strict), validated 8/8 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p16"
+   },
+   {
+    "seq": 7032,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[0]. Parser suspended.",
+    "parser_id": "V04-p15"
+   },
+   {
+    "seq": 7061,
+    "kind": "candidate",
+    "vendor_id": "V05",
+    "message": "V05-p3 synthesized (induce_strict), validated 6/6 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V05-p3"
+   },
+   {
+    "seq": 7122,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p17 synthesized (induce_strict), validated 8/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p17"
+   },
+   {
+    "seq": 7128,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p17 promoted (replaces V04-p15) after 8/12 isolated + 3 shadow agreements",
+    "parser_id": "V04-p17"
+   },
+   {
+    "seq": 7202,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p18 synthesized (induce_strict), validated 9/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p18"
+   },
+   {
+    "seq": 7596,
+    "kind": "promoted",
+    "vendor_id": "V05",
+    "message": "V05-p3 promoted (replaces V05-p2) after 6/6 isolated + 3 shadow agreements",
+    "parser_id": "V05-p3"
+   },
+   {
+    "seq": 7693,
+    "kind": "drift",
+    "vendor_id": "V02",
+    "message": "Drift confirmed for Najd Office Solutions: parser output disagrees with verified extraction on po_number. Parser suspended.",
+    "parser_id": "V02-p3"
+   },
+   {
+    "seq": 7695,
+    "kind": "drift",
+    "vendor_id": "V13",
+    "message": "Drift confirmed for Cascade Cloud Inc.: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V13-p3"
+   },
+   {
+    "seq": 7719,
+    "kind": "rejected",
+    "vendor_id": "V04",
+    "message": "V04-p18 rejected in shadow (disagreed on invoice_number, line_items[5]); re-synthesizing"
+   },
+   {
+    "seq": 7843,
+    "kind": "drift",
+    "vendor_id": "V04",
+    "message": "Drift confirmed for Qassim Fresh Foods: audit proved parser wrong on line_items[4]. Parser suspended.",
+    "parser_id": "V04-p17"
+   },
+   {
+    "seq": 7843,
+    "kind": "quarantine",
+    "vendor_id": "V04",
+    "message": "Quarantined 3 recent document(s); corrected 0.",
+    "n": 3,
+    "corrected": 0
+   },
+   {
+    "seq": 7852,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p19 synthesized (induce_strict), validated 5/5 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V04-p19"
+   },
+   {
+    "seq": 7871,
+    "kind": "promoted",
+    "vendor_id": "V04",
+    "message": "V04-p19 promoted (replaces V04-p17) after 5/5 isolated + 3 shadow agreements",
+    "parser_id": "V04-p19"
+   },
+   {
+    "seq": 7920,
+    "kind": "candidate",
+    "vendor_id": "V04",
+    "message": "V04-p20 synthesized (induce_strict), validated 11/11 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V04-p20"
+   },
+   {
+    "seq": 7922,
+    "kind": "candidate",
+    "vendor_id": "V13",
+    "message": "V13-p4 synthesized (induce_strict), validated 7/7 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V13-p4"
+   },
+   {
+    "seq": 7949,
+    "kind": "candidate",
+    "vendor_id": "V02",
+    "message": "V02-p4 synthesized (induce_strict), validated 6/6 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V02-p4"
+   }
+  ],
+  "parsers": [
+   {
+    "vendor_id": "V01",
+    "vendor": "Al-Noor Industrial Supplies",
+    "state": "stable",
+    "active": "V01-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 578,
+    "seen": 716,
+    "audits": 21,
+    "audit_errors": 0,
+    "error_bound": 0.13294591102652337,
+    "bound_text": "0 errors in 21 audits -> true error rate < 13.3% (95% confidence)",
+    "examples": 11,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V02",
+    "vendor": "Najd Office Solutions",
+    "state": "drift",
+    "active": null,
+    "shadow": "V02-p4",
+    "generator": "induce_strict",
+    "docs": 6,
+    "seen": 173,
+    "audits": 9,
+    "audit_errors": 0,
+    "error_bound": 0.2831288355631135,
+    "bound_text": "0 errors in 9 audits -> true error rate < 28.3% (95% confidence)",
+    "examples": 12,
+    "versions": 4
+   },
+   {
+    "vendor_id": "V03",
+    "vendor": "Red Sea Logistics Co.",
+    "state": "suspect",
+    "active": "V03-p1",
+    "shadow": "V03-p2",
+    "generator": "induce_strict",
+    "docs": 161,
+    "seen": 217,
+    "audits": 84,
+    "audit_errors": 0,
+    "error_bound": 0.03503503060494201,
+    "bound_text": "0 errors in 84 audits -> true error rate < 3.5% (95% confidence)",
+    "examples": 12,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V04",
+    "vendor": "Qassim Fresh Foods",
+    "state": "suspect",
+    "active": "V04-p19",
+    "shadow": "V04-p20",
+    "generator": "induce_strict",
+    "docs": 18,
+    "seen": 1705,
+    "audits": 18,
+    "audit_errors": 0,
+    "error_bound": 0.15331755395727814,
+    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
+    "examples": 12,
+    "versions": 20
+   },
+   {
+    "vendor_id": "V05",
+    "vendor": "Desert Peak IT Services",
+    "state": "suspect",
+    "active": "V05-p3",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 10,
+    "seen": 273,
+    "audits": 11,
+    "audit_errors": 0,
+    "error_bound": 0.23840419038085264,
+    "bound_text": "0 errors in 11 audits -> true error rate < 23.8% (95% confidence)",
+    "examples": 12,
+    "versions": 3
+   },
+   {
+    "vendor_id": "V06",
+    "vendor": "Gulf Packaging Factory",
+    "state": "stable",
+    "active": "V06-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 152,
+    "seen": 162,
+    "audits": 18,
+    "audit_errors": 0,
+    "error_bound": 0.15331755395727814,
+    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
+    "examples": 10,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V07",
+    "vendor": "Baltic Freight GmbH",
+    "state": "suspect",
+    "active": "V07-p1",
+    "shadow": "V07-p2",
+    "generator": "induce_strict",
+    "docs": 164,
+    "seen": 217,
+    "audits": 101,
+    "audit_errors": 0,
+    "error_bound": 0.02922515353903904,
+    "bound_text": "0 errors in 101 audits -> true error rate < 2.9% (95% confidence)",
+    "examples": 12,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V08",
+    "vendor": "Rheinwerk Maschinenbau AG",
+    "state": "stable",
+    "active": "V08-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 161,
+    "seen": 170,
+    "audits": 18,
+    "audit_errors": 0,
+    "error_bound": 0.15331755395727814,
+    "bound_text": "0 errors in 18 audits -> true error rate < 15.3% (95% confidence)",
+    "examples": 9,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V09",
+    "vendor": "Lumi\u00e8re Bureau SARL",
+    "state": "stable",
+    "active": "V09-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 190,
+    "seen": 239,
+    "audits": 70,
+    "audit_errors": 0,
+    "error_bound": 0.041893344066888556,
+    "bound_text": "0 errors in 70 audits -> true error rate < 4.2% (95% confidence)",
+    "examples": 12,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V10",
+    "vendor": "Iberia Componentes S.L.",
+    "state": "stable",
+    "active": "V10-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 200,
+    "seen": 210,
+    "audits": 16,
+    "audit_errors": 0,
+    "error_bound": 0.1707497229824809,
+    "bound_text": "0 errors in 16 audits -> true error rate < 17.1% (95% confidence)",
+    "examples": 10,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V11",
+    "vendor": "Thames Consulting Ltd",
+    "state": "suspect",
+    "active": "V11-p5",
+    "shadow": "V11-p7",
+    "generator": "induce_strict",
+    "docs": 59,
+    "seen": 243,
+    "audits": 59,
+    "audit_errors": 0,
+    "error_bound": 0.049507609888226944,
+    "bound_text": "0 errors in 59 audits -> true error rate < 5.0% (95% confidence)",
+    "examples": 12,
+    "versions": 7
+   },
+   {
+    "vendor_id": "V12",
+    "vendor": "Northwind Electrical Ltd",
+    "state": "stable",
+    "active": "V12-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 393,
+    "seen": 403,
+    "audits": 17,
+    "audit_errors": 0,
+    "error_bound": 0.16156611126074014,
+    "bound_text": "0 errors in 17 audits -> true error rate < 16.2% (95% confidence)",
+    "examples": 10,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V13",
+    "vendor": "Cascade Cloud Inc.",
+    "state": "drift",
+    "active": null,
+    "shadow": "V13-p4",
+    "generator": "induce_strict",
+    "docs": 35,
+    "seen": 325,
+    "audits": 32,
+    "audit_errors": 0,
+    "error_bound": 0.08936819898626476,
+    "bound_text": "0 errors in 32 audits -> true error rate < 8.9% (95% confidence)",
+    "examples": 12,
+    "versions": 4
+   },
+   {
+    "vendor_id": "V14",
+    "vendor": "Lone Star Fasteners LLC",
+    "state": "stable",
+    "active": "V14-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 317,
+    "seen": 519,
+    "audits": 21,
+    "audit_errors": 0,
+    "error_bound": 0.13294591102652337,
+    "bound_text": "0 errors in 21 audits -> true error rate < 13.3% (95% confidence)",
+    "examples": 9,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V15",
+    "vendor": "Pacific Print Works",
+    "state": "stable",
+    "active": "V15-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 364,
+    "seen": 539,
+    "audits": 25,
+    "audit_errors": 0,
+    "error_bound": 0.11292814500684319,
+    "bound_text": "0 errors in 25 audits -> true error rate < 11.3% (95% confidence)",
+    "examples": 11,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V16",
+    "vendor": "Emirates Steel Trading",
+    "state": "stable",
+    "active": "V16-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 159,
+    "seen": 171,
+    "audits": 24,
+    "audit_errors": 0,
+    "error_bound": 0.11734615615494877,
+    "bound_text": "0 errors in 24 audits -> true error rate < 11.7% (95% confidence)",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V17",
+    "vendor": "Falcon Security Systems",
+    "state": "stable",
+    "active": "V17-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 150,
+    "seen": 160,
+    "audits": 16,
+    "audit_errors": 0,
+    "error_bound": 0.1707497229824809,
+    "bound_text": "0 errors in 16 audits -> true error rate < 17.1% (95% confidence)",
+    "examples": 10,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V18",
+    "vendor": "Riyadh Medical Supply",
+    "state": "suspect",
+    "active": "V18-p1",
+    "shadow": "V18-p2",
+    "generator": "induce_strict",
+    "docs": 178,
+    "seen": 246,
+    "audits": 127,
+    "audit_errors": 0,
+    "error_bound": 0.023312410428213137,
+    "bound_text": "0 errors in 127 audits -> true error rate < 2.3% (95% confidence)",
+    "examples": 12,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V19",
+    "vendor": "Al-Qassim Cold Chain",
+    "state": "stable",
+    "active": "V19-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 716,
+    "seen": 978,
+    "audits": 33,
+    "audit_errors": 0,
+    "error_bound": 0.08678118929147488,
+    "bound_text": "0 errors in 33 audits -> true error rate < 8.7% (95% confidence)",
+    "examples": 10,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V20",
+    "vendor": "Hijaz Construction Materials",
+    "state": "suspect",
+    "active": "V20-p3",
+    "shadow": "V20-p4",
+    "generator": "induce_strict",
+    "docs": 66,
+    "seen": 310,
+    "audits": 40,
+    "audit_errors": 0,
+    "error_bound": 0.07215752450551455,
+    "bound_text": "0 errors in 40 audits -> true error rate < 7.2% (95% confidence)",
+    "examples": 12,
+    "versions": 4
+   }
+  ]
+ }
+]
