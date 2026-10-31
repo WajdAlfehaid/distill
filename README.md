@@ -13,6 +13,7 @@ Companies send the same kinds of documents through language models over and over
 5. **Recover.** On real drift: suspend the parser, quarantine and re-check what it accepted since its last verified result, synthesize a replacement from fresh examples, shadow-test it, promote it. A parser that has simply never seen a field (a vendor's first discount) is kept and extended, not suspended.
 6. **Keep proving reliability.** Audits compare parsers with the model at a rate that adapts to evidence (100% for a new parser, halving every 3 clean audits, 2% floor) and spike on risk. Each parser carries an exact 95% upper bound on its error rate.
 7. **Route by policy.** Each document's path (code, code + audit, small model, large model, person) is chosen from risk, uncertainty, cost and latency, and the reasons are recorded with the result.
+8. **Ask the large model only what it must answer.** When the small model's reading fails some checks, Sonnet is asked only for the fields or line-item rows behind them, not the whole invoice; a full re-read follows only if that does not settle every check. Its answers shrink from 248 to 59 tokens on average.
 
 ## How it answers Challenge 2 ("Deliver AI with less compute")
 
@@ -103,12 +104,16 @@ pip install -r requirements.txt
 python -m pytest -q
 python -m distill.bench                 # synthetic benchmark -> results/benchmark.md
 python -m distill.server --warm 1500    # live dashboard on http://127.0.0.1:8000, starting with parsers in place
-python -m distill.server --dataset fatura --warm 5000   # starts on FATURA; both datasets warmed, switchable in the page
+python -m distill.server --dataset fatura --warm 9000   # starts on FATURA; both datasets warmed, switchable in the page
 ```
 
 Real datasets:
 
 ```bash
+# FATURA: download FATURA2.zip from https://zenodo.org/records/10371464, then
+python scripts/prepare_fatura.py FATURA2.zip                 # -> data/fatura_invoices.jsonl.gz
+python -m distill.realdata fatura
+
 # DocILE: get a token at https://docile.rossum.ai, then
 curl -O https://docile-dataset-rossum.s3.eu-west-1.amazonaws.com/<TOKEN>/labeled-trainval.zip
 python scripts/prepare_docile.py labeled-trainval.zip      # -> data/docile_trainval_words.jsonl.gz
@@ -132,27 +137,35 @@ Real runs read documents 8 at a time (`--workers`), cache every answer in `resul
 
 ## The live demo
 
-`python -m distill.server --dataset fatura --warm 5000` (about 90 seconds: it processes 5,000 invoices of each dataset first), then open http://127.0.0.1:8000. The page shows one bar per invoice (click one to see how it was handled and why), the cost per 1,000 invoices for Distill, Haiku and Sonnet, the total spend of each, and what Distill did, in light or dark mode. Switch the data to *Generated invoices* (each dataset keeps its own progress) to change a supplier's template live; Distill is not told which one.
+`python -m distill.server --dataset fatura --warm 9000`, then open http://127.0.0.1:8000. The warm-up processes 9,000 invoices of each dataset first (a few minutes) so the page opens in steady state, with numbers that match the published benchmarks. The page shows:
+
+- **Every invoice, as it arrives:** one mark per invoice, coloured by how it was handled (code, code spot-checked by AI, read by AI, template change caught); its height is what it cost in AI. Click a mark to see Distill's answer against the answer key, the checks, and every decision it made.
+- **AI cost per 1,000 invoices:** Distill, Haiku on every invoice, and Sonnet on every invoice, side by side on the same invoices.
+- **The bill so far:** the total spend of each, and a table comparing Distill with Haiku on accuracy, cost per 1,000 correct invoices, and typical time per invoice.
+- **What Distill did:** compiles, detected template changes, quarantines and promotions, in plain language.
+
+Switch the data to *Generated invoices* (each dataset keeps its own progress) to change a supplier's template live; Distill is not told which one. Light and dark mode are switchable. Model calls are simulated with Claude's prices and timings unless the server is started with `--real`.
 
 ## Code map
 
 | File | What it does |
 |---|---|
 | `distill/model.py` | Schemas and records for any document type; field comparison |
-| `distill/doctypes.py` | Invoice, receipt (SROIE) and DocILE document types: fields, checks, source identification |
+| `distill/doctypes.py` | Invoice, receipt (SROIE), DocILE and FATURA document types: fields, checks, source identification |
 | `distill/parser.py` | Spec interpreter: line rules, constant fields, zone rules, OCR-tolerant values, fuzzy labels, multi-page tables |
 | `distill/synth.py` | Candidate generation (strict, relaxed, geometric) and legibility-aware validation |
 | `distill/zones.py` | Geometric templates with page registration |
 | `distill/ocr.py` | OCR damage model and noise recognition |
-| `distill/engine.py` | Routing, audits, arbitration, noise-vs-drift, quarantine, synthesis, shadow, promotion, rollback |
+| `distill/engine.py` | Routing, audits, arbitration, noise-vs-drift, quarantine, synthesis, shadow, promotion, rollback, scoped escalation |
+| `distill/repair.py` | Invariant repair: fixes a damaged value from the invoice's own arithmetic, dates and master data, only when the fix is unique |
 | `distill/checks.py`, `policy.py`, `audit.py`, `drift.py`, `fingerprint.py` | Checks, routing policy, audit statistics, drift monitor, layout fingerprints and clustering |
 | `distill/datagen.py` | Synthetic invoice stream with scan quality, layout quirks and drift mutations |
-| `distill/realdata.py`, `scripts/prepare_docile.py` | Public-dataset loaders, scoring and reports |
+| `distill/realdata.py`, `scripts/prepare_docile.py`, `scripts/prepare_fatura.py` | Public-dataset loaders, scoring and reports |
 | `distill/bench.py`, `distill/server.py`, `web/index.html` | Benchmark and live dashboard |
 
 ## Limitations
 
-- Model-tier accuracy in the synthetic benchmark is simulated (its tokens and latency are calibrated on real calls); result 4 uses real Claude.
+- Model-tier accuracy in the synthetic benchmark is simulated (its tokens and latency are calibrated on real calls); result 5 uses real Claude.
 - On DocILE Distill compiles almost nothing: its layout clusters are shared billing software used by many suppliers, and its OCR cuts values. Per-field partial templates are the main open work.
 - Multi-line values (address blocks) are not compiled; FATURA's buyer and seller-address fields are left out for that reason, and its seller name is not in the text layer.
 - Line items are extracted for invoices only; DocILE line items (LIR) are not attempted.
