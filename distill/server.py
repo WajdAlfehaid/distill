@@ -86,6 +86,7 @@ class Simulation:
         self.lock = threading.RLock()
         self.running = False
         self.speed = 8.0  # documents per second
+        self.started_at = 0.0
         self.pending: deque = deque()  # vendor ids forced next (judge "send invoices")
         self.reset()
         threading.Thread(target=self._loop, daemon=True).start()
@@ -137,6 +138,9 @@ class Simulation:
     # ------------------------------------------------------------------ loop
     def _loop(self) -> None:
         while True:
+            # Public deployment: never run unattended (nobody watching, or one Start left on for more than 5 minutes).
+            if PUBLIC and self.running and (VIEWERS == 0 or time.time() - self.started_at > PUBLIC_RUN_SECONDS):
+                self.running = False
             if self.running or self.pending:
                 try:
                     self.step()
@@ -247,7 +251,7 @@ class Simulation:
             return {
                 "mode": "real Claude" if self.real else ("FATURA invoices, labels as a perfect model" if self.dataset == "fatura"
                                                          else "simulated LLM tiers"),
-                "dataset": self.dataset, "datasets": DATASETS, "warming": self.warming,
+                "dataset": self.dataset, "datasets": DATASETS, "warming": self.warming, "public": PUBLIC,
                 "available": [d for d in DATASETS if d in SIMS or d == "synthetic" or Path(self.fatura_path).exists()],
                 "running": self.running, "speed": self.speed, "profile": self.profile,
                 "models": {"small": SMALL_MODEL, "large": LARGE_MODEL},
@@ -331,6 +335,10 @@ class Simulation:
             self.warm(warm)
 
 
+PUBLIC = False  # hosted for anyone: no reset, and the stream pauses itself when unattended
+PUBLIC_RUN_SECONDS = 300
+VIEWERS = 0  # open dashboard pages
+
 SIM: Optional[Simulation] = None  # the stream on screen
 SIMS: dict[str, Simulation] = {}  # one live stream per dataset, so switching keeps each one's progress
 SIM_ARGS: dict = {}
@@ -351,11 +359,16 @@ async def state(request: Request):
 
 async def stream(request: Request):
     async def gen():
-        while True:
-            if await request.is_disconnected():
-                break
-            yield f"data: {json.dumps(SIM.snapshot(), default=str)}\n\n"
-            await asyncio.sleep(0.5)
+        global VIEWERS
+        VIEWERS += 1
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                yield f"data: {json.dumps(SIM.snapshot(), default=str)}\n\n"
+                await asyncio.sleep(0.5)
+        finally:
+            VIEWERS -= 1
     return StreamingResponse(gen(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
 
 
@@ -378,9 +391,12 @@ async def control(request: Request):
     a = body.get("action")
     if a == "start":
         SIM.running = True
+        SIM.started_at = time.time()
     elif a == "pause":
         SIM.running = False
     elif a == "reset":
+        if PUBLIC:
+            return JSONResponse({"ok": False, "error": "reset is off on the public dashboard"}, status_code=403)
         SIM.running = False
         SIM.reset()
     elif a == "step":
@@ -469,11 +485,14 @@ def main(argv=None):
     ap.add_argument("--dataset", choices=list(DATASETS), default="synthetic",
                     help="synthetic: generated invoices with template changes; fatura: FATURA invoices")
     ap.add_argument("--fatura", default="data/fatura_invoices.jsonl.gz")
+    ap.add_argument("--public", action="store_true",
+                    help="hosted for anyone: hide reset, pause when nobody is watching or after 5 minutes of running")
     ap.add_argument("--warm", type=int, default=0,
                     help="process this many invoices of each dataset before the page opens (simulated mode), so the "
                          "demo starts with parsers in place, e.g. --warm 5000")
     args = ap.parse_args(argv)
-    global SIMS, SIM_ARGS
+    global SIMS, SIM_ARGS, PUBLIC
+    PUBLIC = args.public
     SIM_ARGS = {"real": args.real, "seed": args.seed, "db": ":memory:", "fatura_path": args.fatura}
     SIM = SIMS[args.dataset] = Simulation(dataset=args.dataset, **{**SIM_ARGS, "db": args.db})
     if args.real:

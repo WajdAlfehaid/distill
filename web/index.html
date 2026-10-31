@@ -237,6 +237,7 @@ async function post(url, body){ const r = await fetch(url,{method:"POST",headers
 function drawControls(){
   const fat = S.dataset === "fatura";
   $("#run").textContent = S.running ? "Pause" : "Start";
+  $("#reset").hidden = !!S.public;
   if (document.activeElement !== $("#dataset")) $("#dataset").value = S.dataset || "synthetic";
   $("#log-note").textContent = fat ? "FATURA's layouts never change. Switch to the generated invoices to change a supplier's template live." : "";
   $("#log-note").hidden = !fat;

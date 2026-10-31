@@ -3,7 +3,7 @@ __pycache__/
 *.db
 .env
 .pytest_cache/
-data/
+/data/
 results_*.log
 # real-API caches and per-document predictions contain dataset content: keep local
 results/llm_cache_*.jsonl
@@ -15,3 +15,5 @@ docs/*.mp4
 # demo materials, kept local
 Distill_intro.pptx
 web/how.html
+# Hugging Face Space upload folder (copy of the code + FATURA data), kept out of this repo
+hf-space/

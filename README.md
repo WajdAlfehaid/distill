@@ -4,6 +4,8 @@
 
 Companies send the same kinds of documents through language models over and over, even though most suppliers' layouts barely change. Distill reads a source's first documents with a model, compiles what it learned into a small parser (JSON data, never generated code), and from then on extracts that source's documents without AI, while checking every result, auditing its parsers against the model, and telling scan damage apart from a real change of template.
 
+**Try it in your browser:** [wajdalfehaid.github.io/distill](https://wajdalfehaid.github.io/distill/), recorded runs of the real engine played back on the dashboard.
+
 ## What it does
 
 1. **Compile.** From a few verified examples, Distill induces candidate parsers: text-line patterns for text documents, and *registered geometric templates* for scanned pages (each page is aligned to a reference copy of its layout using shared landmark words, then fields are read from learned zones). Candidates are validated in isolation, only against values that are actually legible in each example, then run in **shadow mode** next to live traffic before promotion.
@@ -79,6 +81,7 @@ python -m pytest -q
 python -m distill.bench                 # synthetic benchmark -> results/benchmark.md
 python -m distill.server --warm 1500    # dashboard on http://127.0.0.1:8000, starting with parsers in place
 python -m distill.server --dataset fatura --warm 9000   # starts on FATURA; both datasets warmed, switchable in the page
+python scripts/build_static.py          # the browser version in docs/ (GitHub Pages): records runs of the engine
 ```
 
 FATURA:
@@ -117,6 +120,7 @@ Real runs read documents 8 at a time (`--workers`), cache every answer in `resul
 | `distill/datagen.py` | Synthetic invoice stream with scan quality, layout quirks and drift mutations |
 | `distill/realdata.py`, `scripts/prepare_fatura.py` | FATURA loader, scoring and report |
 | `distill/bench.py`, `distill/server.py`, `web/index.html` | Benchmark and dashboard |
+| `scripts/build_static.py`, `web/static_shim.js`, `docs/` | Browser version for GitHub Pages: recorded runs of the engine, played back on the same dashboard |
 
 ## Limitations
 
