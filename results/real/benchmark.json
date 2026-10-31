@@ -1,0 +1,877 @@
+[
+ {
+  "system": "llm_only_small",
+  "mode": "llm_only",
+  "simulated_llm": false,
+  "docs": 400,
+  "doc_accuracy": 0.79,
+  "wrong_docs": 84,
+  "field_accuracy": 0.985608,
+  "cost_usd": 0.626665,
+  "cost_per_1k_docs": 1.56666,
+  "cost_per_1k_docs_last_1000": 0.62666,
+  "llm_calls": 479,
+  "llm_calls_per_doc": 1.1975,
+  "code_share": 0.0,
+  "audit_share": 0.0,
+  "code_share_last_1000": 0.0,
+  "cost_per_1k_correct_docs": 1.98312,
+  "tokens_per_doc": 1523.5,
+  "input_tokens": 322398,
+  "output_tokens": 287011,
+  "escalations_full": 79,
+  "escalations_scoped": 0,
+  "escalation_out_tokens_full": 464.3,
+  "escalation_out_tokens_scoped": null,
+  "scoped_resolved": 0,
+  "human_review": 74,
+  "repaired": 0,
+  "repaired_wrong": 0,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 3136.92,
+  "latency_ms_mean": 3831.33,
+  "wall_seconds": 1533.35,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 75,
+    "vendor_docs_after": 31,
+    "wrong_after": 4
+   },
+   {
+    "vendor": "V10",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 90,
+    "vendor_docs_after": 67,
+    "wrong_after": 45
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 105,
+    "vendor_docs_after": 33,
+    "wrong_after": 7
+   },
+   {
+    "vendor": "V07",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 120,
+    "vendor_docs_after": 17,
+    "wrong_after": 0
+   },
+   {
+    "vendor": "V12",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 135,
+    "vendor_docs_after": 9,
+    "wrong_after": 1
+   },
+   {
+    "vendor": "V13",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 150,
+    "vendor_docs_after": 10,
+    "wrong_after": 0
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.052056,
+    "llm_calls": 55
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.090103,
+    "llm_calls": 109
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.17169,
+    "llm_calls": 169
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.255312,
+    "llm_calls": 229
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.363145,
+    "llm_calls": 295
+   },
+   {
+    "doc": 300,
+    "cost_usd": 0.435979,
+    "llm_calls": 354
+   },
+   {
+    "doc": 350,
+    "cost_usd": 0.539787,
+    "llm_calls": 418
+   },
+   {
+    "doc": 400,
+    "cost_usd": 0.626665,
+    "llm_calls": 479
+   }
+  ],
+  "events": [],
+  "parsers": []
+ },
+ {
+  "system": "distill",
+  "mode": "distill",
+  "simulated_llm": false,
+  "docs": 400,
+  "doc_accuracy": 0.9125,
+  "wrong_docs": 35,
+  "field_accuracy": 0.99444,
+  "cost_usd": 0.355148,
+  "cost_per_1k_docs": 0.88787,
+  "cost_per_1k_docs_last_1000": 0.35515,
+  "llm_calls": 379,
+  "llm_calls_per_doc": 0.9475,
+  "code_share": 0.1775,
+  "audit_share": 0.15,
+  "code_share_last_1000": 0.325,
+  "cost_per_1k_correct_docs": 0.97301,
+  "tokens_per_doc": 1192.8,
+  "input_tokens": 252803,
+  "output_tokens": 224327,
+  "escalations_full": 23,
+  "escalations_scoped": 26,
+  "escalation_out_tokens_full": 484.2,
+  "escalation_out_tokens_scoped": 185.2,
+  "scoped_resolved": 3,
+  "human_review": 23,
+  "repaired": 42,
+  "repaired_wrong": 3,
+  "quarantined": 0,
+  "quarantine_corrected": 0,
+  "latency_ms_p50": 2821.72,
+  "latency_ms_mean": 2946.42,
+  "wall_seconds": 1182.82,
+  "drifts": [
+   {
+    "vendor": "V01",
+    "kind": "inline_swap",
+    "class": "silent",
+    "at_doc": 75,
+    "vendor_docs_after": 31,
+    "wrong_after": 4,
+    "detected_after_vendor_docs": null,
+    "recovered_after_vendor_docs": 13,
+    "detection_reason": null
+   },
+   {
+    "vendor": "V10",
+    "kind": "date_locale",
+    "class": "silent",
+    "at_doc": 90,
+    "vendor_docs_after": 67,
+    "wrong_after": 7,
+    "detected_after_vendor_docs": 7,
+    "recovered_after_vendor_docs": 17,
+    "detection_reason": "parser output disagrees with verified extraction on invoice_date. Parser suspended."
+   },
+   {
+    "vendor": "V19",
+    "kind": "relabel",
+    "class": "loud",
+    "at_doc": 105,
+    "vendor_docs_after": 33,
+    "wrong_after": 4,
+    "detected_after_vendor_docs": null,
+    "recovered_after_vendor_docs": null,
+    "detection_reason": null
+   },
+   {
+    "vendor": "V07",
+    "kind": "table_reflow",
+    "class": "loud",
+    "at_doc": 120,
+    "vendor_docs_after": 17,
+    "wrong_after": 0,
+    "detected_after_vendor_docs": 4,
+    "recovered_after_vendor_docs": 9,
+    "detection_reason": "parser output disagrees with verified extraction on line_items. Parser suspended."
+   },
+   {
+    "vendor": "V12",
+    "kind": "number_style",
+    "class": "loud",
+    "at_doc": 135,
+    "vendor_docs_after": 9,
+    "wrong_after": 1,
+    "detected_after_vendor_docs": null,
+    "recovered_after_vendor_docs": null,
+    "detection_reason": null
+   },
+   {
+    "vendor": "V13",
+    "kind": "new_fields",
+    "class": "structural",
+    "at_doc": 150,
+    "vendor_docs_after": 10,
+    "wrong_after": 0,
+    "detected_after_vendor_docs": null,
+    "recovered_after_vendor_docs": 1,
+    "detection_reason": null
+   }
+  ],
+  "curve": [
+   {
+    "doc": 50,
+    "cost_usd": 0.046099,
+    "llm_calls": 53
+   },
+   {
+    "doc": 100,
+    "cost_usd": 0.102938,
+    "llm_calls": 106
+   },
+   {
+    "doc": 150,
+    "cost_usd": 0.189464,
+    "llm_calls": 169
+   },
+   {
+    "doc": 200,
+    "cost_usd": 0.232562,
+    "llm_calls": 216
+   },
+   {
+    "doc": 250,
+    "cost_usd": 0.264501,
+    "llm_calls": 259
+   },
+   {
+    "doc": 300,
+    "cost_usd": 0.28972,
+    "llm_calls": 301
+   },
+   {
+    "doc": 350,
+    "cost_usd": 0.337697,
+    "llm_calls": 345
+   },
+   {
+    "doc": 400,
+    "cost_usd": 0.355148,
+    "llm_calls": 379
+   }
+  ],
+  "events": [
+   {
+    "seq": 11,
+    "kind": "candidate",
+    "vendor_id": "V10",
+    "message": "V10-p1 synthesized (induce_strict), validated 2/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V10-p1"
+   },
+   {
+    "seq": 17,
+    "kind": "promoted",
+    "vendor_id": "V10",
+    "message": "V10-p1 promoted (first parser for this source) after 2/3 isolated + 3 shadow agreements",
+    "parser_id": "V10-p1"
+   },
+   {
+    "seq": 24,
+    "kind": "candidate",
+    "vendor_id": "V01",
+    "message": "V01-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V01-p1"
+   },
+   {
+    "seq": 48,
+    "kind": "candidate",
+    "vendor_id": "V16",
+    "message": "V16-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V16-p1"
+   },
+   {
+    "seq": 60,
+    "kind": "candidate",
+    "vendor_id": "V19",
+    "message": "V19-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V19-p1"
+   },
+   {
+    "seq": 63,
+    "kind": "candidate",
+    "vendor_id": "V20",
+    "message": "V20-p1 synthesized (induce_strict), validated 2/4 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V20-p1"
+   },
+   {
+    "seq": 67,
+    "kind": "candidate",
+    "vendor_id": "V06",
+    "message": "V06-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V06-p1"
+   },
+   {
+    "seq": 87,
+    "kind": "candidate",
+    "vendor_id": "V07",
+    "message": "V07-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V07-p1"
+   },
+   {
+    "seq": 94,
+    "kind": "rejected",
+    "vendor_id": "V01",
+    "message": "V01-p1 rejected in shadow (disagreed on line_items[0], line_items[1], line_items[2]); re-synthesizing"
+   },
+   {
+    "seq": 97,
+    "kind": "candidate",
+    "vendor_id": "V05",
+    "message": "V05-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V05-p1"
+   },
+   {
+    "seq": 101,
+    "kind": "candidate",
+    "vendor_id": "V12",
+    "message": "V12-p1 synthesized (induce_strict), validated 4/4 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V12-p1"
+   },
+   {
+    "seq": 104,
+    "kind": "promoted",
+    "vendor_id": "V07",
+    "message": "V07-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V07-p1"
+   },
+   {
+    "seq": 112,
+    "kind": "candidate",
+    "vendor_id": "V18",
+    "message": "V18-p1 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V18-p1"
+   },
+   {
+    "seq": 115,
+    "kind": "promoted",
+    "vendor_id": "V16",
+    "message": "V16-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V16-p1"
+   },
+   {
+    "seq": 116,
+    "kind": "candidate",
+    "vendor_id": "V13",
+    "message": "V13-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V13-p1"
+   },
+   {
+    "seq": 121,
+    "kind": "candidate",
+    "vendor_id": "V09",
+    "message": "V09-p1 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V09-p1"
+   },
+   {
+    "seq": 122,
+    "kind": "candidate",
+    "vendor_id": "V08",
+    "message": "V08-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V08-p1"
+   },
+   {
+    "seq": 123,
+    "kind": "candidate",
+    "vendor_id": "V03",
+    "message": "V03-p1 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V03-p1"
+   },
+   {
+    "seq": 125,
+    "kind": "promoted",
+    "vendor_id": "V20",
+    "message": "V20-p1 promoted (first parser for this source) after 2/4 isolated + 3 shadow agreements",
+    "parser_id": "V20-p1"
+   },
+   {
+    "seq": 126,
+    "kind": "drift",
+    "vendor_id": "V10",
+    "message": "Drift confirmed for Iberia Componentes S.L.: parser output disagrees with verified extraction on invoice_date. Parser suspended.",
+    "parser_id": "V10-p1"
+   },
+   {
+    "seq": 135,
+    "kind": "candidate",
+    "vendor_id": "V10",
+    "message": "V10-p2 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V10-p2"
+   },
+   {
+    "seq": 152,
+    "kind": "candidate",
+    "vendor_id": "V02",
+    "message": "V02-p1 synthesized (induce_strict), validated 3/3 in isolation from 4 candidates; now in shadow mode",
+    "parser_id": "V02-p1"
+   },
+   {
+    "seq": 154,
+    "kind": "promoted",
+    "vendor_id": "V13",
+    "message": "V13-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V13-p1"
+   },
+   {
+    "seq": 155,
+    "kind": "promoted",
+    "vendor_id": "V06",
+    "message": "V06-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V06-p1"
+   },
+   {
+    "seq": 163,
+    "kind": "promoted",
+    "vendor_id": "V10",
+    "message": "V10-p2 promoted (replaces V10-p1) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V10-p2"
+   },
+   {
+    "seq": 178,
+    "kind": "candidate",
+    "vendor_id": "V15",
+    "message": "V15-p1 synthesized (induce_strict), validated 3/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V15-p1"
+   },
+   {
+    "seq": 192,
+    "kind": "candidate",
+    "vendor_id": "V01",
+    "message": "V01-p2 synthesized (induce_strict), validated 4/4 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V01-p2"
+   },
+   {
+    "seq": 202,
+    "kind": "drift",
+    "vendor_id": "V07",
+    "message": "Drift confirmed for Baltic Freight GmbH: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "parser_id": "V07-p1"
+   },
+   {
+    "seq": 221,
+    "kind": "promoted",
+    "vendor_id": "V01",
+    "message": "V01-p2 promoted (first parser for this source) after 4/4 isolated + 3 shadow agreements",
+    "parser_id": "V01-p2"
+   },
+   {
+    "seq": 233,
+    "kind": "candidate",
+    "vendor_id": "V07",
+    "message": "V07-p2 synthesized (induce_strict), validated 2/3 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V07-p2"
+   },
+   {
+    "seq": 242,
+    "kind": "promoted",
+    "vendor_id": "V15",
+    "message": "V15-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V15-p1"
+   },
+   {
+    "seq": 246,
+    "kind": "promoted",
+    "vendor_id": "V18",
+    "message": "V18-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V18-p1"
+   },
+   {
+    "seq": 259,
+    "kind": "candidate",
+    "vendor_id": "V01",
+    "message": "V01-p3 synthesized (induce_strict), validated 8/12 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V01-p3"
+   },
+   {
+    "seq": 265,
+    "kind": "promoted",
+    "vendor_id": "V09",
+    "message": "V09-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V09-p1"
+   },
+   {
+    "seq": 269,
+    "kind": "promoted",
+    "vendor_id": "V07",
+    "message": "V07-p2 promoted (replaces V07-p1) after 2/3 isolated + 3 shadow agreements",
+    "parser_id": "V07-p2"
+   },
+   {
+    "seq": 272,
+    "kind": "candidate",
+    "vendor_id": "V14",
+    "message": "V14-p1 synthesized (induce_strict), validated 2/4 in isolation from 2 candidates; now in shadow mode",
+    "parser_id": "V14-p1"
+   },
+   {
+    "seq": 325,
+    "kind": "promoted",
+    "vendor_id": "V05",
+    "message": "V05-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V05-p1"
+   },
+   {
+    "seq": 367,
+    "kind": "promoted",
+    "vendor_id": "V14",
+    "message": "V14-p1 promoted (first parser for this source) after 2/4 isolated + 3 shadow agreements",
+    "parser_id": "V14-p1"
+   },
+   {
+    "seq": 394,
+    "kind": "promoted",
+    "vendor_id": "V02",
+    "message": "V02-p1 promoted (first parser for this source) after 3/3 isolated + 3 shadow agreements",
+    "parser_id": "V02-p1"
+   },
+   {
+    "seq": 399,
+    "kind": "drift",
+    "vendor_id": "V14",
+    "message": "Drift confirmed for Lone Star Fasteners LLC: parser output disagrees with verified extraction on invoice_date, discount. Parser suspended.",
+    "parser_id": "V14-p1"
+   }
+  ],
+  "parsers": [
+   {
+    "vendor_id": "V01",
+    "vendor": "Al-Noor Industrial Supplies",
+    "state": "suspect",
+    "active": "V01-p2",
+    "shadow": "V01-p3",
+    "generator": "induce_strict",
+    "docs": 9,
+    "seen": 37,
+    "audits": 11,
+    "audit_errors": 0,
+    "error_bound": 0.23840419038085264,
+    "bound_text": "0 errors in 11 audits -> true error rate < 23.8% (95% confidence)",
+    "examples": 12,
+    "versions": 3
+   },
+   {
+    "vendor_id": "V02",
+    "vendor": "Najd Office Solutions",
+    "state": "stable",
+    "active": "V02-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 0,
+    "seen": 6,
+    "audits": 3,
+    "audit_errors": 0,
+    "error_bound": 0.6315968501359612,
+    "bound_text": "0 errors in 3 audits -> true error rate < 63.2% (95% confidence)",
+    "examples": 6,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V03",
+    "vendor": "Red Sea Logistics Co.",
+    "state": "learning",
+    "active": null,
+    "shadow": "V03-p1",
+    "generator": null,
+    "docs": 0,
+    "seen": 15,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V04",
+    "vendor": "Qassim Fresh Foods",
+    "state": "learning",
+    "active": null,
+    "shadow": null,
+    "generator": null,
+    "docs": 0,
+    "seen": 6,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 5,
+    "versions": 0
+   },
+   {
+    "vendor_id": "V05",
+    "vendor": "Desert Peak IT Services",
+    "state": "suspect",
+    "active": "V05-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 1,
+    "seen": 10,
+    "audits": 4,
+    "audit_errors": 0,
+    "error_bound": 0.5271291954984121,
+    "bound_text": "0 errors in 4 audits -> true error rate < 52.7% (95% confidence)",
+    "examples": 7,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V06",
+    "vendor": "Gulf Packaging Factory",
+    "state": "stable",
+    "active": "V06-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 17,
+    "seen": 23,
+    "audits": 7,
+    "audit_errors": 0,
+    "error_bound": 0.3481636551311608,
+    "bound_text": "0 errors in 7 audits -> true error rate < 34.8% (95% confidence)",
+    "examples": 6,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V07",
+    "vendor": "Baltic Freight GmbH",
+    "state": "suspect",
+    "active": "V07-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 6,
+    "seen": 27,
+    "audits": 7,
+    "audit_errors": 0,
+    "error_bound": 0.3481636551311608,
+    "bound_text": "0 errors in 7 audits -> true error rate < 34.8% (95% confidence)",
+    "examples": 8,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V08",
+    "vendor": "Rheinwerk Maschinenbau AG",
+    "state": "learning",
+    "active": null,
+    "shadow": "V08-p1",
+    "generator": null,
+    "docs": 0,
+    "seen": 7,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 6,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V09",
+    "vendor": "Lumi\u00e8re Bureau SARL",
+    "state": "stable",
+    "active": "V09-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 3,
+    "seen": 11,
+    "audits": 6,
+    "audit_errors": 0,
+    "error_bound": 0.3930377689970827,
+    "bound_text": "0 errors in 6 audits -> true error rate < 39.3% (95% confidence)",
+    "examples": 8,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V10",
+    "vendor": "Iberia Componentes S.L.",
+    "state": "stable",
+    "active": "V10-p2",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 46,
+    "seen": 92,
+    "audits": 16,
+    "audit_errors": 0,
+    "error_bound": 0.1707497229824809,
+    "bound_text": "0 errors in 16 audits -> true error rate < 17.1% (95% confidence)",
+    "examples": 10,
+    "versions": 2
+   },
+   {
+    "vendor_id": "V11",
+    "vendor": "Thames Consulting Ltd",
+    "state": "learning",
+    "active": null,
+    "shadow": null,
+    "generator": null,
+    "docs": 0,
+    "seen": 6,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 6,
+    "versions": 0
+   },
+   {
+    "vendor_id": "V12",
+    "vendor": "Northwind Electrical Ltd",
+    "state": "learning",
+    "active": null,
+    "shadow": "V12-p1",
+    "generator": null,
+    "docs": 0,
+    "seen": 21,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V13",
+    "vendor": "Cascade Cloud Inc.",
+    "state": "suspect",
+    "active": "V13-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 5,
+    "seen": 16,
+    "audits": 8,
+    "audit_errors": 0,
+    "error_bound": 0.3123439780663678,
+    "bound_text": "0 errors in 8 audits -> true error rate < 31.2% (95% confidence)",
+    "examples": 11,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V14",
+    "vendor": "Lone Star Fasteners LLC",
+    "state": "drift",
+    "active": null,
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 0,
+    "seen": 10,
+    "audits": 3,
+    "audit_errors": 0,
+    "error_bound": 0.6315968501359612,
+    "bound_text": "0 errors in 3 audits -> true error rate < 63.2% (95% confidence)",
+    "examples": 1,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V15",
+    "vendor": "Pacific Print Works",
+    "state": "stable",
+    "active": "V15-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 4,
+    "seen": 11,
+    "audits": 5,
+    "audit_errors": 0,
+    "error_bound": 0.450719728346941,
+    "bound_text": "0 errors in 5 audits -> true error rate < 45.1% (95% confidence)",
+    "examples": 7,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V16",
+    "vendor": "Emirates Steel Trading",
+    "state": "stable",
+    "active": "V16-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 11,
+    "seen": 18,
+    "audits": 7,
+    "audit_errors": 0,
+    "error_bound": 0.3481636551311608,
+    "bound_text": "0 errors in 7 audits -> true error rate < 34.8% (95% confidence)",
+    "examples": 7,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V17",
+    "vendor": "Falcon Security Systems",
+    "state": "learning",
+    "active": null,
+    "shadow": null,
+    "generator": null,
+    "docs": 0,
+    "seen": 13,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 11,
+    "versions": 0
+   },
+   {
+    "vendor_id": "V18",
+    "vendor": "Riyadh Medical Supply",
+    "state": "stable",
+    "active": "V18-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 4,
+    "seen": 11,
+    "audits": 4,
+    "audit_errors": 0,
+    "error_bound": 0.5271291954984121,
+    "bound_text": "0 errors in 4 audits -> true error rate < 52.7% (95% confidence)",
+    "examples": 7,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V19",
+    "vendor": "Al-Qassim Cold Chain",
+    "state": "learning",
+    "active": null,
+    "shadow": "V19-p1",
+    "generator": null,
+    "docs": 0,
+    "seen": 39,
+    "audits": 0,
+    "audit_errors": 0,
+    "error_bound": null,
+    "bound_text": "",
+    "examples": 12,
+    "versions": 1
+   },
+   {
+    "vendor_id": "V20",
+    "vendor": "Hijaz Construction Materials",
+    "state": "suspect",
+    "active": "V20-p1",
+    "shadow": null,
+    "generator": "induce_strict",
+    "docs": 8,
+    "seen": 20,
+    "audits": 10,
+    "audit_errors": 0,
+    "error_bound": 0.2588655508930523,
+    "bound_text": "0 errors in 10 audits -> true error rate < 25.9% (95% confidence)",
+    "examples": 11,
+    "versions": 1
+   }
+  ]
+ }
+]

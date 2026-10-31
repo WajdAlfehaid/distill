@@ -27,11 +27,11 @@ Companies send the same kinds of documents through language models over and over
 | Cost per successful task | Repair and checks turn would-be failures into right answers instead of re-runs | $0.18 per 1,000 correct invoices vs $0.62 (Haiku) and $3.76 (Sonnet) |
 | Accuracy and latency floors | More accurate than either model alone; compiled invoices answer in under a millisecond | 96.8% vs 94.7% (Haiku) and 94.1% (Sonnet); median 0.3 ms vs 1.7 s |
 
-On FATURA (10,000 third-party invoices) Distill is 3.0x cheaper than Haiku on every invoice. Model tiers in these benchmarks are simulated, with token counts and latency calibrated on real Claude calls.
+On FATURA (10,000 third-party invoices) Distill is 3.0x cheaper than Haiku on every invoice. Model tiers in these benchmarks are simulated, with token counts and latency calibrated on real Claude calls. A 400-invoice run on the real Claude API confirms the direction: 2.0x cheaper than Haiku per correct invoice, and 91.3% exactly right against 79.0%.
 
 ## Results
 
-Two benchmarks, a held-out and ablation validation, and one measurement with the real Claude API, each answering a different question. All numbers come from scripts in this repository, and every run of a script gives the same numbers.
+Two benchmarks, a held-out and ablation validation, and two runs on the real Claude API, each answering a different question. All numbers come from scripts in this repository, and every run of a script gives the same numbers.
 
 ### 1. Synthetic invoice stream with realistic scan damage, and injected template changes
 
@@ -84,7 +84,18 @@ On every unseen stream Distill is the most accurate system and costs 3.2–4.7x 
 
 Repair more than halves the cost and removes 44 wrong invoices; scoped escalation saves 11% at the same accuracy; compiling on top of repair halves the cost again. The 37 tests run on every push (badge above).
 
-### 4. Real Claude: the cheapest correct way to call it
+### 4. The real Claude API: 400 invoices
+
+`python -m distill.bench --real --n 400 --systems llm_only_small,distill --out results/real` ([results/real/benchmark.md](results/real/benchmark.md)): the first 400 invoices of the main stream, read by real Claude Haiku 5.5 and Sonnet 5.5. Total spend for both systems: $0.98.
+
+| System | Exactly right | Wrong invoices | AI cost | Cost per 1k correct | Flagged for human review |
+|---|---|---|---|---|---|
+| Claude Haiku on every invoice (Sonnet when checks fail) | 79.0% | 84 | $0.63 | $1.98 | 74 |
+| **Distill** | **91.3%** | **35** | **$0.36** | **$0.97** | **23** |
+
+400 invoices from 20 suppliers is mostly the learning phase (code handled 32% of invoices, against 79% later in the long run), yet Distill is already 2.0x cheaper per correct invoice. The accuracy gap is larger than in simulation: real Haiku made more mistakes than the simulated tier, and Distill's checks, repair and parsers caught many of them. On the silent date-order change, Haiku got 45 of that supplier's 67 invoices wrong and Distill 7. One finding goes the other way: with real Sonnet, scoped escalation settled the checks in only 3 of 26 cases, so most escalations still needed a full re-read.
+
+### 5. Real Claude: the cheapest correct way to call it
 
 `python scripts/smoke_real.py 10 --compare` extracts the same 10 generated invoices with each thinking setting ([results/thinking_modes.md](results/thinking_modes.md)): with thinking off Haiku got 7/10 right at $0.21 per 1k; with low effort 9/10 at $0.37; with defaults 9/10 at $0.42. A miss costs a Sonnet call (~$4-6 per 1k), so low effort is the cheapest correct setting and is Distill's default.
 
@@ -145,7 +156,7 @@ Real runs read documents 8 at a time (`--workers`), cache every answer in `resul
 
 ## Limitations
 
-- Model-tier accuracy and cost in both benchmarks are simulated (tokens and latency calibrated on real calls); the thinking-mode measurement uses real Claude.
+- Model-tier accuracy and cost in the two main benchmarks are simulated (tokens and latency calibrated on real calls); the 400-invoice run and the thinking-mode measurement use real Claude. The real run covers the learning phase only.
 - FATURA's content is generated from its templates, and it has no template changes, so the drift results come from the synthetic stream.
 - Multi-line values (address blocks) are not compiled; FATURA's buyer and seller-address fields are left out for that reason, and its seller name is not in the text layer.
 - Line items are extracted for the synthetic invoices only; FATURA's fields here are header and total values.
