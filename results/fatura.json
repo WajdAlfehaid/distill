@@ -44,7 +44,7 @@
    }
   },
   "field_errors": {},
-  "wall_seconds": 2.5942846609999606
+  "wall_seconds": 2.3572820539999952
  },
  {
   "dataset": "fatura",
@@ -99,7 +99,7 @@
    "due_date": 1,
    "tax": 1
   },
-  "wall_seconds": 14.365259595999987
+  "wall_seconds": 13.415259964000029
  },
  {
   "dataset": "fatura",
@@ -156,6 +156,6 @@
    "tax": 1,
    "po_number": 1
   },
-  "wall_seconds": 77.89750945800006
+  "wall_seconds": 75.460390389
  }
 ]

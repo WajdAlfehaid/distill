@@ -1,8 +1,7 @@
-"""Evaluate Distill on public, real-world document datasets.
+"""Evaluate Distill on FATURA, a public set of third-party invoices (Limam et al. 2023).
 
-    python -m distill.realdata docile            # DocILE (Rossum): real business documents, DocTR OCR
-    python -m distill.realdata sroie             # SROIE (ICDAR 2019): scanned receipts, Tesseract OCR
-    python -m distill.realdata docile --real     # use real Claude as the teacher (needs ANTHROPIC_API_KEY)
+    python -m distill.realdata fatura            # 10,000 invoices from 50 layouts, text layer as provided
+    python -m distill.realdata fatura --real     # use real Claude as the teacher (needs ANTHROPIC_API_KEY)
 
 Without --real the model tier is a *perfect teacher*: the dataset's human labels, billed
 with token counts from the real documents at published Claude prices. That isolates the
@@ -26,7 +25,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Optional
 
-from .doctypes import DOCILE, FATURA, RECEIPT, DocileType, FaturaType, ReceiptType, loose_amount
+from .doctypes import FATURA, FaturaType, loose_amount
 from .engine import Config, Engine
 from .llm import AnthropicLLM, CachedLLM, SimulatedLLM, cost_of, LARGE_MODEL, SMALL_MODEL
 from .model import Record, field_equal, _norm_raw
@@ -36,22 +35,6 @@ PERFECT = {"small": {"p_err": 0.0, "per_line": 0.0, "lat": 700, "per_tok": 4, "r
 
 
 # ---------------------------------------------------------------- loaders
-def load_docile(path: str = "data/docile_trainval_words.jsonl.gz") -> list[dict]:
-    names = DOCILE.names
-    items = []
-    for line in gzip.open(path, "rt", encoding="utf-8"):
-        d = json.loads(line)
-        if not d["text"].strip():
-            continue
-        alts = {k: [v.replace("\n", " ") for v in vs] for k, vs in d["fields"].items() if k in names}
-        truth = Record(DOCILE, **{k: vs[0] for k, vs in alts.items()})
-        items.append({"doc_id": d["docid"], "text": d["text"], "truth": truth, "alts": alts,
-                      "meta": {"cluster_id": d["cluster_id"], "document_type": d["document_type"],
-                               "words": d.get("words")},
-                      "source": f"K{d['cluster_id']}"})
-    return items
-
-
 _FATURA_LABEL = re.compile(r"^\s*[A-Za-z][A-Za-z .()#/&%\d_-]{0,40}?\s*(?::|#|\s{2,})\s*")
 
 
@@ -93,50 +76,15 @@ def load_fatura(path: str = "data/fatura_invoices.jsonl.gz", per_template: Optio
     return items
 
 
-def load_sroie(ocr_dir: str, key_dir: str) -> list[dict]:
-    items = []
-    for f in sorted(Path(ocr_dir).glob("*.txt")):
-        text = f.read_text(errors="replace")
-        kp = Path(key_dir) / (f.stem + ".json")
-        if not text.strip() or not kp.exists():
-            continue
-        k = json.loads(kp.read_text(errors="replace"))
-        vals = {"company": (k.get("company") or "").strip() or None, "date": (k.get("date") or "").strip() or None,
-                "address": (k.get("address") or "").strip() or None, "total": loose_amount(k.get("total"))}
-        truth = Record(RECEIPT, **vals)
-        items.append({"doc_id": f.stem, "text": text, "truth": truth,
-                      "alts": {n: [v] for n, v in vals.items() if v is not None}, "meta": {},
-                      "source": vals["company"] or "?"})
-    return items
-
-
 # ---------------------------------------------------------------- scoring
 _CURRENCY = {"$": "USD", "us$": "USD", "usd": "USD", "dollars": "USD", "€": "EUR", "eur": "EUR", "euro": "EUR",
              "£": "GBP", "gbp": "GBP", "chf": "CHF", "kč": "CZK", "czk": "CZK", "sar": "SAR"}
-_DATE_FMTS = ["%m/%d/%y", "%m/%d/%Y", "%d/%m/%y", "%d/%m/%Y", "%m %d %y", "%m %d %Y", "%d %m %y", "%d %m %Y",
-              "%m-%d-%y", "%m-%d-%Y", "%d-%m-%y", "%d-%m-%Y", "%d.%m.%y", "%d.%m.%Y", "%Y-%m-%d", "%Y/%m/%d",
-              "%B %d, %Y", "%b %d, %Y", "%B %d %Y", "%b %d %Y", "%d %B %Y", "%d %b %Y", "%d-%b-%y", "%d-%b-%Y",
-              "%b. %d, %Y", "%B %d. %Y", "%m.%d.%y", "%m.%d.%Y"]
-AMOUNT_FIELDS = {"amount_total_net", "amount_total_tax", "amount_total_gross", "amount_due", "total", "subtotal", "tax",
-                 "discount"}
-DATE_FIELDS = {"date_issue", "date_due", "date"}
-
-
-def _dates(s: str) -> set:
-    from datetime import datetime
-    t = " ".join(str(s).replace(",", ", ").split()).replace(" ,", ",")
-    out = set()
-    for f in _DATE_FMTS:
-        try:
-            out.add(datetime.strptime(t, f).date())
-        except ValueError:
-            pass
-    return out
+AMOUNT_FIELDS = {"amount_due", "total", "subtotal", "tax", "discount"}
 
 
 def same_value(field: str, p, a) -> bool:
     """Do a predicted and an annotated value mean the same thing? Exact after dropping spacing and punctuation,
-    or equal as amounts / dates / currencies. Used for DocILE, whose labels are the printed text."""
+    or equal as amounts / currencies. Used for FATURA, whose labels are the printed text."""
     if p is None or a is None:
         return False
     if _norm_raw(str(p)) == _norm_raw(str(a)):
@@ -144,8 +92,6 @@ def same_value(field: str, p, a) -> bool:
     if field in AMOUNT_FIELDS:
         x, y = loose_amount(p), loose_amount(a)
         return x is not None and y is not None and abs(x - y) < 0.006
-    if field in DATE_FIELDS:
-        return bool(_dates(p) & _dates(a))
     if field.startswith("currency"):
         c = lambda v: _CURRENCY.get(str(v).strip().lower(), str(v).strip().upper())
         return c(p) == c(a)
@@ -153,8 +99,8 @@ def same_value(field: str, p, a) -> bool:
 
 
 def answerable(item: dict, field: str) -> bool:
-    """Is any annotated value for this field present in the OCR text we send the model? DocILE's labels come
-    from the PDF, its OCR (DocTR) sometimes cuts or garbles them; a field the text does not contain cannot be read."""
+    """Is any annotated value for this field present in the text we send the model? Labels come from the
+    original document; a damaged text layer can cut or garble them, and a field the text does not contain cannot be read."""
     key = "_norm_text"
     if key not in item:
         item[key] = _norm_raw(item["text"])
@@ -164,12 +110,11 @@ def answerable(item: dict, field: str) -> bool:
 def score(pred: Optional[Record], item: dict, annotated_only: bool = False, answerable_only: bool = False) -> list[str]:
     """Wrong fields of a prediction, accepting any annotated alternative.
 
-    annotated_only: ignore fields the annotators did not label on this document. DocILE does not label
-    every printed value (e.g. a net total), so a model that reads an unlabelled value is not necessarily wrong.
+    annotated_only: ignore fields the annotators did not label on this document.
     answerable_only: also ignore labelled fields whose value does not appear in the OCR text.
     """
     schema = item["truth"].schema
-    value_aware = schema.name in ("docile", "fatura")
+    value_aware = schema.name == "fatura"
     bad = []
     for f in schema.fields:
         p = pred.values.get(f.name) if pred is not None else None
@@ -227,7 +172,7 @@ def prefetch(llm, dataset: str, order: list[dict], workers: int = 8) -> None:
     large model the ones whose small-model answer fails the checks. The systems then replay from cache."""
     if not isinstance(llm, CachedLLM):
         return
-    doctype = DocileType() if dataset == "docile" else FaturaType() if dataset == "fatura" else ReceiptType()
+    doctype = FaturaType()
     schema = doctype.schema
     say = lambda tier: (lambda d, n: print(f"  {tier} model: {d}/{n} documents read", flush=True))
     print(f"reading {len(order)} documents with the small model ({workers} at a time; cached in results/) ...", flush=True)
@@ -247,8 +192,7 @@ def run(dataset: str, items: list[dict], mode: str, real: bool = False, seed: in
     order = items[:]
     random.Random(seed).shuffle(order)
     truth = {it["doc_id"]: it["truth"] for it in order}
-    doctype = (DocileType(use_given_clusters=given_clusters) if dataset == "docile" else
-               FaturaType(use_given_clusters=given_clusters) if dataset == "fatura" else ReceiptType(threshold=0.4))
+    doctype = FaturaType(use_given_clusters=given_clusters)
     llm = llm or make_llm(dataset, real, truth, seed)
     eng = Engine(doctype, llm, Config(mode=mode, llm_only_tier=llm_only_tier))
     seen = Counter()
@@ -331,8 +275,7 @@ def summarize(dataset, mode, real, rows, eng, cf, wall, schema) -> dict:
 
 def to_markdown(results: list[dict]) -> str:
     r0 = results[0]
-    kind = ("third-party template invoices (FATURA, Limam et al. 2023), text layer as provided" if r0["dataset"] == "fatura"
-            else "real documents")
+    kind = "third-party template invoices (FATURA, Limam et al. 2023), text layer as provided"
     out = [f"# {r0['dataset'].upper()}: {r0['docs']:,} {kind}, {r0['sources']} sources",
            f"Teacher: {r0['teacher']}.", ""]
     out.append("| System | Docs fully right (answerable fields) | Fields right | Labelled fields right | Answerable labelled fields right | Handled by code | Right when handled by code | Wrong but accepted by code | LLM calls / doc | LLM cost | Cost if every doc went to Haiku / Sonnet |")
@@ -351,13 +294,13 @@ def to_markdown(results: list[dict]) -> str:
             out.append(f"| {k} | {v['docs']:,} | {v['code_share']:.1%} | {v['exact']:.1%} |")
         out += ["", f"Parsers promoted: {d['parsers_promoted']}. Disagreements recognised as OCR noise: "
                     f"{d['noise_disagreements']}. Drifts confirmed: {d['drifts']}.",
-                "", ("_FATURA's text layer has its own OCR-like damage (e.g. 'INVO1036008' for 'INV01036008'); the model "
-                     "is given the same text. " if r0["dataset"] == "fatura" else "") +
-                "_Fields right_ counts a value the annotators did not label as wrong; _labelled fields right_ scores only "
-                    "the fields DocILE labelled on that document (DocILE does not label every printed value); _answerable_ further "
+                "", "_FATURA's text layer has its own OCR-like damage (e.g. 'INVO1036008' for 'INV01036008'); the model "
+                    "is given the same text. "
+                    "_Fields right_ counts a value the annotators did not label as wrong; _labelled fields right_ scores only "
+                    "the fields labelled on that document; _answerable_ further "
                     "drops labelled values that do not appear in the text the model is given "
                     f"({1 - d.get('answerable_share', 1):.0%} of labelled fields here). "
-                    "Amounts, dates and currencies are compared by value ($ = USD). "
+                    "Amounts and currencies are compared by value ($ = USD). "
                     "Per-document predictions are in the matching `_predictions.jsonl` file._",
                 "", "Fields Distill got wrong most often: " +
                 ", ".join(f"{k} ({v})" for k, v in list(d["field_errors"].items())[:6])]
@@ -370,25 +313,21 @@ def to_markdown(results: list[dict]) -> str:
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("dataset", choices=["docile", "sroie", "fatura"])
+    ap.add_argument("dataset", nargs="?", default="fatura", choices=["fatura"])
     ap.add_argument("--fatura", default="data/fatura_invoices.jsonl.gz")
     ap.add_argument("--per-template", type=int, help="FATURA: invoices per template (default all 200)")
-    ap.add_argument("--docile", default="data/docile_trainval_words.jsonl.gz")
-    ap.add_argument("--sroie-ocr", default="data/sroie_ocr")
-    ap.add_argument("--sroie-keys", default="data/sroie_keys")
     ap.add_argument("--real", action="store_true")
     ap.add_argument("--limit", type=int)
     ap.add_argument("--clusters", help="only documents from the N largest layout clusters (e.g. 10), or a rank range "
                                        "(e.g. 11-20, for clusters the prompt was not tuned on)")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--cluster", choices=["given", "learned"], default="given",
-                    help="DocILE: identify the source by DocILE's layout cluster (like a vendor master) or by unsupervised clustering")
+                    help="identify the source by the dataset's template id (like a vendor master) or by unsupervised layout clustering")
     ap.add_argument("--systems", default="llm_only,static,distill")
     ap.add_argument("--out", default="results")
     ap.add_argument("--workers", type=int, default=8, help="parallel model calls in --real runs")
     a = ap.parse_args(argv)
-    items = (load_docile(a.docile) if a.dataset == "docile" else
-             load_fatura(a.fatura, a.per_template) if a.dataset == "fatura" else load_sroie(a.sroie_ocr, a.sroie_keys))
+    items = load_fatura(a.fatura, a.per_template)
     if a.clusters:
         from collections import Counter as _C
         lo, _, hi = a.clusters.partition("-")
@@ -399,7 +338,7 @@ def main(argv=None):
         random.Random(a.seed).shuffle(items)
         items = items[:a.limit]
     Path(a.out).mkdir(exist_ok=True)
-    tag = f"{a.dataset}{'_learned' if a.cluster == 'learned' and a.dataset == 'docile' else ''}{'_real' if a.real else ''}"
+    tag = f"{a.dataset}{'_learned' if a.cluster == 'learned' else ''}{'_real' if a.real else ''}"
     llm = None
     if a.real:
         llm = make_llm(a.dataset, True, {}, a.seed, a.out)

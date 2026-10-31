@@ -17,7 +17,7 @@ Teacher: human labels (perfect teacher).
 
 Parsers promoted: 138. Disagreements recognised as OCR noise: 39. Drifts confirmed: 14.
 
-_FATURA's text layer has its own OCR-like damage (e.g. 'INVO1036008' for 'INV01036008'); the model is given the same text. _Fields right_ counts a value the annotators did not label as wrong; _labelled fields right_ scores only the fields DocILE labelled on that document (DocILE does not label every printed value); _answerable_ further drops labelled values that do not appear in the text the model is given (1% of labelled fields here). Amounts, dates and currencies are compared by value ($ = USD). Per-document predictions are in the matching `_predictions.jsonl` file._
+_FATURA's text layer has its own OCR-like damage (e.g. 'INVO1036008' for 'INV01036008'); the model is given the same text. _Fields right_ counts a value the annotators did not label as wrong; _labelled fields right_ scores only the fields labelled on that document; _answerable_ further drops labelled values that do not appear in the text the model is given (1% of labelled fields here). Amounts and currencies are compared by value ($ = USD). Per-document predictions are in the matching `_predictions.jsonl` file._
 
 Fields Distill got wrong most often: discount (69), invoice_number (29), total (4), due_date (4), subtotal (3), invoice_date (3)
 

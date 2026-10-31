@@ -202,8 +202,7 @@ def legible(ex: Example, fname: str) -> bool:
     ftype = ex.labels.schema.types[fname]
     value = getattr(ex.labels, fname)
     if not _has(ftype, value):
-        from .model import INCOMPLETE_LABELS
-        return ex.labels.schema.name not in INCOMPLETE_LABELS  # absent = checked as absent, unless labels are incomplete
+        return True  # absent = checked as absent
     key = ("_legible", fname)
     cache = ex.__dict__.setdefault("_cache", {})
     if key in cache:

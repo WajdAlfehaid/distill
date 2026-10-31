@@ -1,4 +1,4 @@
-"""Live demo server: streams invoices through Distill and serves the dashboard.
+"""Dashboard server: streams invoices through Distill and serves the dashboard.
 
     python -m distill.server                 # simulated LLM tiers, http://localhost:8000
     ANTHROPIC_API_KEY=... python -m distill.server --real

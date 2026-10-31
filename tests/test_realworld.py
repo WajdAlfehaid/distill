@@ -2,7 +2,7 @@
 import random
 
 from distill.datagen import DEMO_OVERRIDES, InvoiceStream
-from distill.doctypes import DOCILE, RECEIPT
+from distill.doctypes import FATURA
 from distill.fingerprint import identify_vendor
 from distill.model import Record, field_equal
 from distill.ocr import corrupt, fuzzy_label, money_ocr_equivalent, ocr_equivalent
@@ -84,29 +84,29 @@ def test_registration_aligns_shifted_scans():
 
 
 def test_zone_template_learned_on_shifted_pages():
-    pages = [(_page(0.0, 0.0, "INV-001", "1,234.50"), {"document_id": "INV-001", "amount_due": "1,234.50"}),
-             (_page(0.02, -0.04, "INV-002", "88.00"), {"document_id": "INV-002", "amount_due": "88.00"}),
-             (_page(-0.01, 0.03, "INV-003", "990.10"), {"document_id": "INV-003", "amount_due": "990.10"})]
-    registration, rules = learn_zones(pages, ["document_id", "amount_due"])
-    assert set(rules) == {"document_id", "amount_due"}
-    spec = {"schema": "docile", "fields": {k: {**r, "type": "raw"} for k, r in rules.items()},
+    pages = [(_page(0.0, 0.0, "INV-001", "1,234.50"), {"invoice_number": "INV-001", "amount_due": "1,234.50"}),
+             (_page(0.02, -0.04, "INV-002", "88.00"), {"invoice_number": "INV-002", "amount_due": "88.00"}),
+             (_page(-0.01, 0.03, "INV-003", "990.10"), {"invoice_number": "INV-003", "amount_due": "990.10"})]
+    registration, rules = learn_zones(pages, ["invoice_number", "amount_due"])
+    assert set(rules) == {"invoice_number", "amount_due"}
+    spec = {"schema": "fatura", "fields": {k: {**r, "type": "raw"} for k, r in rules.items()},
             "registration": registration, "required": [], "num_style": "en", "date_style": "iso"}
     new = _page(0.04, -0.06, "INV-777", "42.00")
-    r = execute(spec, "", DOCILE, new)
-    assert r.record.document_id == "INV-777" and r.record.amount_due == "42.00"
+    r = execute(spec, "", FATURA, new)
+    assert r.record.invoice_number == "INV-777" and r.record.amount_due == "42.00"
     words, ok = register(new, registration)
     assert ok
 
 
 # ------------------------------------------------------------------ dataset scoring
 def test_scoring_accepts_any_annotated_value_and_ignores_punctuation():
-    item = {"truth": Record(DOCILE, document_id="A-1"), "alts": {"document_id": ["A-1", "A1 "]}}
-    assert score(Record(DOCILE, document_id="A1"), item) == []
-    assert score(Record(DOCILE, document_id="A2"), item) == ["document_id"]
-    assert score(Record(DOCILE, document_id="A1", order_id="X"), item) == ["order_id"]  # extra value is wrong
-    assert field_equal("address", "NO 290, JALAN AIR PANAS. SETAPAK", "NO 290 JALAN AIR PANAS, SETAPAK", "raw")
+    item = {"truth": Record(FATURA, invoice_number="A-1"), "alts": {"invoice_number": ["A-1", "A1 "]}}
+    assert score(Record(FATURA, invoice_number="A1"), item) == []
+    assert score(Record(FATURA, invoice_number="A2"), item) == ["invoice_number"]
+    assert score(Record(FATURA, invoice_number="A1", po_number="X"), item) == ["po_number"]  # extra value is wrong
+    assert field_equal("address", "12, Harbour Road. Unit 4", "12 Harbour Road, Unit 4", "raw")
 
 
-def test_receipt_schema_round_trip():
-    r = Record(RECEIPT, company="X SDN BHD", date="25/12/2018", address="NO 1", total=9.0)
-    assert Record.from_dict(r.to_dict(), RECEIPT).values == r.values
+def test_fatura_schema_round_trip():
+    r = Record(FATURA, invoice_number="INV-1", invoice_date="03/04/2020", total="$9.00")
+    assert Record.from_dict(r.to_dict(), FATURA).values == r.values

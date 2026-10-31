@@ -1,4 +1,4 @@
-"""Quick check that real Claude extraction works before a live demo.
+"""Quick check that real Claude extraction works before a longer run.
 
     ANTHROPIC_API_KEY=sk-... python scripts/smoke_real.py [n_docs]
 

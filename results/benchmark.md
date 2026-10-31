@@ -5,7 +5,7 @@
 | llm_only_large | 94.10% | 472 | $28.3361 | $3.7641 | 891 | $3.5416 | 1.001 | 0% | 2158.5 ms | 444 |
 | llm_only_small | 94.74% | 421 | $4.7207 | $0.6229 | 992 | $0.5916 | 1.109 | 0% | 1656.0 ms | 245 |
 | llm_only_small_repair | 96.09% | 313 | $2.7157 | $0.3533 | 930 | $0.3278 | 1.043 | 0% | 1649.0 ms | 118 |
-| static | 81.17% | 1506 | $3.0680 | $0.4724 | 508 | $0.4285 | 0.565 | 43% | 0.7 ms | 43 |
+| static | 81.17% | 1506 | $3.0680 | $0.4724 | 508 | $0.4285 | 0.565 | 43% | 0.6 ms | 43 |
 | distill | 96.84% | 253 | $1.4220 | $0.1835 | 454 | $0.1625 | 0.492 | 79% | 0.3 ms | 102 |
 
 ## Drift events (wrong documents from the drifted vendor after the change)
@@ -21,7 +21,7 @@
 
 'Not needed': the change added lines the parser did not use; Distill checked those documents with the model, found the parser still right, and learned the new layout without replacing the parser.
 
-Repaired from the document's own invariants instead of a (further) model call: 1,528 of 8,000 documents (19.1%); 1,479 of them exactly right (96.8%).
+Repaired from the document's own invariants instead of a (further) model call: 1,527 of 8,000 documents (19.1%); 1,478 of them exactly right (96.8%).
 
 Scoped escalation: when the small model's answer fails only some checks, the large model is asked only for the fields (or the line-item rows) behind them, not the whole record. 225 such calls, 158 of them settled every check; answers averaged 59 output tokens against 248 for a full re-read (67 full re-reads remained).
 

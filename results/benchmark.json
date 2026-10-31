@@ -31,7 +31,7 @@
   "quarantine_corrected": 0,
   "latency_ms_p50": 2158.5,
   "latency_ms_mean": 2199.04,
-  "wall_seconds": 3.84,
+  "wall_seconds": 3.59,
   "drifts": [
    {
     "vendor": "V01",
@@ -919,7 +919,7 @@
   "quarantine_corrected": 0,
   "latency_ms_p50": 1656.0,
   "latency_ms_mean": 1925.09,
-  "wall_seconds": 3.71,
+  "wall_seconds": 3.67,
   "drifts": [
    {
     "vendor": "V01",
@@ -1807,7 +1807,7 @@
   "quarantine_corrected": 0,
   "latency_ms_p50": 1649.0,
   "latency_ms_mean": 1774.64,
-  "wall_seconds": 4.87,
+  "wall_seconds": 4.83,
   "drifts": [
    {
     "vendor": "V01",
@@ -2693,9 +2693,9 @@
   "repaired_wrong": 0,
   "quarantined": 0,
   "quarantine_corrected": 0,
-  "latency_ms_p50": 0.65,
-  "latency_ms_mean": 991.88,
-  "wall_seconds": 28.46,
+  "latency_ms_p50": 0.6,
+  "latency_ms_mean": 991.87,
+  "wall_seconds": 27.24,
   "drifts": [
    {
     "vendor": "V01",
@@ -3995,13 +3995,13 @@
   "escalation_out_tokens_scoped": 58.9,
   "scoped_resolved": 158,
   "human_review": 102,
-  "repaired": 1528,
+  "repaired": 1527,
   "repaired_wrong": 49,
   "quarantined": 4,
   "quarantine_corrected": 0,
-  "latency_ms_p50": 0.35,
-  "latency_ms_mean": 847.31,
-  "wall_seconds": 61.77,
+  "latency_ms_p50": 0.33,
+  "latency_ms_mean": 847.3,
+  "wall_seconds": 58.7,
   "drifts": [
    {
     "vendor": "V01",
@@ -4023,7 +4023,7 @@
     "wrong_after": 1,
     "detected_after_vendor_docs": 4,
     "recovered_after_vendor_docs": 10,
-    "detection_reason": "parser output disagrees with verified extraction on invoice_date. Parser suspended."
+    "detection_reason": "parser output disagrees with verified extraction on due_date. Parser suspended."
    },
    {
     "vendor": "V19",
@@ -4034,7 +4034,7 @@
     "wrong_after": 34,
     "detected_after_vendor_docs": 5,
     "recovered_after_vendor_docs": 14,
-    "detection_reason": "parser output disagrees with verified extraction on total. Parser suspended."
+    "detection_reason": "parser output disagrees with verified extraction on invoice_number. Parser suspended."
    },
    {
     "vendor": "V07",
@@ -4056,7 +4056,7 @@
     "wrong_after": 19,
     "detected_after_vendor_docs": 4,
     "recovered_after_vendor_docs": 28,
-    "detection_reason": "parser output disagrees with verified extraction on line_items. Parser suspended."
+    "detection_reason": "parser output disagrees with verified extraction on total. Parser suspended."
    },
    {
     "vendor": "V13",
@@ -5236,7 +5236,7 @@
     "seq": 1821,
     "kind": "drift",
     "vendor_id": "V10",
-    "message": "Drift confirmed for Iberia Componentes S.L.: parser output disagrees with verified extraction on invoice_date. Parser suspended.",
+    "message": "Drift confirmed for Iberia Componentes S.L.: parser output disagrees with verified extraction on due_date. Parser suspended.",
     "parser_id": "V10-p1"
    },
    {
@@ -5264,7 +5264,7 @@
     "seq": 2158,
     "kind": "drift",
     "vendor_id": "V19",
-    "message": "Drift confirmed for Al-Qassim Cold Chain: parser output disagrees with verified extraction on total. Parser suspended.",
+    "message": "Drift confirmed for Al-Qassim Cold Chain: parser output disagrees with verified extraction on invoice_number. Parser suspended.",
     "parser_id": "V19-p3"
    },
    {
@@ -5334,7 +5334,7 @@
     "seq": 2742,
     "kind": "drift",
     "vendor_id": "V12",
-    "message": "Drift confirmed for Northwind Electrical Ltd: parser output disagrees with verified extraction on line_items. Parser suspended.",
+    "message": "Drift confirmed for Northwind Electrical Ltd: parser output disagrees with verified extraction on total. Parser suspended.",
     "parser_id": "V12-p2"
    },
    {

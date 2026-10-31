@@ -46,20 +46,7 @@ Output: compact JSON on a single line, no spaces after separators, no markdown f
 
 
 # Labelling conventions of a dataset, given to the model the way a deployment would give its own field definitions.
-SCHEMA_NOTES = {
-    "docile": [
-        "Field conventions (follow them exactly):",
-        "- vendor_address: the supplier's full address block as printed, starting with the supplier name line.",
-        "- customer_billing_name: the bill-to name block as printed, including an attention / person line above the company.",
-        "- vendor_name: the supplier's name as printed in its letterhead or remit-to block.",
-        "- amount_total_gross: the document's grand total. Fill it even when no tax is shown; it is often the same number as amount_due.",
-        "- amount_due: the amount payable (balance / total due).",
-        "- amount_total_net, amount_total_tax: only when a total before tax or a tax total is printed.",
-        "- currency_code_amount_due: the currency symbol or code printed with the amount due, exactly as printed (e.g. \"$\"); do not convert it.",
-        "- amounts and dates: copy exactly as printed, including any currency symbol; do not reformat.",
-        "- document_id is the invoice / document number; order_id the purchase or order number; customer_id the customer or account number.",
-    ],
-}
+SCHEMA_NOTES: dict[str, list[str]] = {}
 
 
 def prompt_for(schema: Schema) -> str:
